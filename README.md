@@ -1,91 +1,163 @@
 
+Pheasant
+=======================================
 
-Pheasant (An ORM inspired by Martin Fowler)
+Pheasant is a object-mapper written to take advantage of PHP 5.3. It's inspired by 
+Martin Fowler's DataMapper pattern. Simple relationships are supported, with the 
+emphasis being on scalability and performance over complexity.
 
-Pheasant is a lightweight data mapper designed to take advantage of PHP 5.3+. It's key goals
-are simplicity and performance, Pheasant is written to work with large datasets with small amounts
-of memory. MySQL 5.x is targeted specifically to avoid database abstraction.
+Persisting Objects
+---------------------------------
 
-Things I like:
+Each domain object has a set of properties and relationships that are defined in the 
+configure method. Each domain object delegates to a mapper object for the actual saving
+and loading of objects.
 
-- Mapper/Finders decoupled from DomainObjects
-- Attribute accessors rather than getters/setters
-- No dependancies other than SPL and mysqlnd
-- Constructors don't require chaining to parent classes
-- Chainable methods
+	<?php
 
-Things I don't like:
-
-- SQL-like languages that need to be transformed into SQL
-- Persistence coupled heavily to domain objects
-- Huge inheritance hierarchies
-- Too much magic
-
-
-Examples:
-
-	// adding a configure method defines an object
-	class User extends DomainObject
+	use pheasant;
+	
+	class Post extends DomainObject
 	{
-		private function configure()
+		private function configure($schema, $props, $rels)
 		{
-			$this->addAttributes(array(
-				'userid' => array(Serial(), array('primary'=>true)),
-				'firstname' => String(255),
-				'lastname' => String(255),
-				));
-
-			$this->addRelationships(array(
-				'Group'=>HasOne('Group', 'groupid')
-				));
+			$schema
+				->table('post')
+				;
+		
+			$props
+				->serial('postid', array('primary'=>true))
+				->string('title', 255, array('required'=>true))
+				->string('subtitle', 255)
+				->enum('status', array('closed','open'))
+				;
+		
+			$rels
+				->hasOne('Author', 'Author', 'author_id')
+				;
 		}
 	}
-
-	// creating an object and setting keys
-	$user = new User();
-	$user->firstname = 'Test';
-	$user->lastname = 'Testerson';
-
-	$user = new User();
-	$user->set(array(
-		'firstname'=>'Test',
-		'lastname'=>'Testerson',
-	));
-
-	$user = new User();
-	$user
-		->set('firstname','Test')
-		->set('lastname','Testerson')
-
-	// save a domain object (still not sure about this bit)
-	User::save($user);
-	Pheasant::mapper($user)->save($user);
-
-	// querying
-	foreach(User::findBySql("firstname like ?", array('%T%')) as $user)
+	
+	class Author extends DomainObject
 	{
-		// do stuff with user object
+		private function configure($schema, $props, $rels)
+		{
+			$schema
+				->table('Author')
+				;
+		
+			$props
+				->serial('authorid', array('primary'=>true))
+				->string('fullname', 255, array('required'=>true))
+				;
+		
+			$rels
+				->belongsTo('Posts', 'Post')
+				;
+		}
+	}
+	
+	Pheasant::setup('mysql://localhost:/mydatabase');
+	
+	// create some objects
+	$author = new Author(array('fullname'=>'Lachlan'));
+	$post = new Post(array('title'=>'My Post', 'author'=>$author);
+	$post->save();
+	
+	?>		
+	
+Querying Objects
+---------------------------------	
+	
+	<?php
+
+	use pheasant;
+	use pheasant\query;
+	
+	// all users
+	$users = User::find();
+
+	// all users named frank
+	$users = User::find('firstname = ?', 'frank');	
+	
+	// this requires two queries
+	foreach(User::find() as $user)
+	{
+		printf("User %s has %d posts\n", $user->fullname, $user->Posts->count());
 	}
 
-	// load 1-1 relationships with 1 query
-	foreach(User::findAll()->join('Group') as $user)
+	// custom queries for complex joins
+	$query = new Query();
+	$query
+		->select(array('User'=>'*', 'Post'=>'*')) 	
+		->from('User u')
+		->innerJoin('Post p', 'on u.userid=p.userid and p.title like ?', array('Llama%'))
+		;
+			
+	// builds in one query
+	foreach(User::hydrate($query) as $user)
 	{
-		echo $user->Group->groupid;
+		printf("User %s has %d posts about llamas\n',$user->fullname,$user->Posts
 	}
+	
+	?>
 
-	// delete all objects
-	User::delete(User::findAll());
+Events
+---------------------------------	
+	
+Code can be triggered before and after create, update and delete operations.
 
-	// raw sql
-	$resultSet = ResultSet("SELECT * FROM user", new User());
-	foreach($resultSet as $user)
+	<?php
+
+	use pheasant;
+	use pheasant\events;
+	
+	class Post extends DomainObject
 	{
-		// do stuff with user
+		private function configure($schema, $props, $rels, $events)
+		{
+			$schema
+				->table('post')
+				->event(Events::PRE_CREATE, 'preCreate')
+				;
+
+			$props
+				->serial('postid', array('primary'=>true))
+				->string('title', 255, array('required'=>true))
+				->timestamp('timecreated')
+				;
+		}
+		
+		private function preCreate()
+		{
+			// sets a timestamp
+			$this->timestamp = time();
+		}
+	}	
+	
+	?>	
+	
+Custom Finders
+---------------------------------		
+
+Finders and mappers are decoupled from each other, so implementing custom finder methods
+is straight forward.
+
+	<?php
+	
+	use pheasant;
+	
+	class PostFinder extends Finder
+	{
+		public function findByAuthorId($definition, $id)
+		{
+			return $this->find('author_id = ?', $id);
+		}
 	}
-
-	// resultset hydration with closures
-	$resultSet = ResultSet("SELECT * FROM user");
-	$resultSet->setHydrator(function($row){
-		return new User()->set($row);
-	});
-
+	
+	Pheasant::defineFinder('Post',new PostFinder());
+	
+	// finds single posts by author id
+	$post = Post::findByAuthorId(55)->one();
+	
+	?>
