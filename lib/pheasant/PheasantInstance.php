@@ -33,9 +33,13 @@ class PheasantInstance
 		return $this->_connectionManager->connection($name);
 	}
 
+	/**
+	 * Generates a closure that invokes a method regardless of whether it's private
+	 * or protected. Treat with extreme caution.
+	 * @return closure
+	 */
 	public function methodClosure($object, $method)
 	{
-		// magic is concentrated here, hopefully
 		return function() use($object, $method) {
 			$refObj = new \ReflectionObject($object);
 			$refMethod = $refObj->getMethod($method);
@@ -44,6 +48,9 @@ class PheasantInstance
 		};
 	}
 
+	/**
+	 * Returns the Schema instance for an object
+	 */
 	public function schema($object)
 	{
 		$class = get_class($object);
@@ -54,6 +61,10 @@ class PheasantInstance
 		return $this->_schema[$class];
 	}
 
+	/**
+	 * Constructs a domain object, invoking DomainObject::configure() if required
+	 * and also DomainObject::construct()
+	 */
 	public function construct($object, $params)
 	{
 		$class = get_class($object);
@@ -71,5 +82,6 @@ class PheasantInstance
 
 		$construct = $this->methodClosure($object, 'construct');
 		call_user_func_array($construct, $params);
+		return $object;
 	}
 }

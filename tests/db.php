@@ -57,7 +57,6 @@ class TokenizerTestCase extends \UnitTestCase
 		$sql = "select * from table where x = ?";;
 
 		$tokenizer = new Tokenizer($sql);
-		var_dump($tokenizer->tokenize());
 		$this->assertEqual($sql, implode('', $tokenizer->tokenize()));
 	}
 }
