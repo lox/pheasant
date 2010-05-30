@@ -1,0 +1,35 @@
+<?php
+
+namespace pheasant;
+
+class Schema
+{
+	private $_properties;
+	private $_relationships;
+	private $_table;
+
+	public function properties()
+	{
+		if(!isset($this->_properties))
+			$this->_properties = new Properties();
+
+		return $this->_properties;
+	}
+
+	public function relationships()
+	{
+		if(!isset($this->_relationships))
+			$this->_relationships = new Relationships();
+
+		return $this->_relationships;
+	}
+
+	/**
+	 * Setter/Getter for table name
+	 */
+	public function table($name)
+	{
+		if($name) $this->_table = $name;
+		return $this->_table;
+	}
+}
