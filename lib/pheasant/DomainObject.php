@@ -5,8 +5,6 @@ namespace pheasant;
 class DomainObject
 {
 	private $_memento;
-	private $_revision;
-	private $_schema;
 	private $_identity;
 
 	/**
@@ -16,33 +14,36 @@ class DomainObject
 	final public function __construct()
 	{
 		$this->_memento = new Memento();
-		$this->_schema = new Schema();
-
-		$this->configure(
-			$this->_schema,
-			$this->_schema->properties(),
-			$this->_schema->relationships()
-			);
+		Pheasant::construct($this, func_get_args());
 	}
 
 	/**
-	 * Template function for configuring a domain object
+	 * Template function for configuring a domain object. Called once per type
+	 * of domain object
 	 */
-	protected function configure($schema, $props, $rels)
+	private function configure($schema, $props, $rels)
+	{
+	}
+
+	/**
+	 * Template function for constructing a domain object instance, called on
+	 * each object construction
+	 */
+	private function construct()
 	{
 	}
 
 	public function identity()
 	{
 		if(!isset($this->_identity))
-			$this->_identity = new Identity($this);
+			$this->_identity = $this->schema()->identity($this);
 
 		return $this->_identity;
 	}
 
 	public function schema()
 	{
-		return $this->_schema;
+		return Pheasant::schema($this);
 	}
 
 	public function isSaved()
@@ -70,20 +71,19 @@ class DomainObject
 		{
 			return $this->_memento->{$prop};
 		}
-		else if($future && $this->identity()->hasProperty($prop))
+		else if(isset($this->schema()->properties()->{$prop}))
 		{
-			return $this->future($prop);
+			return $future ? $this->future($prop) : $default;
 		}
 		else
 		{
-			return $default;
+			throw new Exception("Unknown property $prop");
 		}
 	}
 
 	public function set($prop, $value)
 	{
 		$this->_memento->{$prop} = $value;
-		return $this;
 	}
 
 	public function has($prop)

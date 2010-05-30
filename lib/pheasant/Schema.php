@@ -32,4 +32,9 @@ class Schema
 		if($name) $this->_table = $name;
 		return $this->_table;
 	}
+
+	public function identity($object)
+	{
+		return new Identity($object);
+	}
 }

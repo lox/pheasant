@@ -62,7 +62,17 @@ class Properties
 
 	public function primaryKeys()
 	{
-		return $this->_primary;
+		$properties = array();
+
+		foreach($this->_primary as $kwy)
+			$properties = $this->{$key};
+
+		return $properties;
+	}
+
+	public function __isset($key)
+	{
+		return isset($this->_properties[$key]);
 	}
 
 	public function __get($key)

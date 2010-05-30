@@ -11,7 +11,6 @@ class Memento implements \IteratorAggregate
 	private $_data=array();
 	private $_revisions=array();
 	private $_current;
-	private $_changed=array();
 
 	public function __construct($data=array())
 	{
@@ -30,7 +29,7 @@ class Memento implements \IteratorAggregate
 	{
 		$revision = $this->_nextRevision();
 
-		foreach($array as $key=>$value)
+		foreach((array) $array as $key=>$value)
 		{
 			$revision->$key = $value;
 			$this->_data[$key] = & $revision->{$key};
