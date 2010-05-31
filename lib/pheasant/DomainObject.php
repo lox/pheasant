@@ -6,6 +6,8 @@ class DomainObject
 {
 	private $_memento;
 	private $_identity;
+	private $_checkpoint=0;
+	private $_saved=false;
 
 	/**
 	 * The final constructer which initializes the object. Subclasses
@@ -21,7 +23,7 @@ class DomainObject
 	 * Template function for configuring a domain object. Called once per type
 	 * of domain object
 	 */
-	private function configure($schema, $props, $rels)
+	protected function configure($schema, $props, $rels)
 	{
 	}
 
@@ -29,7 +31,7 @@ class DomainObject
 	 * Template function for constructing a domain object instance, called on
 	 * each object construction
 	 */
-	private function construct()
+	protected function construct()
 	{
 	}
 
@@ -43,15 +45,38 @@ class DomainObject
 
 	public function schema()
 	{
-		return Pheasant::schema($this);
+		return Pheasant::schema(get_class($this));
 	}
 
 	public function isSaved()
 	{
+		return $this->_saved;
 	}
 
+	/**
+	 * Saves the domain object via the associated mapper
+	 */
 	public function save()
 	{
+		$mapper = Pheasant::mapper($this);
+		$mapper->save($this);
+	}
+
+	/**
+	 * Marks the object as being persisted.
+	 */
+	public function checkpoint()
+	{
+		$this->_saved = true;
+		$this->_checkpoint = $this->_memento->revisionNumber();
+	}
+
+	/**
+	 * Returns an array of columns that have changed since the last checkpoint
+	 */
+	public function changes()
+	{
+		return $this->_memento->changesAfter($this->_checkpoint);
 	}
 
 	/**
@@ -65,7 +90,7 @@ class DomainObject
 	// ----------------------------------------
 	// property manipulators
 
-	public function get($prop, $default=null, $future=true)
+	public function get($prop, $future=false, $default=null)
 	{
 		if(isset($this->_memento->{$prop}))
 		{
@@ -96,7 +121,7 @@ class DomainObject
 
 	public function __get($prop)
 	{
-		return $this->get($prop);
+		return $this->get($prop, true);
 	}
 
 	public function __set($prop, $value)

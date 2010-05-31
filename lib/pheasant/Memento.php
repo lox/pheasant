@@ -53,8 +53,12 @@ class Memento implements \IteratorAggregate
 		for($idx=$revision; $idx<$count; $idx++)
 		{
 			$current = (array) $this->_revisions[$idx];
-			$changes += array_keys(array_diff_assoc($current,$previous));
-			$changes += array_keys(array_diff_assoc($previous,$current));
+			$changes = array_merge(
+				$changes,
+				array_keys(array_diff_assoc($previous,$current)),
+				array_keys(array_diff_assoc($current,$previous))
+				);
+
 			$previous = $current;
 		}
 
@@ -78,7 +82,7 @@ class Memento implements \IteratorAggregate
 		// clone previous revision values in the new one
 		if(isset($this->_current))
 			foreach($this->_current as $key=>$value)
-			$revision->{$key} =& $this->_current->{$key};
+			$revision->{$key} = $this->_current->{$key};
 
 		$this->_revisions[] = $revision;
 		$this->_current = $revision;

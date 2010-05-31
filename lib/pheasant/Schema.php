@@ -27,7 +27,7 @@ class Schema
 	/**
 	 * Setter/Getter for table name
 	 */
-	public function table($name)
+	public function table($name=null)
 	{
 		if($name) $this->_table = $name;
 		return $this->_table;

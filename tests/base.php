@@ -17,7 +17,7 @@ namespace
 			if(file_exists($path))
 				require_once($path);
 
-			if(!class_exists($className))
+			if(!class_exists($className) && !interface_exists($className))
 				throw new Exception("Unable to load $className");
 		}
 	}

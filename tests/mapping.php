@@ -10,22 +10,20 @@ require_once(__DIR__.'/base.php');
 
 class Post extends DomainObject
 {
-	private function configure($schema, $props, $rels)
+	protected function configure($schema, $props, $rels)
 	{
 		$schema
-			->table('post')
-			;
+			->table('post');
 
 		$props
-			->serial('postid', array('primary'))
+			->serial('postid', array('primary', 'auto_increment'))
 			->string('title', 255, array('required'))
-			->string('subtitle', 255)
-			;
+			->string('subtitle', 255);
 	}
 
-	private function construct($title)
+	protected function construct($title)
 	{
-		$this->title = 'title';
+		$this->title = $title;
 	}
 }
 
@@ -52,15 +50,23 @@ class BasicMappingTestCase extends \pheasant\tests\MysqlTestCase
 		$this->assertEqual((string) $post->postid, null);
 		$this->assertIsA($post->identity(), '\pheasant\Identity');
 		$this->assertIsA($post->postid, '\pheasant\Future');
+		$this->assertEqual(array('title','subtitle'), $post->changes());
 		$this->assertFalse($post->isSaved());
 		$post->save();
 
-		/*
 		$this->assertTrue($post->isSaved());
+		$this->assertEqual(array(), $post->changes());
 		$this->assertEqual($post->postid, 1);
 		$this->assertEqual($post->title, 'First post, bitches!');
 		$this->assertEqual($post->subtitle, 'Just because...');
-		*/
+
+		$post->title = 'Another title, perhaps';
+		$this->assertTrue($post->isSaved());
+		$this->assertEqual(array('title'), $post->changes());
+		$post->save();
+
+		$this->assertEqual(array(), $post->changes());
+		$this->assertEqual($post->title, 'Another title, perhaps');
 	}
 }
 

@@ -1,14 +1,10 @@
 <?php
 
-namespace pheasant/mapper;
+namespace pheasant\mapper;
 
 interface Mapper
 {
-	public function insert(DomainObject $object);
+	public function save($object);
 
-	public function update(DomainObject $object);
-
-	public function delete(DomainObject $object);
-
-	public function hydrate($array);
+	public function delete($object);
 }

@@ -1,15 +1,13 @@
 <?php
 
 namespace pheasant;
+use \pheasant\mapper\TableMapper;
 
 class PheasantInstance
 {
 	private $_connectionManager;
 	private $_schema=array();
-
-	public function __construct()
-	{
-	}
+	private $_mappers=array();
 
 	public function setup($dsn)
 	{
@@ -49,11 +47,11 @@ class PheasantInstance
 	}
 
 	/**
-	 * Returns the Schema instance for an object
+	 * Returns the Schema instance for a
 	 */
-	public function schema($object)
+	public function schema($class)
 	{
-		$class = get_class($object);
+		$class = is_object($class) ? get_class($class) : $class;
 
 		if(!isset($this->_schema[$class]))
 			throw new Exception("No schema created for $class");
@@ -83,5 +81,24 @@ class PheasantInstance
 		$construct = $this->methodClosure($object, 'construct');
 		call_user_func_array($construct, $params);
 		return $object;
+	}
+
+	/**
+	 * Returns the mapper registered for an object, defaults to a TableMapper
+	 * @param mixed either a classname or an object
+	 * @return Mapper
+	 */
+	public function mapper($class)
+	{
+		$class = is_object($class) ? get_class($class) : $object;
+
+		if(!isset($this->_mappers[$class]))
+			return $this->_mappers[$class] = new TableMapper();
+
+		return $this->_mappers[$class];
+	}
+
+	public function finder($object)
+	{
 	}
 }

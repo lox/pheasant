@@ -64,8 +64,8 @@ class Properties
 	{
 		$properties = array();
 
-		foreach($this->_primary as $kwy)
-			$properties = $this->{$key};
+		foreach($this->_primary as $key)
+			$properties[$key] = $this->{$key};
 
 		return $properties;
 	}

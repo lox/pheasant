@@ -199,4 +199,39 @@ class Table
 			$this->_name
 			)->count();
 	}
+
+	/**
+	 * Inserts a row into the table
+	 */
+	public function insert($data)
+	{
+		return $this->_connection->execute(sprintf(
+			'INSERT INTO `%s` (`%s`) VALUES (%s)',
+			$this->_name,
+			implode('`,`', array_keys($data)),
+			implode(', ', array_fill(0, count($data), '?'))
+			), array_values($data));
+	}
+
+	/**
+	 * Updates a row into the table
+	 */
+	public function update($data, $keys)
+	{
+		$columns = '';
+		$where = '';
+
+		foreach($data as $key=>$value)
+			$columns[] = sprintf('`%s`=?',$key);
+
+		foreach($keys as $key=>$value)
+			$where[] = sprintf('`%s`=?',$key);
+
+		return $this->_connection->execute(sprintf(
+			'UPDATE `%s` SET %s WHERE %s',
+			$this->_name,
+			implode(', ', $columns),
+			implode(' AND ', $where)
+			), array_merge(array_values($data), array_values($keys)));
+	}
 }

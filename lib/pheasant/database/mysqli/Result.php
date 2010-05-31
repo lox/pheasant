@@ -20,4 +20,9 @@ class Result implements \Countable
 	{
 		return $this->affectedRows();
 	}
+
+	public function lastInsertId()
+	{
+		return $this->_link->insert_id;
+	}
 }
