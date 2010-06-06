@@ -10,18 +10,18 @@ require_once(__DIR__.'/base.php');
 
 class Post extends DomainObject
 {
-	protected function configure($schema, $props, $rels)
+	protected static function configure($schema, $props, $rels)
 	{
 		$schema
 			->table('post');
 
 		$props
-			->serial('postid', array('primary', 'auto_increment'))
+			->integer('postid', 4, array('primary', 'auto_increment'))
 			->string('title', 255, array('required'))
 			->string('subtitle', 255);
 	}
 
-	protected function construct($title)
+	public function construct($title)
 	{
 		$this->title = $title;
 	}

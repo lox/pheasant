@@ -18,46 +18,46 @@ class Properties
 		return $this;
 	}
 
-	public function serial($name, $options=array())
+	public function sequence($name, $options=array())
 	{
-		$array = array_merge($this->defaults(), array(
+		return $this->addProperty($name, new Property($this->_options($options, array(
 			'name'=>$name,
 			'type'=>'sequence',
-			));
-
-		return $this->addProperty($name, new Property($options, $array));
+			'primary'=>true,
+			))));
 	}
 
 	public function string($name, $length=255, $options=array())
 	{
-		$array = array_merge($this->defaults(), array(
+		return $this->addProperty($name, new Property($this->_options($options, array(
 			'name'=>$name,
 			'type'=>'string',
 			'length'=>$length,
-			));
-
-		return $this->addProperty($name, new Property($options, $array));
+			))));
 	}
 
 	public function integer($name, $length=4, $options=array())
 	{
-		$array = array_merge($this->defaults(), array(
+		return $this->addProperty($name, new Property($this->_options($options, array(
 			'name'=>$name,
 			'type'=>'integer',
 			'length'=>$length,
-			));
-
-		return $this->addProperty($name, new Property($options, $array));
+			))));
 	}
 
-	public function defaults()
+	private function _options($options, $defaults)
 	{
-		return array(
+		$object = new Options(array(
 			'primary'=>false,
 			'required'=>false,
 			'auto_increment'=>false,
 			'default'=>null,
-			);
+			));
+
+		return $object
+			->merge($defaults)
+			->merge($options)
+			;
 	}
 
 	public function primaryKeys()

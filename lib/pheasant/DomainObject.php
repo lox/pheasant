@@ -4,9 +4,10 @@ namespace pheasant;
 
 class DomainObject
 {
-	private $_memento;
+	private static $_schema;
 	private $_identity;
-	private $_checkpoint=0;
+	private $_data = array();
+	private $_changed = array();
 	private $_saved=false;
 
 	/**
@@ -15,15 +16,27 @@ class DomainObject
 	 */
 	final public function __construct()
 	{
-		$this->_memento = new Memento();
-		Pheasant::construct($this, func_get_args());
+		// lazily define the schema
+		if(!isset(self::$_schema))
+		{
+			self::$_schema = new Schema();
+			static::configure(
+				self::$_schema,
+				self::$_schema->properties(),
+				self::$_schema->relationships()
+				);
+
+			// call user-defined constructor
+			call_user_func_array(array($this,'construct'),
+				func_get_args());
+		}
 	}
 
 	/**
 	 * Template function for configuring a domain object. Called once per type
 	 * of domain object
 	 */
-	protected function configure($schema, $props, $rels)
+	protected static function configure($schema, $props, $rels)
 	{
 	}
 
@@ -45,7 +58,7 @@ class DomainObject
 
 	public function schema()
 	{
-		return Pheasant::schema(get_class($this));
+		return self::$_schema;
 	}
 
 	public function isSaved()
@@ -55,32 +68,29 @@ class DomainObject
 
 	/**
 	 * Saves the domain object via the associated mapper
+	 * @chainable
 	 */
 	public function save()
 	{
 		$mapper = Pheasant::mapper($this);
 		$mapper->save($this);
-	}
-
-	/**
-	 * Marks the object as being persisted.
-	 */
-	public function checkpoint()
-	{
 		$this->_saved = true;
-		$this->_checkpoint = $this->_memento->revisionNumber();
+		$this->_changed = array();
+		return $this;
 	}
 
 	/**
-	 * Returns an array of columns that have changed since the last checkpoint
+	 * Returns an array of columns that have changed since the last save
+	 * @return array
 	 */
 	public function changes()
 	{
-		return $this->_memento->changesAfter($this->_checkpoint);
+		return array_unique($this->_changed);
 	}
 
 	/**
 	 * Returns an object for accessing a particular property
+	 * @return Future
 	 */
 	public function future($property)
 	{
@@ -90,11 +100,15 @@ class DomainObject
 	// ----------------------------------------
 	// property manipulators
 
+	/**
+	 * Gets the value of a property, optionally as a Future if the value
+	 * doesn't exist yet
+	 */
 	public function get($prop, $future=false, $default=null)
 	{
-		if(isset($this->_memento->{$prop}))
+		if(isset($this->_data[$prop]))
 		{
-			return $this->_memento->{$prop};
+			return $this->_data[$prop];
 		}
 		else if(isset($this->schema()->properties()->{$prop}))
 		{
@@ -106,14 +120,18 @@ class DomainObject
 		}
 	}
 
+	/**
+	 * Sets the value of a property
+	 */
 	public function set($prop, $value)
 	{
-		$this->_memento->{$prop} = $value;
+		$this->_data[$prop] = $value;
+		$this->_changed[] = $prop;
 	}
 
 	public function has($prop)
 	{
-		return isset($this->_memento->{$prop});
+		return isset($this->_data[$prop]);
 	}
 
 	// ----------------------------------------

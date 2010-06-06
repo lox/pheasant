@@ -7,7 +7,7 @@ class TableMapper implements Mapper
 {
 	public function save($object)
 	{
-		$schema = Pheasant::schema($object);
+		$schema = $object->schema();
 		$table = Pheasant::connection()->table($schema->table());
 		$data = array();
 
@@ -39,7 +39,6 @@ class TableMapper implements Mapper
 			$result = $table->update($data, $keys);
 		}
 
-		$object->checkpoint();
 		return $this;
 	}
 
