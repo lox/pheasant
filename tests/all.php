@@ -8,7 +8,6 @@ class AllTests extends TestSuite
 	{
 		parent::__construct('All tests');
 		$this->addFile(dirname(__FILE__).'/db.php');
-		$this->addFile(dirname(__FILE__).'/tokenizer.php');
 		$this->addFile(dirname(__FILE__).'/sequences.php');
 		$this->addFile(dirname(__FILE__).'/transaction.php');
 		$this->addFile(dirname(__FILE__).'/mapping.php');
