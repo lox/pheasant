@@ -11,4 +11,9 @@ class Property
 			$this->{$key} = $value;
 		}
 	}
+
+	public function __toString()
+	{
+		return $this->name;
+	}
 }

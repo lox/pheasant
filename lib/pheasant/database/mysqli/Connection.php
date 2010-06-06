@@ -99,4 +99,9 @@ class Connection
 	{
 		return new Table($name, $this);
 	}
+
+	public function sequencePool()
+	{
+		return new SequencePool($this);
+	}
 }

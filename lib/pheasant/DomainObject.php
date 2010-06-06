@@ -80,12 +80,16 @@ class DomainObject
 	}
 
 	/**
-	 * Returns an array of columns that have changed since the last save
+	 * Returns a key=>val array of properties that have changed since the last save
 	 * @return array
 	 */
 	public function changes()
 	{
-		return array_unique($this->_changed);
+		$changes = array();
+		foreach(array_unique($this->_changed) as $key)
+			$changes[$key] = $this->get($key, false);
+
+		return $changes;
 	}
 
 	/**

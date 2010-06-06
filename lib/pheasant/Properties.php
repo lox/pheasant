@@ -22,8 +22,10 @@ class Properties
 	{
 		return $this->addProperty($name, new Property($this->_options($options, array(
 			'name'=>$name,
-			'type'=>'sequence',
+			'type'=>'integer',
+			'length'=>8,
 			'primary'=>true,
+			'sequence'=>true,
 			))));
 	}
 
@@ -52,6 +54,7 @@ class Properties
 			'required'=>false,
 			'auto_increment'=>false,
 			'default'=>null,
+			'sequence'=>false,
 			));
 
 		return $object

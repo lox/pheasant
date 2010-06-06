@@ -205,6 +205,9 @@ class Table
 	 */
 	public function insert($data)
 	{
+		if(empty($data))
+			throw new Exception("Can't insert an empty row");
+
 		return $this->_connection->execute(sprintf(
 			'INSERT INTO `%s` (`%s`) VALUES (%s)',
 			$this->_name,
@@ -218,6 +221,9 @@ class Table
 	 */
 	public function update($data, $keys)
 	{
+		if(empty($data))
+			throw new Exception("Can't insert an empty row");
+
 		$columns = '';
 		$where = '';
 

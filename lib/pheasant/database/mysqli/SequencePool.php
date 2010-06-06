@@ -28,7 +28,7 @@ class SequencePool
 	{
 		$this->_connection->table(self::TABLE)
 			->string('name', 255, array('notnull','primary'))
-			->integer('id', 4, array('notnull'))
+			->integer('id', 8, array('notnull','unsigned'))
 			->createIfNotExists();
 		return $this;
 	}

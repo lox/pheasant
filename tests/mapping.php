@@ -50,7 +50,7 @@ class BasicMappingTestCase extends \pheasant\tests\MysqlTestCase
 		$this->assertEqual((string) $post->postid, null);
 		$this->assertIsA($post->identity(), '\pheasant\Identity');
 		$this->assertIsA($post->postid, '\pheasant\Future');
-		$this->assertEqual(array('title','subtitle'), $post->changes());
+		$this->assertEqual(array('title','subtitle'), array_keys($post->changes()));
 		$this->assertFalse($post->isSaved());
 		$post->save();
 
@@ -62,7 +62,7 @@ class BasicMappingTestCase extends \pheasant\tests\MysqlTestCase
 
 		$post->title = 'Another title, perhaps';
 		$this->assertTrue($post->isSaved());
-		$this->assertEqual(array('title'), $post->changes());
+		$this->assertEqual(array('title'), array_keys($post->changes()));
 		$post->save();
 
 		$this->assertEqual(array(), $post->changes());
