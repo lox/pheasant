@@ -2,13 +2,18 @@
 
 namespace pheasant;
 
+/**
+ * An object which represents an entity in the problem domain.
+ */
 class DomainObject
 {
-	private static $_schema;
 	private $_identity;
 	private $_data = array();
 	private $_changed = array();
 	private $_saved=false;
+
+	// a cache of schema objects by classname
+	private static $_schemas = array();
 
 	/**
 	 * The final constructer which initializes the object. Subclasses
@@ -16,14 +21,16 @@ class DomainObject
 	 */
 	final public function __construct()
 	{
+		$className = get_class($this);
+
 		// lazily define the schema
-		if(!isset(self::$_schema))
+		if(!isset(self::$_schemas[$className]))
 		{
-			self::$_schema = new Schema();
+			$schema = self::$_schemas[$className] = new Schema();
 			static::configure(
-				self::$_schema,
-				self::$_schema->properties(),
-				self::$_schema->relationships()
+				$schema,
+				$schema->properties(),
+				$schema->relationships()
 				);
 
 			// call user-defined constructor
@@ -48,6 +55,18 @@ class DomainObject
 	{
 	}
 
+	/**
+	 * Wipes the internal schema cache
+	 */
+	public static function wipeSchemas()
+	{
+		self::$_schemas = array();
+	}
+
+	/**
+	 * Returns an Identity object for the domain object
+	 * @return Identity
+	 */
 	public function identity()
 	{
 		if(!isset($this->_identity))
@@ -56,11 +75,19 @@ class DomainObject
 		return $this->_identity;
 	}
 
+	/**
+	 * Returns the Schema registered for this class
+	 * @return Schema
+	*/
 	public function schema()
 	{
-		return self::$_schema;
+		return self::$_schemas[get_class($this)];
 	}
 
+	/**
+	 * Returns whether the object has been saved
+	 * @return bool
+	 */
 	public function isSaved()
 	{
 		return $this->_saved;
