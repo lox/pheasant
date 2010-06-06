@@ -19,7 +19,7 @@ and loading of objects.
 
 	class Post extends DomainObject
 	{
-		private function configure($schema, $props, $rels)
+		protected static function configure($schema, $props, $rels)
 		{
 			$schema
 				->table('post')
@@ -40,7 +40,7 @@ and loading of objects.
 
 	class Author extends DomainObject
 	{
-		private function configure($schema, $props, $rels)
+		protected static function configure($schema, $props, $rels)
 		{
 			$schema
 				->table('Author')
@@ -114,7 +114,7 @@ Code can be triggered before and after create, update and delete operations.
 
 	class Post extends DomainObject
 	{
-		private function configure($schema, $props, $rels, $events)
+		protected static function configure($schema, $props, $rels, $events)
 		{
 			$schema
 				->table('post')
