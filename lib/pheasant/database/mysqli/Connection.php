@@ -74,6 +74,14 @@ class Connection
 		return $escaper->escape($string);
 	}
 
+	public function bind($sql, $params=array())
+	{
+		if(!is_array($params))
+			$params = array_slice(func_get_args(),1);
+
+		return (string) new Binder($sql, $params, new Escaper($this->_link));
+	}
+
 	public function prepare($sql)
 	{
 		return new Statement($this, $sql);

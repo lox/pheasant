@@ -13,7 +13,7 @@ class DomainObject
 	private $_saved=false;
 
 	// a cache of schema objects by classname
-	private static $_schemas = array();
+	private static $_configured = array();
 
 	/**
 	 * The final constructer which initializes the object. Subclasses
@@ -24,9 +24,9 @@ class DomainObject
 		$className = get_class($this);
 
 		// lazily define the schema
-		if(!isset(self::$_schemas[$className]))
+		if(!isset(self::$_configured[$className]))
 		{
-			$schema = self::$_schemas[$className] = new Schema();
+			$schema = self::$_configured[$className] = $this->schema();
 			static::configure(
 				$schema,
 				$schema->properties(),
@@ -56,11 +56,34 @@ class DomainObject
 	}
 
 	/**
-	 * Wipes the internal schema cache
+	 * Creates an instance from an array, bypassing the constructor
 	 */
-	public static function wipeSchemas()
+	public static function fromArray($array)
 	{
-		self::$_schemas = array();
+		$className = get_called_class();
+
+		// hack that uses object deserialization to bypass constructor
+		$object = unserialize(sprintf('O:%d:"%s":0:{}',
+			strlen($className),
+			$className));
+
+		var_dump($object);
+	}
+
+	/**
+	 * Gets the registered mapper for the domain object
+	 */
+	public static function find($sql, $params=array())
+	{
+		return static::mapper()->find($sql, $params);
+	}
+
+	/**
+	 * Gets the registered mapper for the domain object
+	 */
+	public static function mapper()
+	{
+		return Pheasant::mapper(get_called_class());
 	}
 
 	/**
@@ -81,7 +104,7 @@ class DomainObject
 	*/
 	public function schema()
 	{
-		return self::$_schemas[get_class($this)];
+		return Pheasant::schema($this);
 	}
 
 	/**

@@ -3,15 +3,17 @@
 namespace pheasant\mapper;
 use pheasant\Pheasant;
 
-class TableMapper extends GenericMapper
+class TableMapper extends AbstractMapper
 {
+	private $_class;
 	private $_connection;
 
 	/**
 	 * Constructor
 	 */
-	public function __construct($connection=null)
+	public function __construct($class, $connection=null)
 	{
+		$this->_class = $class;
 		$this->_connection = $connection ?: Pheasant::connection();
 	}
 
@@ -78,5 +80,20 @@ class TableMapper extends GenericMapper
 			if($property->auto_increment)
 				$object->{$key} = $result->lastInsertId();
 		}
+	}
+
+	public function find($sql=null, $params=array())
+	{
+		$schema = Pheasant::schema($this->_class);
+		$query = new \pheasant\query\Query();
+		return $query
+			->from($schema->table())
+			->where($sql, $params)
+			->execute()
+			;
+	}
+
+	public function hydrate($object)
+	{
 	}
 }

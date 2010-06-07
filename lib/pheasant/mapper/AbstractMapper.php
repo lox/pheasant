@@ -6,7 +6,7 @@ use pheasant\Pheasant;
 /**
  * A generic mapper object that provides infrastructure for other mappers
  */
-class GenericMapper implements Mapper
+abstract class AbstractMapper implements Mapper
 {
 	public function save($object)
 	{
@@ -24,16 +24,16 @@ class GenericMapper implements Mapper
 
 	protected function insert($object)
 	{
-		throw new \BadMethodCallException("Insert not implemented");
+		throw new \BadMethodCallException(__FUNCTION__." not implemented");
 	}
 
 	protected function update($object, $changes)
 	{
-		throw new \BadMethodCallException("Update not implemented");
+		throw new \BadMethodCallException(__FUNCTION__." not implemented");
 	}
 
 	public function delete($object)
 	{
-		throw new \BadMethodCallException("Delete not implemented");
+		throw new \BadMethodCallException(__FUNCTION__." not implemented");
 	}
 }

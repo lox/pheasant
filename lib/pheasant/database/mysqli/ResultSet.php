@@ -28,6 +28,22 @@ class ResultSet extends Result implements \IteratorAggregate, \ArrayAccess
 		return $result;
 	}
 
+	public function fetch()
+	{
+		if(!$this->_iterator->current())
+			$this->_iterator->next();
+
+		$value = $this->_iterator->current();
+		$this->_iterator->next();
+		return $value;
+	}
+
+	public function fetchOne()
+	{
+		$row = $this->fetch();
+		return $row ? array_pop(array_values($row)) : null;
+	}
+
 	// ----------------------------------
 	// array access
 

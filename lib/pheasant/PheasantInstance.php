@@ -1,13 +1,12 @@
 <?php
 
 namespace pheasant;
-use \pheasant\mapper\TableMapper;
 
 class PheasantInstance
 {
 	private $_connectionManager;
 	private $_mappers=array();
-	private $_finders=array();
+	private $_schemas=array();
 
 	public function setup($dsn)
 	{
@@ -38,15 +37,21 @@ class PheasantInstance
 	 */
 	public function mapper($class)
 	{
-		$class = is_object($class) ? get_class($class) : $object;
+		$class = is_object($class) ? get_class($class) : $class;
 
 		if(!isset($this->_mappers[$class]))
-			return $this->_mappers[$class] = new TableMapper();
+			return $this->_mappers[$class] = new \pheasant\mapper\TableMapper($class);
 
 		return $this->_mappers[$class];
 	}
 
-	public function finder($object)
+	public function schema($class)
 	{
+		$class = is_object($class) ? get_class($class) : $class;
+
+		if(!isset($this->_schemas[$class]))
+			return $this->_schemas[$class] = new \pheasant\Schema();
+
+		return $this->_schemas[$class];
 	}
 }

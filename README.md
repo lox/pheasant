@@ -89,15 +89,14 @@ Querying Objects
 	// custom queries for complex joins
 	$query = new Query();
 	$query
-		->select(array('User'=>'*', 'Post'=>'*'))
-		->from('User u')
-		->innerJoin('Post p', 'on u.userid=p.userid and p.title like ?', array('Llama%'))
+		->from('user u')
+		->innerJoin('post p', 'on u.userid=p.userid and p.title like ?', array('Llama%'))
 		;
 
 	// builds in one query
-	foreach(User::hydrate($query) as $user)
+	foreach($query as $user)
 	{
-		printf("User %s has %d posts about llamas\n',$user->fullname,$user->Posts
+		printf("User %s has posts about llamas\n',$user->fullname,$user->Posts
 	}
 
 	?>
