@@ -24,7 +24,7 @@ class Transaction
 		if(count($this->_callbacks)==0)
 			throw new Exception("No valid callbacks provided");
 
-		$this->_connection->execute('begin');
+		$this->_connection->execute('BEGIN');
 		$this->results = array();
 
 		try
@@ -35,12 +35,12 @@ class Transaction
 				$this->results[] = call_user_func_array($callback, $arguments);
 			}
 
-			$this->_connection->execute('commit');
+			$this->_connection->execute('COMMIT');
 			return $this->results;
 		}
 		catch(\Exception $e)
 		{
-			$this->_connection->execute('rollback');
+			$this->_connection->execute('ROLLBACK');
 			throw $e;
 		}
 	}

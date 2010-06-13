@@ -12,6 +12,7 @@ class AllTests extends TestSuite
 		$this->addFile(dirname(__FILE__).'/transaction.php');
 		$this->addFile(dirname(__FILE__).'/mapping.php');
 		$this->addFile(dirname(__FILE__).'/finding.php');
+		$this->addFile(dirname(__FILE__).'/query.php');
 	}
 }
 

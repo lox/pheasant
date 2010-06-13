@@ -10,7 +10,7 @@ require_once(__DIR__.'/base.php');
 
 class Person extends DomainObject
 {
-	protected static function configure($schema, $props, $rels)
+	public static function configure($schema, $props, $rels)
 	{
 		$schema->table('person');
 		$props->sequence('personid');

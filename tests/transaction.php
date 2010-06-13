@@ -11,8 +11,8 @@ class TransactionTestCase extends \pheasant\tests\MysqlTestCase
 	public function testBasicSuccessfulTransaction()
 	{
 		$connection = new \MockConnection();
-		$connection->expectAt(0,'execute',array('begin'));
-		$connection->expectAt(1,'execute',array('commit'));
+		$connection->expectAt(0,'execute',array('BEGIN'));
+		$connection->expectAt(1,'execute',array('COMMIT'));
 
 		$transaction = new Transaction($connection);
 		$transaction->callback(function(){
@@ -27,8 +27,8 @@ class TransactionTestCase extends \pheasant\tests\MysqlTestCase
 	public function testExceptionsCauseRollback()
 	{
 		$connection = new \MockConnection();
-		$connection->expectAt(0,'execute',array('begin'));
-		$connection->expectAt(1,'execute',array('rollback'));
+		$connection->expectAt(0,'execute',array('BEGIN'));
+		$connection->expectAt(1,'execute',array('ROLLBACK'));
 
 		$transaction = new Transaction($connection);
 		$transaction->callback(function(){
@@ -47,9 +47,9 @@ class TransactionTestCase extends \pheasant\tests\MysqlTestCase
 	{
 		$sql = "SELECT * FROM table";
 		$connection = new \MockConnection();
-		$connection->expectAt(0,'execute',array('begin'));
+		$connection->expectAt(0,'execute',array('BEGIN'));
 		$connection->expectAt(1,'execute',array($sql));
-		$connection->expectAt(2,'execute',array('commit'));
+		$connection->expectAt(2,'execute',array('COMMIT'));
 
 		$transaction = new Transaction($connection);
 		$transaction->callback(function() use($connection, $sql) {
@@ -62,8 +62,8 @@ class TransactionTestCase extends \pheasant\tests\MysqlTestCase
 	public function testCallbacksWithParams()
 	{
 		$connection = new \MockConnection();
-		$connection->expectAt(0,'execute',array('begin'));
-		$connection->expectAt(2,'execute',array('commit'));
+		$connection->expectAt(0,'execute',array('BEGIN'));
+		$connection->expectAt(2,'execute',array('COMMIT'));
 
 		$transaction = new Transaction($connection);
 		$transaction->callback(function($param) {

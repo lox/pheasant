@@ -14,6 +14,9 @@ class ConnectionManager
 
 	public function connection($name)
 	{
+		if(!isset($this->_connections[$name]))
+			throw new \pheasant\Exception("No connection called $name registered");
+
 		$index = array_rand($this->_connections[$name]);
 		$connection = $this->_connections[$name][$index];
 

@@ -13,6 +13,12 @@ class ResultSet extends Result implements \IteratorAggregate, \ArrayAccess
 		$this->_iterator = new ResultIterator($this->_result);
 	}
 
+	public function setHydrator($closure)
+	{
+		$this->_iterator->setHydrator($closure);
+		return $this;
+	}
+
 	public function getIterator()
 	{
 		return $this->_iterator;

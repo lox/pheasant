@@ -8,13 +8,6 @@ class PheasantInstance
 	private $_mappers=array();
 	private $_schemas=array();
 
-	public function setup($dsn)
-	{
-		$this->connectionManager()
-			->addConnection('default', $dsn)
-			;
-	}
-
 	public function connectionManager()
 	{
 		if(!isset($this->_connectionManager))
@@ -27,7 +20,7 @@ class PheasantInstance
 
 	public function connection($name='default')
 	{
-		return $this->_connectionManager->connection($name);
+		return $this->connectionManager()->connection($name);
 	}
 
 	/**
@@ -45,13 +38,55 @@ class PheasantInstance
 		return $this->_mappers[$class];
 	}
 
+	/**
+	 * Determines if a class has had it's schema configured
+	 * @return bool
+	 */
+	public function isConfigured($class)
+	{
+		$class = is_object($class) ? get_class($class) : $class;
+
+		return isset($this->_schemas[$class]);
+	}
+
+	/**
+	 * Creates a new schema and configures it via Class::configure()
+	 * @param string the full qualified class name
+	 * @return Schema
+	 */
+	public function configure($class)
+	{
+		$schema = new \pheasant\Schema();
+		forward_static_call(array($class,'configure'),
+			$schema,
+			$schema->properties(),
+			$schema->relationships()
+			);
+
+		return $schema;
+	}
+
+	/**
+	 * Returns a schema instance for a class or object, configures in needed
+	 * @return Schema
+	 */
 	public function schema($class)
 	{
 		$class = is_object($class) ? get_class($class) : $class;
 
 		if(!isset($this->_schemas[$class]))
-			return $this->_schemas[$class] = new \pheasant\Schema();
+			$this->_schemas[$class] = $this->configure($class);
 
 		return $this->_schemas[$class];
+	}
+
+	/**
+	 * Resets registered mappers and schemas
+	 */
+	public function reset()
+	{
+		$this->_mappers = array();
+		$this->_schemas = array();
+		return $this;
 	}
 }

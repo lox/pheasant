@@ -20,6 +20,17 @@ class Pheasant
 	}
 
 	/**
+	 * Sets up a new pheasant instance with the provided connection dsn
+	 * @void
+	 */
+	public static function setup($dsn)
+	{
+		$instance = new \pheasant\PheasantInstance();
+		$instance->connectionManager()->addConnection('default', $dsn);
+		self::instance($instance);
+	}
+
+	/**
 	 * Delegates static calls to the internal {@link PheasantInstance} object
 	 */
 	static function __callStatic($method, $arguments)

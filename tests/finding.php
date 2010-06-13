@@ -10,7 +10,7 @@ require_once(__DIR__.'/base.php');
 
 class User extends DomainObject
 {
-	protected static function configure($schema, $props, $rels)
+	public static function configure($schema, $props, $rels)
 	{
 		$schema
 			->table('user');
@@ -35,18 +35,19 @@ class BasicFindingTestCase extends \pheasant\tests\MysqlTestCase
 			;
 
 		// create some users
-		$user1 = new User(array('firstname'=>'Frank','lastname'=>'Castle'));
-		$user1->save();
-		$user2 = new User(array('firstname'=>'Cletus','lastname'=>'Kasady'));
-		$user2->save();
+		$this->users = User::import(array(
+			array('firstname'=>'Frank','lastname'=>'Castle'),
+			array('firstname'=>'Cletus','lastname'=>'Kasady')
+			));
 	}
 
-	public function testBasicFinding()
+	public function testFindAll()
 	{
-		// test via mapper first
-		$mapper = User::mapper();
-		$users = $mapper->find();
+		$users = User::find();
 
 		$this->assertEqual(2, $users->count());
+		$this->assertEqual(2, $users->count());
 	}
+
+
 }

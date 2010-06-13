@@ -78,7 +78,7 @@ class Query
 			sprintf("SELECT %s", $this->_select),
 			sprintf("FROM %s", $this->_from),
 			implode(' ', $this->_joins),
-			ltrim(implode(' ', $this->_where), 'ANDOR '),
+			$this->_where ? 'WHERE '. ltrim(implode(' ', $this->_where), 'ANDOR ') : NULL,
 			$this->_limit
 			);
 

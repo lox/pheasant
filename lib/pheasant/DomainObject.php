@@ -12,31 +12,19 @@ class DomainObject
 	private $_changed = array();
 	private $_saved=false;
 
-	// a cache of schema objects by classname
-	private static $_configured = array();
-
 	/**
 	 * The final constructer which initializes the object. Subclasses
 	 * can implement {@link constructor()} instead
 	 */
 	final public function __construct()
 	{
-		$className = get_class($this);
+		// configure the schema if needed
+		if(!Pheasant::isConfigured($this))
+			Pheasant::configure(get_class($this));
 
-		// lazily define the schema
-		if(!isset(self::$_configured[$className]))
-		{
-			$schema = self::$_configured[$className] = $this->schema();
-			static::configure(
-				$schema,
-				$schema->properties(),
-				$schema->relationships()
-				);
-
-			// call user-defined constructor
-			call_user_func_array(array($this,'construct'),
-				func_get_args());
-		}
+		// call user-defined constructor
+		call_user_func_array(array($this,'construct'),
+			func_get_args());
 	}
 
 	/**
@@ -53,37 +41,8 @@ class DomainObject
 	 */
 	protected function construct()
 	{
-	}
-
-	/**
-	 * Creates an instance from an array, bypassing the constructor
-	 */
-	public static function fromArray($array)
-	{
-		$className = get_called_class();
-
-		// hack that uses object deserialization to bypass constructor
-		$object = unserialize(sprintf('O:%d:"%s":0:{}',
-			strlen($className),
-			$className));
-
-		var_dump($object);
-	}
-
-	/**
-	 * Gets the registered mapper for the domain object
-	 */
-	public static function find($sql, $params=array())
-	{
-		return static::mapper()->find($sql, $params);
-	}
-
-	/**
-	 * Gets the registered mapper for the domain object
-	 */
-	public static function mapper()
-	{
-		return Pheasant::mapper(get_called_class());
+		foreach(func_get_args() as $arg)
+			if(is_array($arg)) $this->load($arg);
 	}
 
 	/**
@@ -152,6 +111,58 @@ class DomainObject
 	}
 
 	// ----------------------------------------
+	// static helpers
+
+	/**
+	 * Creates an instance from an array, bypassing the constructor
+	 */
+	public static function fromArray($array)
+	{
+		$className = get_called_class();
+
+		// hack that uses object deserialization to bypass constructor
+		$object = unserialize(sprintf('O:%d:"%s":0:{}',
+			strlen($className),
+			$className));
+
+		return $object->load($array);
+	}
+
+	/**
+	 * Gets the registered mapper for the domain object
+	 */
+	public static function find($sql=null, $params=array())
+	{
+		return static::mapper()->find($sql, $params);
+	}
+
+	/**
+	 * Gets the registered mapper for the domain object
+	 */
+	public static function mapper()
+	{
+		return Pheasant::mapper(get_called_class());
+	}
+
+	/**
+	 * Creates and saves a array or arrays as domain objects
+	 * @return array of saved domain objects
+	 */
+	public static function import($records)
+	{
+		$objects = array();
+
+		foreach($records as $record)
+		{
+			$object = static::mapper()->hydrate($record);
+			$object->save();
+			$objects []= $object;
+		}
+
+		return $objects;
+	}
+
+	// ----------------------------------------
 	// property manipulators
 
 	/**
@@ -186,6 +197,18 @@ class DomainObject
 	public function has($prop)
 	{
 		return isset($this->_data[$prop]);
+	}
+
+	/**
+	 * Loads an array of values into the objecty
+	 * @chainable
+	 */
+	public function load($array)
+	{
+		foreach($array as $key=>$value)
+			$this->set($key, $value);
+
+		return $this;
 	}
 
 	// ----------------------------------------

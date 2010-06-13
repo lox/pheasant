@@ -89,6 +89,8 @@ class Connection
 
 	public function execute($sql, $params=array())
 	{
+		//var_dump(array($sql, $params));
+
 		if(!is_array($params))
 			$params = array_slice(func_get_args(),1);
 

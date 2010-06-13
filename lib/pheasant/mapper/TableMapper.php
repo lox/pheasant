@@ -1,7 +1,10 @@
 <?php
 
 namespace pheasant\mapper;
+
 use pheasant\Pheasant;
+use pheasant\query\Query;
+use pheasant\query\QueryIterator;
 
 class TableMapper extends AbstractMapper
 {
@@ -85,15 +88,17 @@ class TableMapper extends AbstractMapper
 	public function find($sql=null, $params=array())
 	{
 		$schema = Pheasant::schema($this->_class);
-		$query = new \pheasant\query\Query();
-		return $query
-			->from($schema->table())
-			->where($sql, $params)
-			->execute()
-			;
+		$query = new Query();
+		$query->from($schema->table());
+
+		// add optional where clause
+		if($sql) $query->where($sql, $params);
+
+		return new QueryIterator($query, $this);
 	}
 
-	public function hydrate($object)
+	public function hydrate($array)
 	{
+		return forward_static_call(array($this->_class,'fromArray'), $array);
 	}
 }

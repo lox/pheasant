@@ -10,7 +10,7 @@ require_once(__DIR__.'/base.php');
 
 class Post extends DomainObject
 {
-	protected static function configure($schema, $props, $rels)
+	public static function configure($schema, $props, $rels)
 	{
 		$schema
 			->table('post');
@@ -67,6 +67,21 @@ class BasicMappingTestCase extends \pheasant\tests\MysqlTestCase
 
 		$this->assertEqual(array(), $post->changes());
 		$this->assertEqual($post->title, 'Another title, perhaps');
+	}
+
+	public function testSequentialSave()
+	{
+		$post1 = new Post('First post');
+		$post2 = new Post('Second post');
+
+		$this->assertEqual($post1->title, 'First post');
+		$this->assertEqual($post2->title, 'Second post');
+
+		$post1->save();
+		$post2->save();
+
+		$this->assertEqual($post1->title, 'First post');
+		$this->assertEqual($post2->title, 'Second post');
 	}
 }
 

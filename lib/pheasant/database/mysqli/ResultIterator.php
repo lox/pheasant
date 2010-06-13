@@ -2,10 +2,9 @@
 
 namespace pheasant\database\mysqli;
 
-class ResultIterator implements \SeekableIterator
+class ResultIterator implements \SeekableIterator, \Countable
 {
 	private $_result;
-	private $_fetchMode;
 	private $_position;
 	private $_currentRow;
 
@@ -13,10 +12,9 @@ class ResultIterator implements \SeekableIterator
 	* Constructor
 	* @param MySQLi_Result $result
 	*/
-	public function __construct($result, $fetchMode=MYSQLI_ASSOC)
+	public function __construct($result)
 	{
 		$this->_result = $result;
-		$this->_fetchMode = $fetchMode;
 	}
 
 	/**
@@ -41,7 +39,7 @@ class ResultIterator implements \SeekableIterator
 	*/
 	public function next()
 	{
-		$this->_currentRow = $this->_result->fetch_array($this->_fetchMode);
+		$this->_currentRow = $this->_fetch();
 		++$this->_position;
 	}
 
@@ -80,8 +78,24 @@ class ResultIterator implements \SeekableIterator
 		if($this->_position !== $position)
 		{
 			$this->_result->data_seek($this->_position = $position);
-			$this->_currentRow = $this->_result->fetch_array($this->_fetchMode);
+			$this->_currentRow = $this->_fetch();
 		}
+	}
+
+	/**
+	 * Returns the number of rows in the result
+	 */
+	public function count()
+	{
+		return $this->_result->num_rows;
+	}
+
+	/**
+	 * Template for fetching the array
+	 */
+	private function _fetch()
+	{
+		return $this->_result->fetch_array(MYSQLI_ASSOC);
 	}
 }
 

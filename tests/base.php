@@ -21,8 +21,6 @@ namespace
 				throw new Exception("Unable to load $className");
 		}
 	}
-
-	\pheasant\Pheasant::setup('mysql://pheasant:pheasant@localhost:/pheasanttest?charset=utf8');
 }
 
 namespace pheasant\tests
@@ -35,6 +33,21 @@ namespace pheasant\tests
 
 	class MysqlTestCase extends TestCase
 	{
+		public function before($method)
+		{
+			parent::before($method);
+
+			// set up a test database
+			\pheasant\Pheasant::setup(
+				'mysql://pheasant:pheasant@localhost:/pheasanttest?charset=utf8');
+
+			// wipe sequence pool
+			$this->connection()->sequencePool()
+				->initialize()
+				->clear()
+				;
+		}
+
 		public function connection()
 		{
 			return \pheasant\Pheasant::connection();
