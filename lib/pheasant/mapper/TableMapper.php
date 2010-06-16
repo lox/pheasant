@@ -2,11 +2,12 @@
 
 namespace pheasant\mapper;
 
-use pheasant\Pheasant;
+use \Pheasant;
+use pheasant\Collection;
 use pheasant\query\Query;
-use pheasant\query\QueryIterator;
+use pheasant\finder\Finder;
 
-class TableMapper extends AbstractMapper
+class TableMapper extends AbstractMapper implements Finder
 {
 	private $_class;
 	private $_connection;
@@ -94,11 +95,11 @@ class TableMapper extends AbstractMapper
 		// add optional where clause
 		if($sql) $query->where($sql, $params);
 
-		return new QueryIterator($query, $this);
+		return new Collection($this, $query);
 	}
 
 	public function hydrate($array)
 	{
-		return forward_static_call(array($this->_class,'fromArray'), $array);
+		return forward_static_call(array($this->_class,'fromArray'),$array);
 	}
 }

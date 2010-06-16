@@ -160,3 +160,26 @@ is straight forward.
 	$post = Post::findByAuthorId(55)->one();
 
 	?>
+
+Transactions
+---------------------------------
+
+Executing multiple actions in a transaction are facilitated with unit of work objects.
+
+	<?php
+
+	$user1 = User::findOneById(1);
+	$user2 = User::findOneByFirstName('Frank');
+
+	// create a script
+	$unit = new UnitOfWork();
+
+	// prepare the unit of work
+	$user1->type = 'admin';
+	$user2->type = 'admin';
+	$unit->save($user1, $user2);
+
+	// execute in a transaction
+	$unit->execute();
+
+	?>

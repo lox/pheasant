@@ -2,7 +2,7 @@
 
 namespace pheasant;
 
-class Properties
+class Properties implements \IteratorAggregate
 {
 	private $_properties;
 	private $_primary=array();
@@ -81,5 +81,10 @@ class Properties
 	public function __get($key)
 	{
 		return $this->_properties[$key];
+	}
+
+	public function getIterator()
+	{
+		return new \ArrayIterator($this->_properties);
 	}
 }

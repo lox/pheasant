@@ -36,19 +36,27 @@ class ConnectionManager
 	{
 		$driver = substr($dsn, 0, strpos($dsn,':'));
 
-		// check built in drivers first
+		// look at registered drivers
+		if(isset($this->_drivers[$driver]))
+		{
+			if(is_string($this->_drivers[$driver]))
+			{
+				$class = $this->_drivers[$driver];
+				return new $class($dsn);
+			}
+			else
+			{
+				$callable = $this->_drivers[$driver];
+				return new call_user_func($callable, $dsn);
+			}
+		}
+
+		// check built in drivers
 		switch($driver)
 		{
 			case 'mysql':
 			case 'mysqli':
 				return new mysqli\Connection($dsn);
-		}
-
-		// next look at registered drivers
-		if(isset($this->_drivers[$driver]))
-		{
-			$class = $this->_drivers[$driver];
-			return new $class($dsn);
 		}
 
 		throw new \pheasant\Exception("Unknown driver $driver");

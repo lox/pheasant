@@ -19,12 +19,6 @@ interface Mapper
 	public function delete($object);
 
 	/**
-	 * Finds all domain objects, returns an iterator for iterating over the result
-	 * @return Iterator
-	 */
-	public function find($sql=null, $params=array());
-
-	/**
 	 * Hydrates an array into an object
 	 * @return DomainObject
 	 */

@@ -12,6 +12,7 @@ class QueryIterator implements \SeekableIterator, \Countable
 	private $_query;
 	private $_hydrator;
 	private $_iterator;
+	private $_resultSet;
 
 	/**
 	 * Constructor
@@ -29,8 +30,19 @@ class QueryIterator implements \SeekableIterator, \Countable
 	 */
 	private function _resultSet()
 	{
+		if(!isset($this->_resultSet))
+			$this->_resultSet = $this->_query->execute();
+
+		return $this->_resultSet;
+	}
+
+	/**
+	 * Returns the delegate iterator from the resultset
+	 */
+	private function _iterator()
+	{
 		if(!isset($this->_iterator))
-			$this->_iterator = $this->_query->execute()->getIterator();
+			$this->_iterator = $this->_resultSet()->getIterator();
 
 		return $this->_iterator;
 	}
@@ -40,7 +52,7 @@ class QueryIterator implements \SeekableIterator, \Countable
 	*/
 	public function rewind()
 	{
-		return $this->_resultSet()->rewind();
+		return $this->_iterator()->rewind();
 	}
 
 	/**
@@ -48,7 +60,7 @@ class QueryIterator implements \SeekableIterator, \Countable
 	*/
 	public function next()
 	{
-		return $this->_resultSet()->next();
+		return $this->_iterator()->next();
 	}
 
 	/**
@@ -57,7 +69,7 @@ class QueryIterator implements \SeekableIterator, \Countable
 	*/
 	public function valid()
 	{
-		return $this->_resultSet()->valid();
+		return $this->_iterator()->valid();
 	}
 
 	/**
@@ -66,7 +78,7 @@ class QueryIterator implements \SeekableIterator, \Countable
 	*/
 	public function current()
 	{
-		return $this->_resultSet()->current();
+		return $this->_hydrate($this->_iterator()->current());
 	}
 
 	/**
@@ -75,7 +87,7 @@ class QueryIterator implements \SeekableIterator, \Countable
 	*/
 	public function key()
 	{
-		return $this->_resultSet()->key();
+		return $this->_iterator()->key();
 	}
 
 	/**
@@ -83,7 +95,7 @@ class QueryIterator implements \SeekableIterator, \Countable
 	 */
 	public function seek($position)
 	{
-		return $this->_resultSet()->seek($position);
+		return $this->_iterator()->seek($position);
 	}
 
 	/**
@@ -91,6 +103,14 @@ class QueryIterator implements \SeekableIterator, \Countable
 	 */
 	public function count()
 	{
-		return $this->_resultSet()->count();
+		return $this->_iterator()->count();
+	}
+
+	/**
+	 * Hydrates a row into an object
+	 */
+	private function _hydrate($row)
+	{
+		return $this->_hydrator->hydrate($row);
 	}
 }

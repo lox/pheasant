@@ -3,7 +3,7 @@
 namespace pheasant\tests\mapping;
 
 use pheasant\DomainObject;
-use pheasant\Pheasant;
+use \Pheasant;
 
 require_once('autorun.php');
 require_once(__DIR__.'/base.php');
@@ -82,6 +82,22 @@ class BasicMappingTestCase extends \pheasant\tests\MysqlTestCase
 
 		$this->assertEqual($post1->title, 'First post');
 		$this->assertEqual($post2->title, 'Second post');
+	}
+
+	public function testImport()
+	{
+		$posts = Post::import(array(
+			array('title'=>'First Post'),
+			array('title'=>'Second Post'),
+			));
+
+		$this->assertEqual(count($posts), 2);
+		$this->assertEqual($posts[0]->postid, 1);
+		$this->assertEqual($posts[1]->postid, 2);
+		$this->assertEqual($posts[0]->title, 'First Post');
+		$this->assertEqual($posts[1]->title, 'Second Post');
+		$this->assertTrue($posts[0]->isSaved());
+		$this->assertTrue($posts[1]->isSaved());
 	}
 }
 

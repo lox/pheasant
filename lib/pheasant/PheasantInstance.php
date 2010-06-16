@@ -5,8 +5,15 @@ namespace pheasant;
 class PheasantInstance
 {
 	private $_connectionManager;
-	private $_mappers=array();
 	private $_schemas=array();
+	private $_mappers;
+	private $_finders;
+
+	public function __construct()
+	{
+		$this->_mappers = new Registry();
+		$this->_finders = new Registry();
+	}
 
 	public function connectionManager()
 	{
@@ -24,18 +31,46 @@ class PheasantInstance
 	}
 
 	/**
-	 * Returns the mapper registered for an object, defaults to a TableMapper
-	 * @param mixed either a classname or an object
-	 * @return Mapper
+	 * Returns the classname for an object or a classname
+	 * @return string
 	 */
+	private function _className($mixed)
+	{
+		return is_object($mixed) ? get_class($mixed) : $mixed;
+	}
+
 	public function mapper($class)
 	{
-		$class = is_object($class) ? get_class($class) : $class;
+		return $this->_mappers->lookup($this->_className($class));
+	}
 
-		if(!isset($this->_mappers[$class]))
-			return $this->_mappers[$class] = new \pheasant\mapper\TableMapper($class);
+	public function setMapper($class, $mapper)
+	{
+		$this->_mappers->register($this->_className($class), $mapper);
+		return $this;
+	}
 
-		return $this->_mappers[$class];
+	public function setDefaultMapper($mapper)
+	{
+		$this->_mappers->setDefaultCallback($mapper);
+		return $this;
+	}
+
+	public function finder($class)
+	{
+		return $this->_finders->lookup($this->_className($class));
+	}
+
+	public function setFinder($class, $finder)
+	{
+		$this->_finders->register($this->_className($class), $finder);
+		return $this;
+	}
+
+	public function setDefaultFinder($finder)
+	{
+		$this->_finders->setDefaultCallback($finder);
+		return $this;
 	}
 
 	/**
@@ -44,9 +79,7 @@ class PheasantInstance
 	 */
 	public function isConfigured($class)
 	{
-		$class = is_object($class) ? get_class($class) : $class;
-
-		return isset($this->_schemas[$class]);
+		return isset($this->_schemas[$this->_className($class)]);
 	}
 
 	/**
@@ -72,7 +105,7 @@ class PheasantInstance
 	 */
 	public function schema($class)
 	{
-		$class = is_object($class) ? get_class($class) : $class;
+		$class = $this->_className($class);
 
 		if(!isset($this->_schemas[$class]))
 			$this->_schemas[$class] = $this->configure($class);

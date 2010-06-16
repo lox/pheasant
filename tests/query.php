@@ -2,7 +2,7 @@
 
 namespace pheasant\tests\query;
 
-use pheasant\Pheasant;
+use \Pheasant;
 use pheasant\query\QueryBuilder;
 use pheasant\query\Query;
 

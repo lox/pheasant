@@ -1,7 +1,7 @@
 <?php
 
 namespace pheasant\query;
-use \pheasant\Pheasant;
+use \Pheasant;
 
 /**
  * Helper to construct sql

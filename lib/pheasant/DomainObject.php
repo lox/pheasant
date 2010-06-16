@@ -2,12 +2,13 @@
 
 namespace pheasant;
 
+use \Pheasant;
+
 /**
  * An object which represents an entity in the problem domain.
  */
 class DomainObject
 {
-	private $_identity;
 	private $_data = array();
 	private $_changed = array();
 	private $_saved=false;
@@ -51,19 +52,7 @@ class DomainObject
 	 */
 	public function identity()
 	{
-		if(!isset($this->_identity))
-			$this->_identity = $this->schema()->identity($this);
-
-		return $this->_identity;
-	}
-
-	/**
-	 * Returns the Schema registered for this class
-	 * @return Schema
-	*/
-	public function schema()
-	{
-		return Pheasant::schema($this);
+		return $this->schema()->identity($this);
 	}
 
 	/**
@@ -89,6 +78,16 @@ class DomainObject
 	}
 
 	/**
+	 * Change the objects saved state
+	 * @chainable
+	 */
+	public function markSaved($value=true)
+	{
+		$this->_saved = $value;
+		return $this;
+	}
+
+	/**
 	 * Returns a key=>val array of properties that have changed since the last save
 	 * @return array
 	 */
@@ -102,6 +101,16 @@ class DomainObject
 	}
 
 	/**
+	 * Clears the changes array
+	 * @chainable
+	 */
+	public function clearChanges()
+	{
+		$this->_changed = array();
+		return $this;
+	}
+
+	/**
 	 * Returns an object for accessing a particular property
 	 * @return Future
 	 */
@@ -110,8 +119,26 @@ class DomainObject
 		return new Future($this, $property);
 	}
 
+	/**
+	 * Returns the object as an array
+	 * @return array
+	 */
+	public function toArray()
+	{
+		return $this->_data;
+	}
+
 	// ----------------------------------------
 	// static helpers
+
+	/**
+	 * Returns the Schema registered for this class
+	 * @return Schema
+	*/
+	public static function schema()
+	{
+		return Pheasant::schema(get_called_class());
+	}
 
 	/**
 	 * Creates an instance from an array, bypassing the constructor
@@ -151,10 +178,11 @@ class DomainObject
 	public static function import($records)
 	{
 		$objects = array();
+		$mapper = static::mapper();
 
 		foreach($records as $record)
 		{
-			$object = static::mapper()->hydrate($record);
+			$object = $mapper->hydrate($record);
 			$object->save();
 			$objects []= $object;
 		}
@@ -200,7 +228,7 @@ class DomainObject
 	}
 
 	/**
-	 * Loads an array of values into the objecty
+	 * Loads an array of values into the object, optionally marking the object saved
 	 * @chainable
 	 */
 	public function load($array)

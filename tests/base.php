@@ -37,8 +37,7 @@ namespace pheasant\tests
 		{
 			parent::before($method);
 
-			// set up a test database
-			\pheasant\Pheasant::setup(
+			\Pheasant::setup(
 				'mysql://pheasant:pheasant@localhost:/pheasanttest?charset=utf8');
 
 			// wipe sequence pool
@@ -50,7 +49,7 @@ namespace pheasant\tests
 
 		public function connection()
 		{
-			return \pheasant\Pheasant::connection();
+			return \Pheasant::connection();
 		}
 
 		public function assertConnectionExists()

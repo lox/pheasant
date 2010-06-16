@@ -1,8 +1,9 @@
 <?php
 
 namespace pheasant\tests\sequences;
+
+use \Pheasant;
 use \pheasant\database\mysqli\SequencePool;
-use \pheasant\Pheasant;
 use \pheasant\DomainObject;
 
 require_once('autorun.php');
