@@ -23,9 +23,9 @@ namespace
 	}
 }
 
-namespace pheasant\tests
+namespace Pheasant\Tests
 {
-	\Mock::generate('\pheasant\database\mysqli\Connection','MockConnection');
+	\Mock::generate('\Pheasant\Database\Mysqli\Connection','MockConnection');
 
 	class TestCase extends \UnitTestCase
 	{

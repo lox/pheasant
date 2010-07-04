@@ -1,12 +1,12 @@
 <?php
 
-namespace pheasant\tests\db;
-use \pheasant\database\mysqli\Binder;
+namespace Pheasant\Tests\Db;
+use \Pheasant\Database\Mysqli\Binder;
 
 require_once('autorun.php');
 require_once(__DIR__.'/base.php');
 
-class BindingTestCase extends \pheasant\tests\MysqlTestCase
+class BindingTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function testBasicStringBinding()
 	{

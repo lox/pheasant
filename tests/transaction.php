@@ -1,12 +1,12 @@
 <?php
 
-namespace pheasant\tests\transaction;
-use \pheasant\database\mysqli\Transaction;
+namespace Pheasant\Tests\Transaction;
+use \Pheasant\Database\Mysqli\Transaction;
 
 require_once('autorun.php');
 require_once(__DIR__.'/base.php');
 
-class TransactionTestCase extends \pheasant\tests\MysqlTestCase
+class TransactionTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function testBasicSuccessfulTransaction()
 	{

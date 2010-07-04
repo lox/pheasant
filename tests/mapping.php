@@ -1,8 +1,7 @@
 <?php
 
-namespace pheasant\tests\mapping;
-
-use pheasant\DomainObject;
+namespace Pheasant\Tests\Mapping;
+use \Pheasant\DomainObject;
 use \Pheasant;
 
 require_once('autorun.php');
@@ -27,7 +26,7 @@ class Post extends DomainObject
 	}
 }
 
-class BasicMappingTestCase extends \pheasant\tests\MysqlTestCase
+class BasicMappingTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
@@ -48,8 +47,8 @@ class BasicMappingTestCase extends \pheasant\tests\MysqlTestCase
 		$post->subtitle = 'Just because...';
 
 		$this->assertEqual((string) $post->postid, null);
-		$this->assertIsA($post->identity(), '\pheasant\Identity');
-		$this->assertIsA($post->postid, '\pheasant\Future');
+		$this->assertIsA($post->identity(), '\Pheasant\Identity');
+		$this->assertIsA($post->postid, '\Pheasant\Future');
 		$this->assertEqual(array('title','subtitle'), array_keys($post->changes()));
 		$this->assertFalse($post->isSaved());
 		$post->save();

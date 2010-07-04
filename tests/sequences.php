@@ -1,10 +1,9 @@
 <?php
 
-namespace pheasant\tests\sequences;
-
+namespace Pheasant\Tests\Sequences;
 use \Pheasant;
-use \pheasant\database\mysqli\SequencePool;
-use \pheasant\DomainObject;
+use \Pheasant\Database\Mysqli\SequencePool;
+use \Pheasant\DomainObject;
 
 require_once('autorun.php');
 require_once(__DIR__.'/base.php');
@@ -18,7 +17,7 @@ class Person extends DomainObject
 	}
 }
 
-class SequenceTestCase extends \pheasant\tests\MysqlTestCase
+class SequenceTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
@@ -38,7 +37,7 @@ class SequenceTestCase extends \pheasant\tests\MysqlTestCase
 	}
 }
 
-class DomainObjectSequenceTestCase extends \pheasant\tests\MysqlTestCase
+class DomainObjectSequenceTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{

@@ -1,14 +1,13 @@
 <?php
 
-namespace pheasant\tests\criteria;
-
+namespace Pheasant\Tests\Criteria;
 use \Pheasant;
-use pheasant\query\Criteria;
+use \Pheasant\Query\Criteria;
 
 require_once('autorun.php');
 require_once(__DIR__.'/base.php');
 
-class CriteriaTestCase extends \pheasant\tests\MysqlTestCase
+class CriteriaTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function testBasicCriteria()
 	{

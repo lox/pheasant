@@ -1,8 +1,7 @@
 <?php
 
-namespace pheasant\tests\finding;
-
-use pheasant\DomainObject;
+namespace Pheasant\Tests\Finding;
+use \Pheasant\DomainObject;
 use \Pheasant;
 
 require_once('autorun.php');
@@ -22,7 +21,7 @@ class User extends DomainObject
 	}
 }
 
-class BasicFindingTestCase extends \pheasant\tests\MysqlTestCase
+class BasicFindingTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
@@ -49,8 +48,8 @@ class BasicFindingTestCase extends \pheasant\tests\MysqlTestCase
 		$this->assertEqual(2, $users->count());
 		$this->assertEqual(2, count($array));
 
-		$this->assertIsA($array[0], 'pheasant\tests\finding\User');
-		$this->assertIsA($array[1], 'pheasant\tests\finding\User');
+		$this->assertIsA($array[0], 'Pheasant\Tests\finding\User');
+		$this->assertIsA($array[1], 'Pheasant\Tests\finding\User');
 		$this->assertTrue($array[0]->equals($this->users[0]));
 		$this->assertTrue($array[1]->equals($this->users[1]));
 	}

@@ -1,9 +1,8 @@
 <?php
 
-namespace pheasant\tests\relationships;
-
-use pheasant\DomainObject;
-use pheasant\Pheasant;
+namespace Pheasant\Tests\Relationships;
+use \Pheasant\DomainObject;
+use \Pheasant\Pheasant;
 
 require_once('autorun.php');
 require_once(__DIR__.'/base.php');
@@ -42,11 +41,11 @@ class Power extends DomainObject
 	}
 }
 
-class RelationshipsTestCase extends \pheasant\tests\MysqlTestCase
+class RelationshipsTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
-		$migrator = new \pheasant\migrate\Migrator();
+		$migrator = new \Pheasant\Migrate\Migrator();
 		$migrator->create(Hero::schema(), Power::schema());
 	}
 

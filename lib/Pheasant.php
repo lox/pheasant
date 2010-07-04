@@ -24,14 +24,14 @@ class Pheasant
 	public static function setup($dsn)
 	{
 		// set up the pheasant instance
-		$instance = new \pheasant\PheasantInstance();
+		$instance = new \Pheasant\PheasantInstance();
 		$instance->connectionManager()->addConnection('default', $dsn);
 		self::instance($instance);
 
 		// set up default mappers and finders
 		$instance
 			->setDefaultMapper(function($class) {
-				return new \pheasant\mapper\TableMapper($class);
+				return new \Pheasant\Mapper\TableMapper($class);
 			})
 			->setDefaultFinder(function($class) {
 				return Pheasant::mapper($class);
