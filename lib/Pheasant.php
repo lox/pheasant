@@ -13,7 +13,7 @@ class Pheasant
 		if($instance)
 			self::$_instance = $instance;
 		else if(!$instance && !isset(self::$_instance))
-			self::$_instance = new PheasantInstance();
+			self::$_instance = new \Pheasant\PheasantInstance();
 		return self::$_instance;
 	}
 
