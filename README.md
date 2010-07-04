@@ -27,7 +27,7 @@ and loading of objects.
 
 	<?php
 
-	use pheasant;
+	use Pheasant;
 
 	class Post extends DomainObject
 	{
@@ -83,8 +83,7 @@ Querying Objects
 
 	<?php
 
-	use pheasant;
-	use pheasant\query;
+	use Pheasant\Query;
 
 	// all users
 	$users = User::find();
@@ -120,8 +119,7 @@ Code can be triggered before and after create, update and delete operations.
 
 	<?php
 
-	use pheasant;
-	use pheasant\events;
+	use Pheasant\Events;
 
 	class Post extends DomainObject
 	{
@@ -155,8 +153,6 @@ Finders and mappers are decoupled from each other, so implementing custom finder
 is straight forward.
 
 	<?php
-
-	use pheasant;
 
 	class PostFinder extends Finder
 	{
