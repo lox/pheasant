@@ -4,28 +4,22 @@ namespace pheasant\database\mysqli;
 
 class Binder
 {
-	private $_placeholders;
-	private $_sql;
-	private $_params;
-	private $_bound;
 	private $_escaper;
+	private $_params=array();
 
-	public function __construct($sql, $params, $escaper=null)
+	public function __construct($escaper=null)
 	{
-		$this->_sql = $sql;
-		$this->_params = $params;
-		$this->_escaper = $escaper ? $escaper : new Escaper();
+		$this->_escaper = $escaper ?: new Escaper();
 	}
 
-	public function __toString()
+	public function bind($sql, $params=array())
 	{
-		if(!isset($this->_bound))
-		{
-			$this->_bound = preg_replace_callback(
-				'/\?/',array($this,'_bind'),$this->_sql);
-		}
+		$this->_params = is_array($params)
+			? $params
+			: array($params)
+			;
 
-		return $this->_bound;
+		return preg_replace_callback('/\?/',array($this,'_bind'),$sql);
 	}
 
 	private function _bind($match)

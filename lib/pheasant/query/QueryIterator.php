@@ -31,7 +31,10 @@ class QueryIterator implements \SeekableIterator, \Countable
 	private function _resultSet()
 	{
 		if(!isset($this->_resultSet))
+		{
 			$this->_resultSet = $this->_query->execute();
+			//printf("%s => %d\n", $this->_query, $this->_resultSet->count());
+		}
 
 		return $this->_resultSet;
 	}
@@ -111,6 +114,6 @@ class QueryIterator implements \SeekableIterator, \Countable
 	 */
 	private function _hydrate($row)
 	{
-		return $this->_hydrator->hydrate($row);
+		return $this->_hydrator->hydrate($row, true);
 	}
 }

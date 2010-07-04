@@ -6,6 +6,18 @@ Pheasant is a object-mapper written to take advantage of PHP 5.3. It's inspired 
 Martin Fowler's DataMapper pattern. Simple relationships are supported, with the
 emphasis being on scalability and performance over complexity.
 
+Status of Development
+---------------------------------
+
+Still very much alpha. Presently at proof-of-concept phase, examples below are only
+partially implemented.
+
+- Mapping (working)
+- Relationships (partially working)
+- Custom Mappers/Finders (todo)
+- Events (todo)
+- Unit of Work (todo)
+
 Persisting Objects
 ---------------------------------
 
@@ -19,7 +31,7 @@ and loading of objects.
 
 	class Post extends DomainObject
 	{
-		protected static function configure($schema, $props, $rels)
+		public static function configure($schema, $props, $rels)
 		{
 			$schema
 				->table('post')
@@ -40,7 +52,7 @@ and loading of objects.
 
 	class Author extends DomainObject
 	{
-		protected static function configure($schema, $props, $rels)
+		public static function configure($schema, $props, $rels)
 		{
 			$schema
 				->table('Author')
@@ -113,7 +125,7 @@ Code can be triggered before and after create, update and delete operations.
 
 	class Post extends DomainObject
 	{
-		protected static function configure($schema, $props, $rels, $events)
+		public static function configure($schema, $props, $rels, $events)
 		{
 			$schema
 				->table('post')

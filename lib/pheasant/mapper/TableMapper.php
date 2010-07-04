@@ -86,7 +86,7 @@ class TableMapper extends AbstractMapper implements Finder
 		}
 	}
 
-	public function find($sql=null, $params=array())
+	public function query($sql=null, $params=array())
 	{
 		$schema = Pheasant::schema($this->_class);
 		$query = new Query();
@@ -95,11 +95,16 @@ class TableMapper extends AbstractMapper implements Finder
 		// add optional where clause
 		if($sql) $query->where($sql, $params);
 
-		return new Collection($this, $query);
+		return $query;
 	}
 
-	public function hydrate($array)
+	public function find($sql=null, $params=array())
 	{
-		return forward_static_call(array($this->_class,'fromArray'),$array);
+		return new Collection($this, $this->query($sql, $params));
+	}
+
+	public function hydrate($array, $saved=false)
+	{
+		return forward_static_call(array($this->_class,'fromArray'), $array, $saved);
 	}
 }

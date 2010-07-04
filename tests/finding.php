@@ -51,8 +51,8 @@ class BasicFindingTestCase extends \pheasant\tests\MysqlTestCase
 
 		$this->assertIsA($array[0], 'pheasant\tests\finding\User');
 		$this->assertIsA($array[1], 'pheasant\tests\finding\User');
-		$this->assertEqual($array[0]->toArray(), $this->users[0]->toArray());
-		$this->assertEqual($array[1]->toArray(), $this->users[1]->toArray());
+		$this->assertTrue($array[0]->equals($this->users[0]));
+		$this->assertTrue($array[1]->equals($this->users[1]));
 	}
 
 	public function testFindByProperty()
@@ -88,5 +88,13 @@ class BasicFindingTestCase extends \pheasant\tests\MysqlTestCase
 		$this->assertEqual(count($filtered), 1);
 		$this->assertEqual($filtered[0]->firstname, 'Frank');
 		$this->assertEqual($filtered[0]->lastname, 'Castle');
+	}
+
+	public function testSavedStatusAfterFind()
+	{
+		$users = User::find('userid = 1');
+
+		$this->assertTrue($users[0]->isSaved());
+		$this->assertEqual($users[0]->changes(), array());
 	}
 }

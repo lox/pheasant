@@ -79,24 +79,22 @@ class Connection
 		if(!is_array($params))
 			$params = array_slice(func_get_args(),1);
 
-		return (string) new Binder($sql, $params, new Escaper($this->_link));
-	}
-
-	public function prepare($sql)
-	{
-		return new Statement($this, $sql);
+		$binder = new Binder(new Escaper($this->_link));
+		return $binder->bind($sql, $params);
 	}
 
 	public function execute($sql, $params=array())
 	{
-		//var_dump(array($sql, $params));
-
 		if(!is_array($params))
 			$params = array_slice(func_get_args(),1);
 
-		$binder = new Binder($sql, $params, new Escaper($this->_link));
+		if($params)
+		{
+			$binder = new Binder(new Escaper($this->_link));
+			$sql = $binder->bind($sql, $params);
+		}
 
-		if(!$result = $this->_mysqli()->query($binder, MYSQLI_STORE_RESULT))
+		if(!$result = $this->_mysqli()->query($sql, MYSQLI_STORE_RESULT))
 			throw new Exception($this->_link->error, $this->_link->errno);
 
 		return $result === true

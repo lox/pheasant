@@ -17,6 +17,11 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 		$this->_iterator = new QueryIterator($query, $mapper);
 	}
 
+	public function toArray()
+	{
+		return iterator_to_array($this->_iterator);
+	}
+
 	/**
 	 * Adds a filter to the collection
 	 * @chainable

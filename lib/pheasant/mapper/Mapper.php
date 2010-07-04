@@ -22,5 +22,11 @@ interface Mapper
 	 * Hydrates an array into an object
 	 * @return DomainObject
 	 */
-	public function hydrate($array);
+	public function hydrate($array, $saved=false);
+
+	/**
+	 * Returns a query object for querying the datasource
+	 * @return Query
+	 */
+	public function query($sql, $params=array());
 }

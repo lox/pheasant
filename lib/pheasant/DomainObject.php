@@ -143,7 +143,7 @@ class DomainObject
 	/**
 	 * Creates an instance from an array, bypassing the constructor
 	 */
-	public static function fromArray($array)
+	public static function fromArray($array, $saved=false)
 	{
 		$className = get_called_class();
 
@@ -152,7 +152,13 @@ class DomainObject
 			strlen($className),
 			$className));
 
-		return $object->load($array);
+		$object->load($array);
+
+		// saved implies cleared changes
+		if($saved)
+			$object->markSaved(true)->clearChanges();
+
+		return $object;
 	}
 
 	/**
@@ -239,18 +245,57 @@ class DomainObject
 		return $this;
 	}
 
+	/**
+	 * Returns the a collection of objects representing the relationship
+	 */
+	public function relationship($key)
+	{
+		$relationship = self::schema()->relationships()->$key;
+
+		// build query
+		$query = $relationship->mapper->query();
+		$query->andWhere($relationship->criteria . ' = ?',
+			$this->get($relationship->criteria));
+
+		return new Collection($relationship->mapper, $query);
+	}
+
+	/**
+	 * Compares the properties of one domain object to that of another
+	 */
+	public function equals($object)
+	{
+		return $this->toArray() == $object->toArray();
+	}
+
 	// ----------------------------------------
 	// object interface
 
-	public function __get($prop)
+	private function _isRelationship($key)
 	{
-		return $this->get($prop, true);
+		return preg_match('/^[A-Z]/', $key);
+	}
+
+	public function __get($key)
+	{
+		return $this->_isRelationship($key)
+			? $this->relationship($key)
+			: $this->get($key, true);
 	}
 
 	public function __set($prop, $value)
 	{
-		$this->set($prop, $value);
-		return $value;
+		if(preg_match('/^[A-Z]/', $prop))
+		{
+			$relationship = $this->relationship($prop);
+			$relationship[] = $value;
+			return $value;
+		}
+		else
+		{
+			$this->set($prop, $value);
+			return $value;
+		}
 	}
 
 	public function __isset($prop)

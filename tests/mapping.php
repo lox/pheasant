@@ -99,5 +99,13 @@ class BasicMappingTestCase extends \pheasant\tests\MysqlTestCase
 		$this->assertTrue($posts[0]->isSaved());
 		$this->assertTrue($posts[1]->isSaved());
 	}
+
+	public function testUnknownProperty()
+	{
+		$posts = Post::import(array(array('title'=>'First Post')));
+
+		$this->expectException();
+		$posts[0]->unknownKey;
+	}
 }
 

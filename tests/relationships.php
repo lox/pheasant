@@ -8,30 +8,37 @@ use pheasant\Pheasant;
 require_once('autorun.php');
 require_once(__DIR__.'/base.php');
 
-class User extends DomainObject
+class Hero extends DomainObject
 {
 	public static function configure($schema, $props, $rels)
 	{
 		$schema
-			->table('user');
+			->table('hero');
 
 		$props
-			->sequence('userid')
-			->string('firstname')
-			->string('lastname');
+			->sequence('heroid')
+			->string('alias')
+			->string('realname');
+
+		$rels
+			->hasMany('Powers', Power::mapper(), 'heroid');
 	}
 }
 
-class Group extends DomainObject
+class Power extends DomainObject
 {
 	public static function configure($schema, $props, $rels)
 	{
 		$schema
-			->table('group');
+			->table('power');
 
 		$props
-			->sequence('groupid')
-			->string('name');
+			->sequence('powerid')
+			->string('description')
+			->integer('heroid');
+
+		$rels
+			->belongsTo('Hero', Hero::mapper(), 'heroid');
 	}
 }
 
@@ -40,18 +47,21 @@ class RelationshipsTestCase extends \pheasant\tests\MysqlTestCase
 	public function setUp()
 	{
 		$migrator = new \pheasant\migrate\Migrator();
-		$migrator->create(User::schema(), Group::schema());
-
-		// create some users
-		$this->users = User::import(array(
-			array('firstname'=>'Frank','lastname'=>'Castle'),
-			array('firstname'=>'Cletus','lastname'=>'Kasady')
-			));
-
-		//
+		$migrator->create(Hero::schema(), Power::schema());
 	}
 
-	public function testRelationshipQuery()
+	public function testOneToManyRelationship()
 	{
+		$hero = new Hero(array('alias'=>'Spider Man','realname'=>'Peter Parker'));
+		$hero->save();
+
+		$this->assertEqual(count($hero->Powers), 0);
+
+		$power = new Power(array('description'=>'Spider Senses'));
+		$power->heroid = $hero->heroid;
+		$power->save();
+
+		$this->assertEqual(count($hero->Powers), 1);
+		$this->assertTrue($hero->Powers[0]->equals($power));
 	}
 }

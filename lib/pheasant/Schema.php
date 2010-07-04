@@ -19,7 +19,7 @@ class Schema
 	public function relationships()
 	{
 		if(!isset($this->_relationships))
-			$this->_relationships = new Relationships();
+			$this->_relationships = new Relationships($this);
 
 		return $this->_relationships;
 	}

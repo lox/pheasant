@@ -4,90 +4,183 @@ namespace pheasant\query;
 use \Pheasant;
 
 /**
- * Helper to construct sql
+ * A query builder for generating SQL '92 SELECT statements
  */
 class Query
 {
 	// query builder
 	private $_select='*';
 	private $_from=array();
-	private $_where=array();
 	private $_joins=array();
 	private $_limit=null;
+	private $_where;
 
 	// resultset
 	private $_connection;
 	private $_resultset;
 
+	/**
+	 * Constructor
+	 */
 	public function __construct($connection=null)
 	{
 		$this->_connection = $connection ?: Pheasant::connection();
 	}
 
-	public function select($fields)
+	/**
+	 * Sets the SELECT clause, either a single table, an array or varargs.
+	 * @chainable
+	 */
+	public function select($table)
 	{
-		$this->_select = $fields;
+		$this->_select = $this->_arguments(func_get_args());
 		return $this;
 	}
 
+	/**
+	 * Sets the FROM clause, either a single table, an array or varargs.
+	 * @chainable
+	 */
 	public function from($table)
 	{
-		$this->_from = $table;
+		$this->_from = $this->_arguments(func_get_args());
 		return $this;
 	}
 
-	public function where($sql, $params=array())
+	/**
+	 * Sets the where clause to the provided sql, optionally binding
+	 * parameters into the string.
+	 * @chainable
+	 */
+	public function where($sql=null, $params=array())
 	{
-		$this->_where = array($this->_connection->bind($sql, $params));
+		$this->_where = new Criteria($sql, $params);
 		return $this;
 	}
 
-	public function andWhere($sql, $params=array())
+	/**
+	 * Adds an extra criteria to the where clause with an AND
+	 * @chainable
+	 */
+	public function andWhere($sql=null, $params=array())
 	{
-		$this->_where[] = 'AND ('.$this->_connection->bind($sql, $params).')';
+		if(!isset($this->_where))
+			$this->_where = new Criteria();
+
+		$this->_where->and(new Criteria($sql, $params));
 		return $this;
 	}
 
-	public function orWhere($sql, $params=array())
+	/**
+	 * Adds an extra criteria to the where clause with an OR
+	 * @chainable
+	 */
+	public function orWhere($sql=null, $params=array())
 	{
-		$this->_where[] = 'OR ('.$this->_connection->bind($sql, $params).')';
+		if(!isset($this->_where))
+			$this->_where = new Criteria();
+
+		$this->_where->or(new Criteria($sql, $params));
 		return $this;
 	}
 
-	public function innerJoin($sql, $params=array())
+	/**
+	 * Adds an INNER JOIN clause, either with a {@link Query} object or raw sql
+	 * @chainable
+	 */
+	public function innerJoin($mixed, $criteria, $derived='derived')
 	{
-		$this->_joins[] = 'INNER JOIN '.$this->_connection->bind($sql, $params);
-		return $this;
+		return $this->_join('INNER JOIN', $mixed, $criteria, $derived);
 	}
 
-	public function leftJoin($sql, $params=array())
+	/**
+	 * Adds a LEFT JOIN clause, either with a {@link Query} object or raw sql
+	 * @chainable
+	 */
+	public function leftJoin($mixed, $criteria, $derived='derived')
 	{
-		$this->_joins[] = 'LEFT JOIN '.$this->_connection->bind($sql, $params);
-		return $this;
+		return $this->_join('LEFT JOIN', $mixed, $criteria, $derived);
 	}
 
+	/**
+	 * Adds a RIGHT JOIN clause, either with a {@link Query} object or raw sql
+	 * @chainable
+	 */
+	public function rightJoin($mixed, $criteria, $derived='derived')
+	{
+		return $this->_join('RIGHT JOIN', $mixed, $criteria, $derived);
+	}
+
+	/**
+	 * Adds a limit clause
+	 * @chainable
+	 */
 	public function limit($rows, $offset=0)
 	{
 		$this->_limit = sprintf("LIMIT %d OFFSET %d", $rows, $offset);
 		return $this;
 	}
 
+	/**
+	 * Returns the sql for the query
+	 */
 	public function toSql()
 	{
-		$array = array(
-			sprintf("SELECT %s", $this->_select),
-			sprintf("FROM %s", $this->_from),
+		return implode(' ', array_filter(array(
+			$this->_clause('SELECT', $this->_select),
+			$this->_clause('FROM', $this->_from),
 			implode(' ', $this->_joins),
-			$this->_where ? 'WHERE '. ltrim(implode(' ', $this->_where), 'ANDOR ') : NULL,
+			$this->_clause('WHERE', $this->_where),
 			$this->_limit
-			);
-
-		return implode(' ',array_filter($array));
+			)));
 	}
 
+	public function __toString()
+	{
+		return $this->toSql();
+	}
+
+	/**
+	 * Executes the query with the provided connection
+	 * @return Result
+	 */
 	public function execute()
 	{
 		return $this->_connection->execute($this->toSql());
+	}
+
+	// -------------------------------------------
+	// private helper methods
+
+	private function _join($type, $mixed, $criteria, $derived='derived')
+	{
+		if(is_object($mixed))
+			$mixed = sprintf('(%s) %s', $mixed, $derived);
+
+		$this->_joins []= sprintf('%s %s %s', $type, $mixed, $criteria);
+		return $this;
+	}
+
+	private function _clause($clause, $arg, $delim=', ')
+	{
+		if(!empty($arg))
+		{
+			$subject = is_array($arg) ? implode($delim, $arg) : $arg;
+			return sprintf('%s %s', $clause, $subject);
+		}
+	}
+
+	private function _arguments($args)
+	{
+		if(count($args) > 1)
+		{
+			return $args;
+		}
+		else
+		{
+			$arg = $args[0];
+			return is_array($arg) ? $arg : array($arg);
+		}
 	}
 
 	// -------------------------------------------
