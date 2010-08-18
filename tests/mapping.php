@@ -9,15 +9,13 @@ require_once(__DIR__.'/base.php');
 
 class Post extends DomainObject
 {
-	public static function configure($schema, $props, $rels)
+	public static function configure($builder)
 	{
-		$schema
-			->table('post');
-
-		$props
-			->integer('postid', 4, array('primary', 'auto_increment'))
-			->string('title', 255, array('required'))
-			->string('subtitle', 255);
+		$builder->properties(array(
+			'postid' => Integer(11, 'primary auto_increment'),
+			'title' => String(255, 'required'),
+			'subtitle' => String(255),
+			));
 	}
 
 	public function construct($title)
@@ -30,15 +28,17 @@ class BasicMappingTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
-		$table = Pheasant::connection()->table('post');
-		$table
-			->integer('postid', 4, array('auto_increment', 'primary'))
-			->string('title')
-			->string('subtitle')
-			->create()
-			;
+		var_dump('test');
 
-		$this->assertTrue($table->exists());
+		$this->table('post', array(
+			'postid' => Integer(11, 'primary auto_increment'),
+			'title' => String(255, 'required'),
+			'subtitle' => String(255),
+			));
+
+		$this->pheasant
+			->configure('Post', new Mapper\RowMapper('post'))
+			;
 	}
 
 	public function testBasicSaving()

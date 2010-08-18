@@ -2,35 +2,20 @@
 
 namespace Pheasant\Database\Mysqli;
 
-class Binder
+/**
+ * A binder that makes use of internal mysql string escaping
+ */
+class Binder extends \Pheasant\Database\Binder
 {
-	private $_escaper;
-	private $_params=array();
+	private $_link;
 
-	public function __construct($escaper=null)
+	public function __construct($link)
 	{
-		$this->_escaper = $escaper ?: new Escaper();
+		$this->_link = $link;
 	}
 
-	public function bind($sql, $params=array())
+	public function escape($string)
 	{
-		$this->_params = is_array($params)
-			? $params
-			: array($params)
-			;
-
-		return preg_replace_callback('/\?/',array($this,'_bind'),$sql);
-	}
-
-	private function _bind($match)
-	{
-		$param = array_shift($this->_params);
-
-		if(is_int($param) || is_float($param))
-			return $param;
-		else if(is_null($param))
-			return 'NULL';
-		else
-			return $this->_escaper->quote($this->_escaper->escape($param));
+		return $this->_link->escape_string($string);
 	}
 }

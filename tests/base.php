@@ -2,8 +2,6 @@
 
 namespace
 {
-	require_once('autorun.php');
-
 	define('BASEDIR', __DIR__.'/../');
 	define('LIBDIR', BASEDIR.'lib/');
 
@@ -27,39 +25,47 @@ namespace Pheasant\Tests
 {
 	\Mock::generate('\Pheasant\Database\Mysqli\Connection','MockConnection');
 
-	class TestCase extends \UnitTestCase
-	{
-	}
-
-	class MysqlTestCase extends TestCase
+	class MysqlTestCase extends \UnitTestCase
 	{
 		public function before($method)
 		{
 			parent::before($method);
 
-			\Pheasant::setup(
-				'mysql://pheasant:pheasant@localhost:/pheasanttest?charset=utf8');
+			// initialize a new pheasant
+			$this->pheasant = new \Pheasant(
+				'mysql://pheasant:pheasant@localhost:/pheasanttest?charset=utf8'
+				);
 
 			// wipe sequence pool
-			$this->connection()->sequencePool()
+			$this->pheasant->connection()
+				->sequencePool()
 				->initialize()
 				->clear()
 				;
 		}
 
-		public function connection()
+		// Helper to drop and re-create a table
+		public function table($name, $columns)
 		{
-			return \Pheasant::connection();
+			$table = $this->pheasant->connection()->table($name);
+
+			if($table->exists()) $table->drop();
+
+			$table->create($columns);
+
+			$this->assertTableExists($name);
+
+			return $table;
 		}
 
 		public function assertConnectionExists()
 		{
-			$this->assertTrue($this->connection());
+			$this->assertTrue($this->pheasant->connection());
 		}
 
 		public function assertTableExists($table)
 		{
-			$this->assertTrue(false);
+			$this->assertTrue($this->pheasant->connection()->table($table)->exists());
 		}
 
 		public function assertRowCount($sql, $count)

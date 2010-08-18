@@ -1,54 +1,33 @@
 <?php
 
+// manually include type functions
+require_once(dirname(__FILE__).'/Pheasant/Types.php');
+
+/**
+ * Central object for object mapping and lookups, an instance is stored statically
+ * in each domain object class
+ */
 class Pheasant
 {
-	private static $_instance;
+	private $_connections;
 
 	/**
-	 * Either overrides the internal PheasantInstance or returns the current one
-	 * @return PheasantInstance
+	 * Constructor
+	 * @param $dsn string a database dsn
 	 */
-	public static function instance($instance=null)
+	public function __construct($dsn=null)
 	{
-		if($instance)
-			self::$_instance = $instance;
-		else if(!$instance && !isset(self::$_instance))
-			self::$_instance = new \Pheasant\PheasantInstance();
-		return self::$_instance;
+		$this->_connections = new \Pheasant\Database\ConnectionManager();
+
+		// the provided dsn is a default
+		if($dsn) $this->_connections->addConnection('default', $dsn);
 	}
 
 	/**
-	 * Sets up a new pheasant instance with the provided connection dsn
-	 * @void
+	 * @return object
 	 */
-	public static function setup($dsn)
+	public function connection($name='default')
 	{
-		// set up the pheasant instance
-		$instance = new \Pheasant\PheasantInstance();
-		$instance->connectionManager()->addConnection('default', $dsn);
-		self::instance($instance);
-
-		// set up default mappers and finders
-		$instance
-			->setDefaultMapper(function($class) {
-				return new \Pheasant\Mapper\TableMapper($class);
-			})
-			->setDefaultFinder(function($class) {
-				return Pheasant::mapper($class);
-			})
-			;
-	}
-
-	/**
-	 * Delegates static calls to the internal {@link PheasantInstance} object
-	 */
-	static function __callStatic($method, $arguments)
-	{
-		if(!method_exists(self::instance(), $method))
-			throw new \InvalidArgumentException("Instance doesn't implement $method()");
-
-		return call_user_func_array(
-			array(self::instance(), $method), $arguments);
+		return $this->_connections->connection($name);
 	}
 }
-

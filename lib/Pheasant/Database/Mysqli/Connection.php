@@ -2,11 +2,18 @@
 
 namespace Pheasant\Database\Mysqli;
 
+/**
+ * A connection to a MySql database
+ */
 class Connection
 {
 	private $_dsn;
 	private $_link;
 
+	/**
+	 * Constructor
+	 * @param string a database uri
+	 */
 	public function __construct($dsn)
 	{
 		$this->_dsn = $this->_parseDsn($dsn);
@@ -33,11 +40,19 @@ class Connection
 			), $params);
 	}
 
+	/**
+	 * The charset used by the database connection
+	 * @return string
+	 */
 	public function charset()
 	{
 		return $this->_dsn->charset;
 	}
 
+	/**
+	 * Lazily creates the internal mysqli object
+	 * @return MySQLi
+	 */
 	private function _mysqli()
 	{
 		if(!isset($this->_link))
@@ -54,6 +69,27 @@ class Connection
 		return $this->_link;
 	}
 
+	/**
+	 * Executes a statement
+	 * @return ResultSet
+	 */
+	public function execute($sql, $params=array())
+	{
+		if(!is_array($params))
+			$params = array_slice(func_get_args(),1);
+
+		if($params)
+			$sql = $this->binder()->bind($sql, $params);
+
+		if(!$result = $this->_mysqli()->query($sql, MYSQLI_STORE_RESULT))
+			throw new Exception($this->_link->error, $this->_link->errno);
+
+		return new ResultSet($this->_link, $result === true ? false : $result);
+	}
+
+	/**
+	 * @return Transaction
+	 */
 	public function transaction($callback=null)
 	{
 		$transaction = new Transaction($this);
@@ -68,46 +104,25 @@ class Connection
 		return $transaction;
 	}
 
-	public function escape($string)
+	/**
+	 * @return Binder
+	 */
+	public function binder()
 	{
-		$escaper = new Escaper($this->_link);
-		return $escaper->escape($string);
+		return new Binder($this->_mysqli());
 	}
 
-	public function bind($sql, $params=array())
-	{
-		if(!is_array($params))
-			$params = array_slice(func_get_args(),1);
-
-		$binder = new Binder(new Escaper($this->_link));
-		return $binder->bind($sql, $params);
-	}
-
-	public function execute($sql, $params=array())
-	{
-		if(!is_array($params))
-			$params = array_slice(func_get_args(),1);
-
-		if($params)
-		{
-			$binder = new Binder(new Escaper($this->_link));
-			$sql = $binder->bind($sql, $params);
-		}
-
-		if(!$result = $this->_mysqli()->query($sql, MYSQLI_STORE_RESULT))
-			throw new Exception($this->_link->error, $this->_link->errno);
-
-		return $result === true
-			? new Result($this->_link)
-			: new ResultSet($this->_link, $result)
-			;
-	}
-
+	/**
+	 * @return Table
+	 */
 	public function table($name)
 	{
 		return new Table($name, $this);
 	}
 
+	/**
+	 * @return SequencePool
+	 */
 	public function sequencePool()
 	{
 		return new SequencePool($this);

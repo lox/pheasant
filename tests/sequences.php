@@ -21,11 +21,13 @@ class SequenceTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
-		$this->pool = new SequencePool($this->connection());
+		$this->pool = new SequencePool($this->pheasant->connection());
 		$this->pool
 			->initialize()
 			->clear()
 			;
+
+		$this->assertTableExists(SequencePool::TABLE);
 	}
 
 	public function testSequences()
@@ -41,12 +43,10 @@ class DomainObjectSequenceTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
-		$table = Pheasant::connection()->table('person');
-		$table
-			->integer('personid', 4, array('sequence', 'primary'))
-			->string('name')
-			->create()
-			;
+		$table = $this->table('person', array(
+			'personid' => \Pheasant\Types\Sequence('primary'),
+			'name' => \Pheasant\Types\String(),
+			));
 	}
 
 	public function testSequencePrimaryKey()
