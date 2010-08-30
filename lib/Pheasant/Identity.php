@@ -22,7 +22,7 @@ class Identity implements \IteratorAggregate
 		$array = array();
 
 		foreach($this->_properties as $property)
-			$array[$property->name] = $property->callGet($this->_object);
+			$array[$property->name] = $this->_object->get($property->name);
 
 		return $array;
 	}

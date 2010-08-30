@@ -3,13 +3,9 @@
 namespace Pheasant\Tests\Relationships;
 
 use \Pheasant\DomainObject;
-use \Pheasant\Pheasant;
 use \Pheasant\Mapper\RowMapper;
-use \Pheasant\Types\Sequence;
-use \Pheasant\Types\String;
-use \Pheasant\Types\Integer;
-use \Pheasant\Relationships\HasMany;
-use \Pheasant\Relationships\BelongsTo;
+use \Pheasant\Types;
+use \Pheasant\Relationships;
 
 require_once('autorun.php');
 require_once(__DIR__.'/base.php');
@@ -23,12 +19,12 @@ class Hero extends DomainObject
 
 		$builder
 			->properties(array(
-				'heroid' => new Sequence(NULL, 'primary'),
-				'alias' => new String(),
-				'realname' => new String()
+				'heroid' => new Types\Sequence(),
+				'alias' => new Types\String(),
+				'realname' => new Types\String()
 				))
 			->relationships(array(
-				'Powers' => new HasMany(Power::className(),'heroid')
+				'Powers' => new Relationships\HasMany(Power::className(),'heroid')
 				));
 	}
 }
@@ -42,12 +38,12 @@ class Power extends DomainObject
 
 		$builder
 			->properties(array(
-				'powerid' => new Sequence(NULL, 'primary'),
-				'description' => new String(),
-				'heroid' => new Integer()
+				'powerid' => new Types\Sequence(),
+				'description' => new Types\String(),
+				'heroid' => new Types\Integer()
 				))
 			->relationships(array(
-				'Hero' => new BelongsTo(Hero::className(), 'heroid')
+				'Hero' => new Relationships\BelongsTo(Hero::className(), 'heroid')
 				));
 	}
 }
@@ -67,13 +63,11 @@ class RelationshipsTestCase extends \Pheasant\Tests\MysqlTestCase
 	{
 		$hero = new Hero(array('alias'=>'Spider Man','realname'=>'Peter Parker'));
 		$hero->save();
-
 		$this->assertEqual(count($hero->Powers), 0);
 
 		$power = new Power(array('description'=>'Spider Senses'));
 		$power->heroid = $hero->heroid;
 		$power->save();
-
 		$this->assertEqual(count($hero->Powers), 1);
 		$this->assertTrue($hero->Powers[0]->equals($power));
 	}

@@ -19,7 +19,7 @@ class Person extends DomainObject
 
 		$builder
 			->properties(array(
-				'personid' => new Sequence('personid', 'primary'),
+				'personid' => new Sequence('personid'),
 				'name' => new String(),
 			));
 	}
@@ -52,7 +52,7 @@ class DomainObjectSequenceTestCase extends \Pheasant\Tests\MysqlTestCase
 	public function setUp()
 	{
 		$table = $this->table('person', array(
-			'personid' => new Sequence(null, 'primary'),
+			'personid' => new Sequence(),
 			'name' => new String(),
 			));
 	}

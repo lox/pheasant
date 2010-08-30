@@ -3,8 +3,7 @@
 namespace Pheasant\Tests\Mapping;
 
 use \Pheasant\DomainObject;
-use \Pheasant\Types\Integer;
-use \Pheasant\Types\String;
+use \Pheasant\Types;
 use \Pheasant\Mapper\RowMapper;
 
 require_once('autorun.php');
@@ -19,9 +18,9 @@ class Post extends DomainObject
 
 		$builder
 			->properties(array(
-				'postid' => new Integer(11, 'primary auto_increment'),
-				'title' => new String(255, 'required'),
-				'subtitle' => new String(255),
+				'postid' => new Types\Integer(11, 'primary auto_increment'),
+				'title' => new Types\String(255, 'required'),
+				'subtitle' => new Types\String(255),
 			));
 	}
 
@@ -36,9 +35,9 @@ class BasicMappingTestCase extends \Pheasant\Tests\MysqlTestCase
 	public function setUp()
 	{
 		$this->table('post', array(
-			'postid' => new Integer(11, 'primary auto_increment'),
-			'title' => new String(255, 'required'),
-			'subtitle' => new String(255),
+			'postid' => new Types\Integer(11, 'primary auto_increment'),
+			'title' => new Types\String(255, 'required'),
+			'subtitle' => new Types\String(255),
 			));
 	}
 

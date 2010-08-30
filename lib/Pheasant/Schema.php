@@ -20,7 +20,7 @@ class Schema
 	public function identity($object)
 	{
 		$properties = array_filter($this->_properties, function($property) {
-			return $property->options->primary;
+			return $property->type->options->primary;
 		});
 
 		return new Identity($properties, $object);

@@ -18,55 +18,18 @@ class Table
 		$this->_connection = $connection;
 	}
 
-	private function _nativeType($type)
-	{
-		$type = clone $type;
-		$type->params = str_replace(
-			array('primary', 'notnull', 'required', 'sequence'),
-			array('primary key', 'not null', 'not null', ''),
-			$type->params);
-
-		switch($type->name)
-		{
-			case 'string': $type->name ='varchar'; break;
-			case 'integer': $type->name ='int'; break;
-			default: throw new Exception("Unknown type {$type->name}");
-		}
-
-		return $type;
-	}
-
-	/**
-	 * Convert generic types into mysql colum definitions
-	 */
-	private function _columnDefinitions($columns)
-	{
-		$definitions = array();
-
-		foreach($columns as $column=>$type)
-		{
-			$type = $this->_nativeType($type);
-			$definitions[] = sprintf('`%s` %s(%d) %s',
-				$column,
-				$type->name,
-				$type->length,
-				$type->params
-				);
-		}
-
-		return $definitions;
-	}
-
 	/**
 	 * Creates the table, fails if the table exists
 	 * @param $columns a map defining columns to Type objects
 	 */
 	public function create($columns, $options='charset=utf8 engine=innodb')
 	{
+		$types = new TypeMap($columns);
+
 		$this->_connection->execute(sprintf(
 			'CREATE TABLE `%s` (%s) %s',
 			$this->_name,
-			implode(', ', $this->_columnDefinitions($columns)),
+			implode(', ', $types->columnDefs()),
 			$options
 			));
 	}

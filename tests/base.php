@@ -44,6 +44,12 @@ namespace Pheasant\Tests
 				;
 		}
 
+		// Helper to return a connection
+		public function connection()
+		{
+			return $this->pheasant->connection();
+		}
+
 		// Helper to drop and re-create a table
 		public function table($name, $columns)
 		{

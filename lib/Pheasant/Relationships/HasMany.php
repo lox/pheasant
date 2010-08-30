@@ -11,14 +11,13 @@ class HasMany extends RelationshipType
 
 	public function callGet($object, $key)
 	{
-		$finder = \Pheasant::instance()->finderFor($object);
-		return $finder->find($this->class,
-			"{$this->foreign}=?", $object->get($this->local));
+		$finder = \Pheasant::instance()->finderFor($this->class);
+		return $finder->find($this->class, "{$this->foreign}=?", $object->get($this->local));
 	}
 
 	public function callSet($object, $key, $value)
 	{
-		var_dump(__METHOD__, func_get_args(), $this);
+		var_dump(array(__METHOD__, func_get_args(), $this));
 		//return $object->set($key, $value);
 	}
 }

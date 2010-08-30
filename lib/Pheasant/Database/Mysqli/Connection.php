@@ -78,9 +78,10 @@ class Connection
 		if(!is_array($params))
 			$params = array_slice(func_get_args(),1);
 
-		echo "-----------\n";
-		var_dump($sql);
-		var_dump($params);
+		//echo "-----------\n";
+		//printf("sql: %s\nparams: ", $sql);
+		//var_dump($params);
+		//echo "\n";
 
 		if($params)
 			$sql = $this->binder()->bind($sql, $params);
@@ -130,5 +131,14 @@ class Connection
 	public function sequencePool()
 	{
 		return new SequencePool($this);
+	}
+
+	/**
+	 * Takes a map of colName=>Type and returns map for the native connection
+	 * @return TypeMap
+	 */
+	public function typeMap($array)
+	{
+		return new TypeMap($array);
 	}
 }

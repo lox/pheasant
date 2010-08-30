@@ -2,14 +2,24 @@
 
 namespace Pheasant\Types;
 
+use \Pheasant\Options;
+
+/**
+ * A column type in domain object, corresponds to a database type
+ */
 class Type
 {
-	public $name, $length, $params;
+	public $typename, $length, $options;
 
-	public function __construct($name, $length, $params)
+	/**
+	 * @param $type the name of the type
+	 * @param $length the length of the type
+	 * @param $options an {@link Options} object
+	 */
+	public function __construct($type, $length=null, $options=null)
 	{
-		$this->name = $name;
+		$this->type = $type;
 		$this->length = $length;
-		$this->params = $params;
+		$this->options = is_object($options) ? $options : Options::fromString($options);
 	}
 }

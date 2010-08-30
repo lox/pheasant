@@ -44,7 +44,7 @@ class RowMapper extends AbstractMapper implements Finder
 	 */
 	private function sequence($property)
 	{
-		$sequence = $property->type->sequence;
+		$sequence = $property->type->options->sequence;
 
 		// generate if needed
 		if(!is_string($sequence))
@@ -64,7 +64,7 @@ class RowMapper extends AbstractMapper implements Finder
 		// generate any sequences that need generating
 		foreach($object->identity() as $key=>$property)
 		{
-			if($property->options->sequence)
+			if(isset($property->type->options->sequence))
 				$object->set($key, $this->sequence($property));
 		}
 
@@ -73,7 +73,7 @@ class RowMapper extends AbstractMapper implements Finder
 		// check for auto-increment
 		foreach($schema->properties() as $key=>$property)
 		{
-			if($property->options->auto_increment)
+			if($property->type->options->auto_increment)
 				$object->{$key} = $result->lastInsertId();
 		}
 	}
@@ -90,7 +90,7 @@ class RowMapper extends AbstractMapper implements Finder
 		// check for auto-increment
 		foreach($object->identity() as $key=>$property)
 		{
-			if($property->options->auto_increment)
+			if($property->type->options->auto_increment)
 				$object->{$key} = $result->lastInsertId();
 		}
 	}
@@ -114,8 +114,6 @@ class RowMapper extends AbstractMapper implements Finder
 	 */
 	public function find($class, $sql=null, $params=array())
 	{
-		var_dump(func_get_args());
-
 		return new Collection($class, $this->query($sql, $params));
 	}
 }

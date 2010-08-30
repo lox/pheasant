@@ -4,13 +4,12 @@ namespace Pheasant;
 
 class Property
 {
-	public $name, $options, $type;
+	public $name, $type;
 
 	public function __construct($name, $type)
 	{
 		$this->name = $name;
 		$this->type = $type;
-		$this->options = Options::fromString($type->params);
 	}
 
 	public function __toString()
