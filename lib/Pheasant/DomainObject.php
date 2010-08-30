@@ -1,7 +1,6 @@
 <?php
 
 namespace Pheasant;
-
 use \Pheasant;
 
 /**
@@ -19,9 +18,8 @@ class DomainObject
 	 */
 	final public function __construct()
 	{
-		// configure the schema if needed
-		if(!Pheasant::isConfigured($this))
-			Pheasant::configure(get_class($this));
+		$pheasant = Pheasant::instance();
+		$pheasant->initialize($this);
 
 		// call user-defined constructor
 		call_user_func_array(array($this,'construct'),
@@ -29,10 +27,9 @@ class DomainObject
 	}
 
 	/**
-	 * Template function for configuring a domain object. Called once per type
-	 * of domain object
+	 * Template function for configuring a domain object.
 	 */
-	protected static function configure($schema, $props, $rels)
+	protected static function initialize($builder, $pheasant)
 	{
 	}
 
@@ -70,7 +67,7 @@ class DomainObject
 	 */
 	public function save()
 	{
-		$mapper = Pheasant::mapper($this);
+		$mapper = Pheasant::instance()->mapperFor($this);
 		$mapper->save($this);
 		$this->_saved = true;
 		$this->_changed = array();
@@ -111,15 +108,6 @@ class DomainObject
 	}
 
 	/**
-	 * Returns an object for accessing a particular property
-	 * @return Future
-	 */
-	public function future($property)
-	{
-		return new Future($this, $property);
-	}
-
-	/**
 	 * Returns the object as an array
 	 * @return array
 	 */
@@ -128,17 +116,18 @@ class DomainObject
 		return $this->_data;
 	}
 
-	// ----------------------------------------
-	// static helpers
-
 	/**
-	 * Returns the Schema registered for this class
+	 * Returns the Schema registered for this class. Can be called non-statically.
 	 * @return Schema
 	*/
 	public static function schema()
 	{
-		return Pheasant::schema(get_called_class());
+		return Pheasant::instance()->schema(isset($this)
+			? $this : get_called_class());
 	}
+
+	// ----------------------------------------
+	// static helpers
 
 	/**
 	 * Creates an instance from an array, bypassing the constructor
@@ -162,19 +151,21 @@ class DomainObject
 	}
 
 	/**
-	 * Gets the registered mapper for the domain object
+	 * Delegates find calls through to the finder
 	 */
-	public static function find($sql=null, $params=array())
+	public static function __callStatic($method, $params)
 	{
-		return static::mapper()->find($sql, $params);
-	}
-
-	/**
-	 * Gets the registered mapper for the domain object
-	 */
-	public static function mapper()
-	{
-		return Pheasant::mapper(get_called_class());
+		if(preg_match('/^find/',$method))
+		{
+			$class = get_called_class();
+			$finder = Pheasant::instance()->finderFor($class);
+			array_unshift($params, $class);
+			return call_user_func_array(array($finder, $method), $params);
+		}
+		else
+		{
+			throw new \BadMethodCallException("No static method $method available");
+		}
 	}
 
 	/**
@@ -184,11 +175,11 @@ class DomainObject
 	public static function import($records)
 	{
 		$objects = array();
-		$mapper = static::mapper();
+		$schema = Pheasant::instance()->schema(get_called_class());
 
 		foreach($records as $record)
 		{
-			$object = $mapper->hydrate($record);
+			$object = $schema->hydrate($record, false);
 			$object->save();
 			$objects []= $object;
 		}
@@ -196,38 +187,38 @@ class DomainObject
 		return $objects;
 	}
 
+	/**
+	 * Return the class name of the domain object
+	 */
+	public static function className()
+	{
+		return get_called_class();
+	}
+
 	// ----------------------------------------
-	// property manipulators
+	// container extension
 
 	/**
-	 * Gets the value of a property, optionally as a Future if the value
-	 * doesn't exist yet
+	 * Gets a property
 	 */
-	public function get($prop, $future=false, $default=null)
+	public function get($prop)
 	{
-		if(isset($this->_data[$prop]))
-		{
-			return $this->_data[$prop];
-		}
-		else if(isset($this->schema()->properties()->{$prop}))
-		{
-			return $future ? $this->future($prop) : $default;
-		}
-		else
-		{
-			throw new Exception("Unknown property $prop");
-		}
+		return isset($this->_data[$prop]) ? $this->_data[$prop] : null;
 	}
 
 	/**
-	 * Sets the value of a property
+	 * Sets a property
 	 */
 	public function set($prop, $value)
 	{
 		$this->_data[$prop] = $value;
 		$this->_changed[] = $prop;
+		return $this;
 	}
 
+	/**
+	 * Whether the object has a property
+	 */
 	public function has($prop)
 	{
 		return isset($this->_data[$prop]);
@@ -246,21 +237,6 @@ class DomainObject
 	}
 
 	/**
-	 * Returns the a collection of objects representing the relationship
-	 */
-	public function relationship($key)
-	{
-		$relationship = self::schema()->relationships()->$key;
-
-		// build query
-		$query = $relationship->mapper->query();
-		$query->andWhere($relationship->criteria . ' = ?',
-			$this->get($relationship->criteria));
-
-		return new Collection($relationship->mapper, $query);
-	}
-
-	/**
 	 * Compares the properties of one domain object to that of another
 	 */
 	public function equals($object)
@@ -271,35 +247,18 @@ class DomainObject
 	// ----------------------------------------
 	// object interface
 
-	private function _isRelationship($key)
-	{
-		return preg_match('/^[A-Z]/', $key);
-	}
-
 	public function __get($key)
 	{
-		return $this->_isRelationship($key)
-			? $this->relationship($key)
-			: $this->get($key, true);
+		return $this->schema()->{$key}->callGet($this, $key);
 	}
 
-	public function __set($prop, $value)
+	public function __set($key, $value)
 	{
-		if(preg_match('/^[A-Z]/', $prop))
-		{
-			$relationship = $this->relationship($prop);
-			$relationship[] = $value;
-			return $value;
-		}
-		else
-		{
-			$this->set($prop, $value);
-			return $value;
-		}
+		return $this->schema()->{$key}->callSet($this, $key, $value);
 	}
 
-	public function __isset($prop)
+	public function __isset($key)
 	{
-		return $this->has($prop);
+		return isset($this->schema()->$key);
 	}
 }

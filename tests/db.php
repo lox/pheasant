@@ -22,7 +22,7 @@ class BindingTestCase extends \Pheasant\Tests\MysqlTestCase
 		$binder = new Binder();
 		$this->assertEqual(
 			$binder->bind('column=?', 24),
-			'column=24'
+			"column='24'"
 			);
 	}
 
@@ -32,6 +32,15 @@ class BindingTestCase extends \Pheasant\Tests\MysqlTestCase
 		$this->assertEqual(
 			$binder->bind('column=?', null),
 			'column=NULL'
+			);
+	}
+
+	public function testMultipleBinding()
+	{
+		$binder = new Binder();
+		$this->assertEqual(
+			$binder->bind('a=? and b=?', array(24, 'test')),
+			"a='24' and b='test'"
 			);
 	}
 }

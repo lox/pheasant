@@ -4,8 +4,7 @@ namespace Pheasant\Query;
 use \Pheasant\Pheasant;
 
 /**
- * An iterator that lazily executes a query and iterates over the results,
- * hydrating as it goes
+ * An iterator that lazily executes a query, hydrating as it goes
  */
 class QueryIterator implements \SeekableIterator, \Countable
 {
@@ -17,12 +16,23 @@ class QueryIterator implements \SeekableIterator, \Countable
 	/**
 	 * Constructor
 	 * @param object An instance of Query
-	 * @param mixed Either an object with a hydrate() method or a closure
+	 * @param closure A closure that takes a row and returns an object
 	 */
-	public function __construct($query, $hydrator)
+	public function __construct($query, $hydrator=null)
 	{
 		$this->_query = $query;
 		$this->_hydrator = $hydrator;
+	}
+
+	/**
+	 * Sets a hydrator to be used
+	 * @param closure A closure that takes a row and returns an object
+	 * @chainable
+	 */
+	public function setHydrator($hydrator)
+	{
+		$this->_hydrator = $hydrator;
+		return $this;
 	}
 
 	/**
@@ -114,6 +124,7 @@ class QueryIterator implements \SeekableIterator, \Countable
 	 */
 	private function _hydrate($row)
 	{
-		return $this->_hydrator->hydrate($row, true);
+		$callback = $this->_hydrator;
+		return isset($this->_hydrator) ? $callback($row) : $row;
 	}
 }

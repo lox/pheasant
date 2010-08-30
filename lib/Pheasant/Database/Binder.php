@@ -16,8 +16,7 @@ class Binder
 	 */
 	public function bind($sql, $params=array())
 	{
-		$this->_params = (array) $params;
-
+		$this->_params = is_array($params) ? $params : array($params);
 		return preg_replace_callback('/\?/', array($this,'_bindCallback'), $sql);
 	}
 
@@ -26,15 +25,7 @@ class Binder
 	 */
 	private function _bindCallback($match)
 	{
-		$param = array_shift($this->_params);
-
-		// numerics and nulls don't require quoting
-		if(is_int($param) || is_float($param))
-			return $param;
-		else if(is_null($param))
-			return 'NULL';
-
-		return $this->quote($this->escape($param));
+		return $this->quote($this->escape(array_shift($this->_params)));
 	}
 
 	/**
@@ -43,15 +34,15 @@ class Binder
 	 */
 	public function escape($string)
 	{
-		return addslashes($string);
+		return is_null($string) ? $string : addslashes($string);
 	}
 
 	/**
-	 * Surrounds a string with quote marks
+	 * Surrounds a string with quote marks, null is returned as NULL
 	 * @return string
 	 */
 	public function quote($string)
 	{
-		return sprintf("'%s'", $string);
+		return is_null($string) ? 'NULL' : sprintf("'%s'", $string);
 	}
 }

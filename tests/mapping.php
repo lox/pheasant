@@ -1,20 +1,27 @@
 <?php
 
 namespace Pheasant\Tests\Mapping;
+
 use \Pheasant\DomainObject;
-use \Pheasant;
+use \Pheasant\Types\Integer;
+use \Pheasant\Types\String;
+use \Pheasant\Mapper\RowMapper;
 
 require_once('autorun.php');
 require_once(__DIR__.'/base.php');
 
 class Post extends DomainObject
 {
-	public static function configure($builder)
+	public static function initialize($builder, $pheasant)
 	{
-		$builder->properties(array(
-			'postid' => Integer(11, 'primary auto_increment'),
-			'title' => String(255, 'required'),
-			'subtitle' => String(255),
+		$pheasant
+			->register(__CLASS__, new RowMapper('post'));
+
+		$builder
+			->properties(array(
+				'postid' => new Integer(11, 'primary auto_increment'),
+				'title' => new String(255, 'required'),
+				'subtitle' => new String(255),
 			));
 	}
 
@@ -28,17 +35,11 @@ class BasicMappingTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
-		var_dump('test');
-
 		$this->table('post', array(
-			'postid' => Integer(11, 'primary auto_increment'),
-			'title' => String(255, 'required'),
-			'subtitle' => String(255),
+			'postid' => new Integer(11, 'primary auto_increment'),
+			'title' => new String(255, 'required'),
+			'subtitle' => new String(255),
 			));
-
-		$this->pheasant
-			->configure('Post', new Mapper\RowMapper('post'))
-			;
 	}
 
 	public function testBasicSaving()
@@ -48,7 +49,6 @@ class BasicMappingTestCase extends \Pheasant\Tests\MysqlTestCase
 
 		$this->assertEqual((string) $post->postid, null);
 		$this->assertIsA($post->identity(), '\Pheasant\Identity');
-		$this->assertIsA($post->postid, '\Pheasant\Future');
 		$this->assertEqual(array('title','subtitle'), array_keys($post->changes()));
 		$this->assertFalse($post->isSaved());
 		$post->save();

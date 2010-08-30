@@ -2,15 +2,14 @@
 
 namespace Pheasant;
 
-class Property
+class Relationship
 {
-	public $name, $options, $type;
+	public $name, $type;
 
 	public function __construct($name, $type)
 	{
 		$this->name = $name;
 		$this->type = $type;
-		$this->options = Options::fromString($type->params);
 	}
 
 	public function __toString()
@@ -18,13 +17,16 @@ class Property
 		return $this->name;
 	}
 
+	// -------------------------------------
+	// delegate double dispatch calls to type
+
 	public function callGet($object, $key)
 	{
-		return $object->get($key);
+		return $this->type->callGet($object, $key);
 	}
 
 	public function callSet($object, $key, $value)
 	{
-		return $object->set($key, $value);
+		return $this->type->callSet($object, $key, $value);
 	}
 }

@@ -11,7 +11,7 @@ class Options implements \IteratorAggregate
 	private $_options=array();
 
 	/**
-	 *
+	 * Constructor
 	 */
 	public function __construct($options, $default=true)
 	{
@@ -48,6 +48,19 @@ class Options implements \IteratorAggregate
 
 	public function __get($key)
 	{
-		return $this->_options[$key];
+		return isset($this->_options[$key]) ? $this->_options[$key] : false;
+	}
+
+	public static function fromString($string, $default=true)
+	{
+		$array = array();
+
+		foreach(explode(" ", $string) as $token)
+		{
+			$fragments = explode("=", $token);
+			$array[$fragments[0]] = isset($fragments[1]) ? $fragments[1] : $default;
+		}
+
+		return new self($array, $default);
 	}
 }

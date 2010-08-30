@@ -1,6 +1,9 @@
 <?php
 
 namespace Pheasant\Tests\Finding;
+
+use \Pheasant\Types\Sequence;
+use \Pheasant\Types\String;
 use \Pheasant\DomainObject;
 use \Pheasant;
 
@@ -9,15 +12,17 @@ require_once(__DIR__.'/base.php');
 
 class User extends DomainObject
 {
-	public static function configure($schema, $props, $rels)
+	public static function initialize($builder, $pheasant)
 	{
-		$schema
-			->table('user');
+		$pheasant
+			->register(__CLASS__, new \Pheasant\Mapper\RowMapper('user'));
 
-		$props
-			->sequence('userid')
-			->string('firstname')
-			->string('lastname');
+		$builder
+			->properties(array(
+				'userid' => new Sequence(null, 'primary'),
+				'firstname' => new String(),
+				'lastname' => new String(),
+				));
 	}
 }
 
@@ -25,13 +30,11 @@ class BasicFindingTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
-		$table = Pheasant::connection()->table('user');
-		$table
-			->integer('userid', 8, array('primary'))
-			->string('firstname')
-			->string('lastname')
-			->create()
-			;
+		$table = $this->table('user', array(
+			'userid' => new Sequence(null, 'primary'),
+			'firstname' => new String(),
+			'lastname' => new String(),
+			));
 
 		// create some users
 		$this->users = User::import(array(
@@ -48,8 +51,8 @@ class BasicFindingTestCase extends \Pheasant\Tests\MysqlTestCase
 		$this->assertEqual(2, $users->count());
 		$this->assertEqual(2, count($array));
 
-		$this->assertIsA($array[0], 'Pheasant\Tests\finding\User');
-		$this->assertIsA($array[1], 'Pheasant\Tests\finding\User');
+		$this->assertIsA($array[0], 'Pheasant\Tests\Finding\User');
+		$this->assertIsA($array[1], 'Pheasant\Tests\Finding\User');
 		$this->assertTrue($array[0]->equals($this->users[0]));
 		$this->assertTrue($array[1]->equals($this->users[1]));
 	}

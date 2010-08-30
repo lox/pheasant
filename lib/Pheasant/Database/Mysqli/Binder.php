@@ -16,6 +16,6 @@ class Binder extends \Pheasant\Database\Binder
 
 	public function escape($string)
 	{
-		return $this->_link->escape_string($string);
+		return is_null($string) ? $string : $this->_link->escape_string($string);
 	}
 }

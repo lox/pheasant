@@ -28,8 +28,8 @@ class SequencePool
 	{
 		$this->_connection->table(self::TABLE)
 			->createIfNotExists(array(
-				'name'=>\Pheasant\Types\String(255, 'notnull primary'),
-				'id'=>\Pheasant\Types\String(255, 'notnull unsigned'),
+				'name' => new \Pheasant\Types\String(255, 'notnull primary'),
+				'id' => new \Pheasant\Types\Integer(255, 'notnull unsigned'),
 				));
 
 		return $this;

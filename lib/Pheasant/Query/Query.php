@@ -24,7 +24,7 @@ class Query
 	 */
 	public function __construct($connection=null)
 	{
-		$this->_connection = $connection ?: Pheasant::connection();
+		$this->_connection = $connection ?: Pheasant::instance()->connection();
 	}
 
 	/**

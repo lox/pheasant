@@ -32,40 +32,48 @@ and loading of objects.
 
 	class Post extends DomainObject
 	{
-		public static function configure($builder)
+		public static function initialize($builder, $pheasant)
 		{
+			$pheasant
+				->register(__CLASS__, new RowMapper('posts'))
+				;
+
 			$builder
 				->properties(array(
-					'postid' => Serial(array('primary'=>true)),
-					'title' => String(255, array('required'=>true)),
-					'subtitle' => String(255),
-					'status = Enum(array('closed','open')),
-					'authorid => Integer(11),
+					'postid' => new Serial(array('primary'=>true)),
+					'title' => new String(255, array('required'=>true)),
+					'subtitle' => new String(255),
+					'status = new Enum(array('closed','open')),
+					'authorid => new Integer(11),
 				))
 				->relationships(array(
-					'Author' => HasOne('Author', 'author_id')
-				));
+					'Author' => new HasOne('Author', 'author_id')
+				))
+				;
 		}
 	}
 
 	class Author extends DomainObject
 	{
-		public static function configure($builder)
+		public static function configure($builder, $pheasant)
 		{
+			$pheasant
+				->register(__CLASS__, new RowMapper('author'))
+				;
+
 			$builder
 				->properties(array(
-					'authorid' => Serial(array('primary'=>true)),
-					'fullname' => String(255, array('required'=>true))
+					'authorid' => new Serial(array('primary'=>true)),
+					'fullname' => new String(255, array('required'=>true))
 					))
 				->relationships(array(
-					'Posts' => HasOne('Post', 'author_id')
+					'Posts' => new HasOne('Post', 'author_id')
 					))
 		}
 	}
 
 	// configure pheasant
-	$pheasant = new Pheasant('mysql://localhost:/mydatabase');
-	$pheasant->configure('Author', new Mapper\RowMapper('author'));
+	Pheasant::initialize('mysql://localhost:/mydatabase');
 
 	// create some objects
 	$author = new Author(array('fullname'=>'Lachlan'));
@@ -122,8 +130,12 @@ Code can be triggered before and after create, update and delete operations.
 
 	class Post extends DomainObject
 	{
-		public static function configure($builder)
+		public static function configure($builder, $pheasant)
 		{
+			$pheasant
+				->register(__CLASS__, new RowMapper('post'))
+				;
+
 			$builder
 				->properties(array(
 					'postid' => Serial(array('primary'=>true)),

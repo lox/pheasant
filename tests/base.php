@@ -32,7 +32,7 @@ namespace Pheasant\Tests
 			parent::before($method);
 
 			// initialize a new pheasant
-			$this->pheasant = new \Pheasant(
+			$this->pheasant = \Pheasant::setup(
 				'mysql://pheasant:pheasant@localhost:/pheasanttest?charset=utf8'
 				);
 

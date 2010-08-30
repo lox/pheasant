@@ -1,43 +1,54 @@
 <?php
 
 namespace Pheasant\Tests\Relationships;
+
 use \Pheasant\DomainObject;
 use \Pheasant\Pheasant;
+use \Pheasant\Mapper\RowMapper;
+use \Pheasant\Types\Sequence;
+use \Pheasant\Types\String;
+use \Pheasant\Types\Integer;
+use \Pheasant\Relationships\HasMany;
+use \Pheasant\Relationships\BelongsTo;
 
 require_once('autorun.php');
 require_once(__DIR__.'/base.php');
 
 class Hero extends DomainObject
 {
-	public static function configure($schema, $props, $rels)
+	public static function initialize($builder, $pheasant)
 	{
-		$schema
-			->table('hero');
+		$pheasant
+			->register(__CLASS__, new RowMapper('hero'));
 
-		$props
-			->sequence('heroid')
-			->string('alias')
-			->string('realname');
-
-		$rels
-			->hasMany('Powers', Power::mapper(), 'heroid');
+		$builder
+			->properties(array(
+				'heroid' => new Sequence(NULL, 'primary'),
+				'alias' => new String(),
+				'realname' => new String()
+				))
+			->relationships(array(
+				'Powers' => new HasMany(Power::className(),'heroid')
+				));
 	}
 }
 
 class Power extends DomainObject
 {
-	public static function configure($schema, $props, $rels)
+	public static function initialize($builder, $pheasant)
 	{
-		$schema
-			->table('power');
+		$pheasant
+			->register(__CLASS__, new RowMapper('power'));
 
-		$props
-			->sequence('powerid')
-			->string('description')
-			->integer('heroid');
-
-		$rels
-			->belongsTo('Hero', Hero::mapper(), 'heroid');
+		$builder
+			->properties(array(
+				'powerid' => new Sequence(NULL, 'primary'),
+				'description' => new String(),
+				'heroid' => new Integer()
+				))
+			->relationships(array(
+				'Hero' => new BelongsTo(Hero::className(), 'heroid')
+				));
 	}
 }
 
@@ -46,7 +57,10 @@ class RelationshipsTestCase extends \Pheasant\Tests\MysqlTestCase
 	public function setUp()
 	{
 		$migrator = new \Pheasant\Migrate\Migrator();
-		$migrator->create(Hero::schema(), Power::schema());
+		$migrator
+			->create('hero', Hero::schema())
+			->create('power', Power::schema())
+			;
 	}
 
 	public function testOneToManyRelationship()

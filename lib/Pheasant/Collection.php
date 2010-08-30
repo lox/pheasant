@@ -5,16 +5,16 @@ use \Pheasant\Query\QueryIterator;
 
 class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 {
-	private $_mapper;
 	private $_query;
 	private $_iterator;
 	private $_readonly=false;
 
-	public function __construct($mapper, $query)
+	public function __construct($class, $query)
 	{
-		$this->_mapper = $mapper;
 		$this->_query = $query;
-		$this->_iterator = new QueryIterator($query, $mapper);
+		$this->_iterator = new QueryIterator($query, function($row) use($class) {
+			return $class::fromArray($row, true);
+		});
 	}
 
 	public function toArray()

@@ -78,6 +78,10 @@ class Connection
 		if(!is_array($params))
 			$params = array_slice(func_get_args(),1);
 
+		echo "-----------\n";
+		var_dump($sql);
+		var_dump($params);
+
 		if($params)
 			$sql = $this->binder()->bind($sql, $params);
 
