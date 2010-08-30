@@ -11,7 +11,7 @@ class Options implements \IteratorAggregate
 	private $_options=array();
 
 	/**
-	 *
+	 * Constructor
 	 */
 	public function __construct($options, $default=true)
 	{
@@ -36,6 +36,9 @@ class Options implements \IteratorAggregate
 		return $this;
 	}
 
+	/* (non-phpdoc)
+	 * @see IteratorAggregate
+	 */
 	public function getIterator()
 	{
 		return new \ArrayIterator($this->_options);
@@ -43,11 +46,48 @@ class Options implements \IteratorAggregate
 
 	public function __isset($key)
 	{
-		return isset($this->_options[$key]);
+		return array_key_exists($key, $this->_options);
 	}
 
 	public function __get($key)
 	{
-		return $this->_options[$key];
+		return isset($this->_options[$key]) ? $this->_options[$key] : false;
+	}
+
+	/**
+	 * Creates an options object from a flat string
+	 * @return Options
+	 */
+	public static function fromString($string, $default=true)
+	{
+		$array = array();
+
+		foreach(preg_split('/\s+/', $string, -1, PREG_SPLIT_NO_EMPTY) as $token)
+		{
+			$fragments = explode("=", $token);
+			$value = isset($fragments[1])
+				? trim($fragments[1],"' ") : $default;
+
+			$array[$fragments[0]] = $value === 'null'
+				? null : $value;
+		}
+
+		return new self($array, $default);
+	}
+
+	public function toString($default=true)
+	{
+		$options = array();
+		$binder = new Database\Binder();
+
+		foreach($this as $key=>$value)
+		{
+			$options[] = ($value === $default)
+				? $key
+				: sprintf("%s=%s", $key, $binder->quote($value))
+				;
+		}
+
+		return implode(' ', $options);
 	}
 }

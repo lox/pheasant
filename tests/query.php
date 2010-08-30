@@ -2,6 +2,8 @@
 
 namespace Pheasant\Tests\Query;
 use \Pheasant;
+use \Pheasant\Types\Integer;
+use \Pheasant\Types\String;
 use \Pheasant\Query\Query;
 use \Pheasant\Query\Criteria;
 
@@ -12,13 +14,11 @@ class QueryTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
-		$table = Pheasant::connection()->table('user');
-		$table
-			->integer('userid', 8, array('primary', 'auto_increment'))
-			->string('firstname')
-			->string('lastname')
-			->create()
-			;
+		$table =$this->table('user', array(
+			'userid'=>new Integer(8, 'primary auto_increment'),
+			'firstname'=>new String(),
+			'lastname'=>new String(),
+			));
 
 		// create some users
 		$table->insert(array('userid'=>null,'firstname'=>'Frank','lastname'=>'Castle'));
@@ -51,7 +51,7 @@ class QueryTestCase extends \Pheasant\Tests\MysqlTestCase
 
 		$this->assertEqual('SELECT * FROM user '.
 			'INNER JOIN mytable using(tableid) '.
-			'WHERE userid=55',
+			"WHERE userid='55'",
 			$query->toSql()
 			);
 	}

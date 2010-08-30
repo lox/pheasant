@@ -15,40 +15,24 @@ class Migrator
 	 */
 	public function __construct($connection=null)
 	{
-		$this->_connection = $connection ?: \Pheasant::connection();
+		$this->_connection = $connection ?: \Pheasant::instance()->connection();
 	}
 
 	/**
 	 * Creates the underlying tables for a schema, dropping any tables of the same names
 	 * @chainable
 	 */
-	public function create($schema)
+	public function create($table, $schema)
 	{
-		foreach(func_get_args() as $schema)
-		{
-			$this->table($schema)->create();
-		}
+		$columns = array();
 
+		foreach($schema->properties() as $prop)
+			$columns[$prop->name] = $prop->type;
+
+		$table = $this->_connection->table($table);
+		if($table->exists()) $table->drop();
+
+		$table->create($columns);
 		return $this;
-	}
-
-	public function table($schema)
-	{
-		$table = $this->_connection->table($schema->table());
-
-		foreach($schema->properties() as $property)
-		{
-			$options = array();
-			$type = $property->type;
-
-			foreach(array('auto_increment','primary') as $key)
-				if($property->$key) $options[] = $key;
-
-			$options['notnull'] = $property->required;
-
-			$table->$type($property->name, $property->length, $options);
-		}
-
-		return $table;
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace Pheasant;
 
-class Property
+class Relationship
 {
 	public $name, $type;
 
@@ -17,13 +17,16 @@ class Property
 		return $this->name;
 	}
 
+	// -------------------------------------
+	// delegate double dispatch calls to type
+
 	public function callGet($object, $key)
 	{
-		return $object->get($key);
+		return $this->type->callGet($object, $key);
 	}
 
 	public function callSet($object, $key, $value)
 	{
-		return $object->set($key, $value);
+		return $this->type->callSet($object, $key, $value);
 	}
 }

@@ -1,23 +1,27 @@
 <?php
 
 namespace Pheasant\Tests\Mapping;
+
 use \Pheasant\DomainObject;
-use \Pheasant;
+use \Pheasant\Types;
+use \Pheasant\Mapper\RowMapper;
 
 require_once('autorun.php');
 require_once(__DIR__.'/base.php');
 
 class Post extends DomainObject
 {
-	public static function configure($schema, $props, $rels)
+	public static function initialize($builder, $pheasant)
 	{
-		$schema
-			->table('post');
+		$pheasant
+			->register(__CLASS__, new RowMapper('post'));
 
-		$props
-			->integer('postid', 4, array('primary', 'auto_increment'))
-			->string('title', 255, array('required'))
-			->string('subtitle', 255);
+		$builder
+			->properties(array(
+				'postid' => new Types\Integer(11, 'primary auto_increment'),
+				'title' => new Types\String(255, 'required'),
+				'subtitle' => new Types\String(255),
+			));
 	}
 
 	public function construct($title)
@@ -30,15 +34,11 @@ class BasicMappingTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
-		$table = Pheasant::connection()->table('post');
-		$table
-			->integer('postid', 4, array('auto_increment', 'primary'))
-			->string('title')
-			->string('subtitle')
-			->create()
-			;
-
-		$this->assertTrue($table->exists());
+		$this->table('post', array(
+			'postid' => new Types\Integer(11, 'primary auto_increment'),
+			'title' => new Types\String(255, 'required'),
+			'subtitle' => new Types\String(255),
+			));
 	}
 
 	public function testBasicSaving()
@@ -48,7 +48,6 @@ class BasicMappingTestCase extends \Pheasant\Tests\MysqlTestCase
 
 		$this->assertEqual((string) $post->postid, null);
 		$this->assertIsA($post->identity(), '\Pheasant\Identity');
-		$this->assertIsA($post->postid, '\Pheasant\Future');
 		$this->assertEqual(array('title','subtitle'), array_keys($post->changes()));
 		$this->assertFalse($post->isSaved());
 		$post->save();

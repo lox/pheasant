@@ -1,19 +1,27 @@
 <?php
 
 namespace Pheasant\Tests\Sequences;
-use \Pheasant;
+use \Pheasant\Mapper\RowMapper;
 use \Pheasant\Database\Mysqli\SequencePool;
 use \Pheasant\DomainObject;
+use \Pheasant\Types\Sequence;
+use \Pheasant\Types\String;
 
 require_once('autorun.php');
 require_once(__DIR__.'/base.php');
 
 class Person extends DomainObject
 {
-	public static function configure($schema, $props, $rels)
+	public static function initialize($builder, $pheasant)
 	{
-		$schema->table('person');
-		$props->sequence('personid');
+		$pheasant
+			->register(__CLASS__, new RowMapper('person'));
+
+		$builder
+			->properties(array(
+				'personid' => new Sequence('personid'),
+				'name' => new String(),
+			));
 	}
 }
 
@@ -21,11 +29,13 @@ class SequenceTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
-		$this->pool = new SequencePool($this->connection());
+		$this->pool = new SequencePool($this->pheasant->connection());
 		$this->pool
 			->initialize()
 			->clear()
 			;
+
+		$this->assertTableExists(SequencePool::TABLE);
 	}
 
 	public function testSequences()
@@ -41,12 +51,10 @@ class DomainObjectSequenceTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
-		$table = Pheasant::connection()->table('person');
-		$table
-			->integer('personid', 4, array('sequence', 'primary'))
-			->string('name')
-			->create()
-			;
+		$table = $this->table('person', array(
+			'personid' => new Sequence(),
+			'name' => new String(),
+			));
 	}
 
 	public function testSequencePrimaryKey()

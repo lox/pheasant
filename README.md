@@ -2,9 +2,11 @@
 Pheasant
 =======================================
 
-Pheasant is a object-mapper written to take advantage of PHP 5.3. It's inspired by
-Martin Fowler's DataMapper pattern. Simple relationships are supported, with the
-emphasis being on scalability and performance over complexity.
+Pheasant is an object relational mapper written to take advantage of PHP 5.3. Simple relationships
+are supported, with the emphasis being on scalability and performance over complexity.
+
+The entire codebase will always be less than 5000 lines, excluding tests. Currently only compatible with
+InnoDb/Mysql 5+.
 
 Status of Development
 ---------------------------------
@@ -13,10 +15,9 @@ Still very much alpha. Presently at proof-of-concept phase, examples below are o
 partially implemented.
 
 - Mapping (working)
-- Relationships (partially working)
+- Relationships (HasMany implemented, HasOne still to-do)
 - Custom Mappers/Finders (todo)
 - Events (todo)
-- Unit of Work (todo)
 
 Persisting Objects
 ---------------------------------
@@ -31,49 +32,55 @@ and loading of objects.
 
 	class Post extends DomainObject
 	{
-		public static function configure($schema, $props, $rels)
+		public static function initialize($builder, $pheasant)
 		{
-			$schema
-				->table('post')
+			$pheasant
+				->register(__CLASS__, new RowMapper('posts'))
 				;
 
-			$props
-				->serial('postid', array('primary'=>true))
-				->string('title', 255, array('required'=>true))
-				->string('subtitle', 255)
-				->enum('status', array('closed','open'))
-				;
-
-			$rels
-				->hasOne('Author', 'Author', 'author_id')
+			$builder
+				->properties(array(
+					'postid' => new Serial(array('primary'=>true)),
+					'title' => new String(255, array('required'=>true)),
+					'subtitle' => new String(255),
+					'status = new Enum(array('closed','open')),
+					'authorid => new Integer(11),
+				))
+				->relationships(array(
+					'Author' => new HasOne('Author', 'author_id')
+				))
 				;
 		}
 	}
 
 	class Author extends DomainObject
 	{
-		public static function configure($schema, $props, $rels)
+		public static function configure($builder, $pheasant)
 		{
-			$schema
-				->table('Author')
+			$pheasant
+				->register(__CLASS__, new RowMapper('author'))
 				;
 
-			$props
-				->serial('authorid', array('primary'=>true))
-				->string('fullname', 255, array('required'=>true))
-				;
-
-			$rels
-				->belongsTo('Posts', 'Post')
-				;
+			$builder
+				->properties(array(
+					'authorid' => new Serial(array('primary'=>true)),
+					'fullname' => new String(255, array('required'=>true))
+					))
+				->relationships(array(
+					'Posts' => new HasOne('Post', 'author_id')
+					))
 		}
 	}
 
-	Pheasant::setup('mysql://localhost:/mydatabase');
+	// configure pheasant
+	Pheasant::initialize('mysql://localhost:/mydatabase');
 
 	// create some objects
 	$author = new Author(array('fullname'=>'Lachlan'));
-	$post = new Post(array('title'=>'My Post', 'author'=>$author);
+	$post = new Post(array('title'=>'My Post', 'author'=>$author));
+
+	// save objects
+	$author->save();
 	$post->save();
 
 	?>
@@ -107,7 +114,7 @@ Querying Objects
 	// builds in one query
 	foreach($query as $user)
 	{
-		printf("User %s has posts about llamas\n',$user->fullname,$user->Posts
+		printf("User %s has posts about llamas\n',$user->fullname,$user->Posts);
 	}
 
 	?>
@@ -123,30 +130,32 @@ Code can be triggered before and after create, update and delete operations.
 
 	class Post extends DomainObject
 	{
-		public static function configure($schema, $props, $rels, $events)
+		public static function configure($builder, $pheasant)
 		{
-			$schema
-				->table('post')
-				->event(Events::PRE_CREATE, 'preCreate')
+			$pheasant
+				->register(__CLASS__, new RowMapper('post'))
 				;
 
-			$props
-				->serial('postid', array('primary'=>true))
-				->string('title', 255, array('required'=>true))
-				->timestamp('timecreated')
-				;
-		}
+			$builder
+				->properties(array(
+					'postid' => Serial(array('primary'=>true)),
+					'title' => String(255),
+					'timecreated' => Integer(11),
+					));
 
-		private function preCreate()
-		{
-			// sets a timestamp
-			$this->timestamp = time();
+			$builder
+				->events(array(
+					'after_create' => function($d) { $d->timecreated = time(); }
+				));
 		}
 	}
 
 	?>
 
-Custom Finders
+Optionally, domain objects can have the methods afterCreate, beforeUpdate, afterUpdate,
+beforeDelete, afterDelete and they will be implicitly called.
+
+Custom Finder Methods
 ---------------------------------
 
 Finders and mappers are decoupled from each other, so implementing custom finder methods
@@ -154,7 +163,7 @@ is straight forward.
 
 	<?php
 
-	class PostFinder extends Finder
+	class CustomPostFinder extends Finder\RowFinder
 	{
 		public function findByAuthorId($definition, $id)
 		{
@@ -162,32 +171,9 @@ is straight forward.
 		}
 	}
 
-	Pheasant::defineFinder('Post',new PostFinder());
+	$pheasant->configureFinder('Post', new CustomPostFinder('post'));
 
-	// finds single posts by author id
-	$post = Post::findByAuthorId(55)->one();
-
-	?>
-
-Transactions
----------------------------------
-
-Executing multiple actions in a transaction are facilitated with unit of work objects.
-
-	<?php
-
-	$user1 = User::findOneById(1);
-	$user2 = User::findOneByFirstName('Frank');
-
-	// create a script
-	$unit = new UnitOfWork();
-
-	// prepare the unit of work
-	$user1->type = 'admin';
-	$user2->type = 'admin';
-	$unit->save($user1, $user2);
-
-	// execute in a transaction
-	$unit->execute();
+	// finds single posts by author id (magic methods still work)
+	$posts = Post::findOneByAuthorId(55);
 
 	?>

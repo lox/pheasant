@@ -3,7 +3,7 @@
 namespace Pheasant\Query;
 
 use \Pheasant;
-use \Pheasant\Database\Mysqli\Binder;
+use \Pheasant\Database\Binder;
 
 /**
  * A builder object for simple sql where clauses.
