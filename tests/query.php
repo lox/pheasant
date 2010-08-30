@@ -51,7 +51,7 @@ class QueryTestCase extends \Pheasant\Tests\MysqlTestCase
 
 		$this->assertEqual('SELECT * FROM user '.
 			'INNER JOIN mytable using(tableid) '.
-			'WHERE userid=55',
+			"WHERE userid='55'",
 			$query->toSql()
 			);
 	}
