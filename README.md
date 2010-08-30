@@ -28,7 +28,9 @@ and loading of objects.
 
 	<?php
 
-	use Pheasant;
+	use \Pheasant;
+	use \Pheasant\Types;
+	use \Pheasant\Relationships;
 
 	class Post extends DomainObject
 	{
@@ -40,14 +42,14 @@ and loading of objects.
 
 			$builder
 				->properties(array(
-					'postid' => new Serial(array('primary'=>true)),
-					'title' => new String(255, array('required'=>true)),
-					'subtitle' => new String(255),
-					'status = new Enum(array('closed','open')),
-					'authorid => new Integer(11),
+					'postid'   => new Types\Sequence(),
+					'title'    => new Types\String(255, 'required'),
+					'subtitle' => new Types\String(255),
+					'status    => new Types\Enum(array('closed','open')),
+					'authorid  => new Types\Integer(11),
 				))
 				->relationships(array(
-					'Author' => new HasOne('Author', 'author_id')
+					'Author'   => new Relationships\HasOne('Author', 'author_id')
 				))
 				;
 		}
@@ -63,11 +65,11 @@ and loading of objects.
 
 			$builder
 				->properties(array(
-					'authorid' => new Serial(array('primary'=>true)),
-					'fullname' => new String(255, array('required'=>true))
+					'authorid'  => new Types\Sequence(),
+					'fullname'  => new Types\String(255, 'required')
 					))
 				->relationships(array(
-					'Posts' => new HasOne('Post', 'author_id')
+					'Posts'     => new Relationships\HasOne('Post', 'author_id')
 					))
 		}
 	}
@@ -83,10 +85,15 @@ and loading of objects.
 	$author->save();
 	$post->save();
 
+	echo $post->title; // returns 'My Post'
+	echo $post->Author->fullname; // returns 'Lachlan'
+
 	?>
 
-Querying Objects
+Raw Queries
 ---------------------------------
+
+It's easy to take an existing query and hydrate the results into a domain object.
 
 	<?php
 
@@ -126,7 +133,9 @@ Code can be triggered before and after create, update and delete operations.
 
 	<?php
 
-	use Pheasant\Events;
+	use \Pheasant;
+	use \Pheasant\Events;
+	use \Pheasant\Types;
 
 	class Post extends DomainObject
 	{
@@ -138,9 +147,9 @@ Code can be triggered before and after create, update and delete operations.
 
 			$builder
 				->properties(array(
-					'postid' => Serial(array('primary'=>true)),
-					'title' => String(255),
-					'timecreated' => Integer(11),
+					'postid'      => new Types\Sequence(),
+					'title'       => new Types\String(255),
+					'timecreated' => new Types\Integer(11),
 					));
 
 			$builder
@@ -163,6 +172,8 @@ is straight forward.
 
 	<?php
 
+	use \Pheasant\Finder;
+
 	class CustomPostFinder extends Finder\RowFinder
 	{
 		public function findByAuthorId($definition, $id)
@@ -171,7 +182,7 @@ is straight forward.
 		}
 	}
 
-	$pheasant->configureFinder('Post', new CustomPostFinder('post'));
+	$pheasant->registerFinder('Post', new CustomPostFinder('post'));
 
 	// finds single posts by author id (magic methods still work)
 	$posts = Post::findOneByAuthorId(55);
