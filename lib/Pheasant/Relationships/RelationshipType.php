@@ -14,15 +14,31 @@ class RelationshipType
 		$this->foreign = empty($foreign) ? $local : $foreign;
 	}
 
-	public function callGet($object, $key)
+	public function closureGet($object)
 	{
-		throw new \BadMethodCallException(
-			"Get not supported on ".get_class($this));
+		return function($key) use($object) {
+			throw new \BadMethodCallException('Get not supported');
+		};
 	}
 
-	public function callSet($object, $key, $value)
+	public function closureSet($object)
 	{
-		throw new \BadMethodCallException(
-			"Set not supported on ".get_class($this));
+		return function($key, $value) use($object) {
+			throw new \BadMethodCallException('Set not supported');
+		};
+	}
+
+	public function closureAdd($object)
+	{
+		return function($value) use($object) {
+			throw new \BadMethodCallException('Add not supported');
+		};
+	}
+
+	public function closureRemove($object)
+	{
+		return function($key) use($object) {
+			throw new \BadMethodCallException('Remove not supported');
+		};
 	}
 }

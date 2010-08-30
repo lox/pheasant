@@ -2,11 +2,13 @@
 
 namespace Pheasant\Relationships;
 
-class BelongsTo extends RelationshipType
+use \Pheasant\Collection;
+
+class HasOne extends RelationshipType
 {
 	public function __construct($class, $local, $foreign=null)
 	{
-		parent::__construct('belongsto', $class, $local, $foreign);
+		parent::__construct('hasone', $class, $local, $foreign);
 	}
 
 	public function closureGet($object)

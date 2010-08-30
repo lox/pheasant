@@ -2,6 +2,8 @@
 
 namespace Pheasant\Relationships;
 
+use \Pheasant\Collection;
+
 class HasMany extends RelationshipType
 {
 	public function __construct($class, $local, $foreign=null)
@@ -9,15 +11,23 @@ class HasMany extends RelationshipType
 		parent::__construct('hasmany', $class, $local, $foreign);
 	}
 
-	public function callGet($object, $key)
+	public function closureGet($object)
 	{
+		$rel = $this;
 		$finder = \Pheasant::instance()->finderFor($this->class);
-		return $finder->find($this->class, "{$this->foreign}=?", $object->get($this->local));
+
+		return function($key) use($object, $finder, $rel) {
+			$query = $finder->query("{$rel->foreign}=?", $object->get($rel->local));
+			return new Collection(get_class($object), $query, $rel->closureAdd($object));
+		};
 	}
 
-	public function callSet($object, $key, $value)
+	public function closureAdd($object)
 	{
-		var_dump(array(__METHOD__, func_get_args(), $this));
-		//return $object->set($key, $value);
+		$rel = $this;
+
+		return function($value) use($object, $rel) {
+			$value->set($rel->foreign, $object->get($rel->local));
+		};
 	}
 }

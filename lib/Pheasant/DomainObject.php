@@ -249,12 +249,14 @@ class DomainObject
 
 	public function __get($key)
 	{
-		return $this->schema()->{$key}->callGet($this, $key);
+		$closure = $this->schema()->{$key}->closureGet($this);
+		return $closure($key);
 	}
 
 	public function __set($key, $value)
 	{
-		return $this->schema()->{$key}->callSet($this, $key, $value);
+		$closure = $this->schema()->{$key}->closureSet($this);
+		return $closure($key, $value);
 	}
 
 	public function __isset($key)

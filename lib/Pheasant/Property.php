@@ -17,13 +17,31 @@ class Property
 		return $this->name;
 	}
 
-	public function callGet($object, $key)
+	public function closureGet($object)
 	{
-		return $object->get($key);
+		return function($key) use($object) {
+			return $object->get($key);
+		};
 	}
 
-	public function callSet($object, $key, $value)
+	public function closureSet($object)
 	{
-		return $object->set($key, $value);
+		return function($key, $value) use($object) {
+			return $object->set($key, $value);
+		};
+	}
+
+	public function closureAdd($object)
+	{
+		return function($value) use($object) {
+			throw new \BadMethodCallException('Add not supported');
+		};
+	}
+
+	public function closureRemove($object)
+	{
+		return function($key) use($object) {
+			throw new \BadMethodCallException('Remove not supported');
+		};
 	}
 }

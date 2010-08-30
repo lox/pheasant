@@ -1,17 +1,29 @@
 <?php
 
 namespace Pheasant;
+
+use \Pheasant;
 use \Pheasant\Query\QueryIterator;
 
 class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 {
+	private $_class;
 	private $_query;
 	private $_iterator;
+	private $_add=false;
 	private $_readonly=false;
 
-	public function __construct($class, $query)
+	/**
+	 * @param $class string the classname to hydrate
+	 * @param $query Query the query object
+	 * @param $add Closure a closure to call when an object is appended
+	 */
+	public function __construct($class, $query, $add=false)
 	{
 		$this->_query = $query;
+		$this->_class = $class;
+		$this->_add = $add;
+
 		$this->_iterator = new QueryIterator($query, function($row) use($class) {
 			return $class::fromArray($row, true);
 		});
@@ -71,7 +83,12 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 
 	public function offsetSet($offset, $value)
 	{
-		throw new \BadMethodCallException('Collections are read-only');
+		if(!isset($this->_add) && is_null($offset))
+			throw new \BadMethodCallException('Add not supported');
+		else if(is_null($offset))
+			return call_user_func($this->_add, $value);
+		else
+			throw new \BadMethodCallException('Set not supported');
 	}
 
 	public function offsetExists($offset)
@@ -82,6 +99,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 
 	public function offsetUnset($offset)
 	{
-		throw new \BadMethodCallException('Collections are read-only');
+		if(!isset($this->_accessor))
+			throw new \BadMethodCallException('Remove not supported');
 	}
 }
