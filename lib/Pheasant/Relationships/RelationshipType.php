@@ -14,31 +14,52 @@ class RelationshipType
 		$this->foreign = empty($foreign) ? $local : $foreign;
 	}
 
-	public function closureGet($object)
+	public function get($object, $key)
 	{
-		return function($key) use($object) {
-			throw new \BadMethodCallException('Get not supported');
-		};
+		throw new \BadMethodCallException(
+			"Get not supported on ".get_class($this));
 	}
 
-	public function closureSet($object)
+	public function set($object, $key, $value)
 	{
-		return function($key, $value) use($object) {
-			throw new \BadMethodCallException('Set not supported');
-		};
+		throw new \BadMethodCallException(
+			"Set not supported on ".get_class($this));
 	}
 
-	public function closureAdd($object)
+	public function add($object, $value)
 	{
-		return function($value) use($object) {
-			throw new \BadMethodCallException('Add not supported');
-		};
+		throw new \BadMethodCallException(
+			"Add not supported on ".get_class($this));
 	}
 
-	public function closureRemove($object)
+	/**
+	 * Delegates to the finder for querying
+	 * @return Query
+	 */
+	protected function query($sql, $params)
 	{
-		return function($key) use($object) {
-			throw new \BadMethodCallException('Remove not supported');
+		$finder = \Pheasant::instance()->finderFor($this->class);
+		return $finder->query($sql, $params);
+	}
+
+	/**
+	 * Delegates to the schema for hydrating
+	 * @return DomainObject
+	 */
+	protected function hydrate($row, $saved=true)
+	{
+		return \Pheasant::instance()->schema($this->class)->hydrate($row, $saved);
+	}
+
+	/**
+	 * Helper function that creates a closure that calls the add function
+	 * @return Closure
+	 */
+	protected function adder($object)
+	{
+		$rel = $this;
+		return function($value) use($object, $rel) {
+			return $rel->add($object, $value);
 		};
 	}
 }

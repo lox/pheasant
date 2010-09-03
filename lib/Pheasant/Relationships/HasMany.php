@@ -4,30 +4,35 @@ namespace Pheasant\Relationships;
 
 use \Pheasant\Collection;
 
+/**
+ * A HasMany relationship represents a 1 to N relationship.
+ */
 class HasMany extends RelationshipType
 {
+	/**
+	 * Constructor
+	 */
 	public function __construct($class, $local, $foreign=null)
 	{
 		parent::__construct('hasmany', $class, $local, $foreign);
 	}
 
-	public function closureGet($object)
+	/* (non-phpdoc)
+	 * @see RelationshipType::get()
+	 */
+	public function get($object, $key)
 	{
-		$rel = $this;
-		$finder = \Pheasant::instance()->finderFor($this->class);
+		$query = $this->query(
+			"{$this->foreign}=?", $object->get($this->local));
 
-		return function($key) use($object, $finder, $rel) {
-			$query = $finder->query("{$rel->foreign}=?", $object->get($rel->local));
-			return new Collection(get_class($object), $query, $rel->closureAdd($object));
-		};
+		return new Collection(get_class($object), $query, $this->adder($object));
 	}
 
-	public function closureAdd($object)
+	/* (non-phpdoc)
+	 * @see RelationshipType::add()
+	 */
+	public function add($object, $value)
 	{
-		$rel = $this;
-
-		return function($value) use($object, $rel) {
-			$value->set($rel->foreign, $object->get($rel->local));
-		};
+		$value->set($this->foreign, $object->get($this->local));
 	}
 }

@@ -21,6 +21,9 @@ class DomainObject
 		$pheasant = Pheasant::instance();
 		$pheasant->initialize($this);
 
+		// set default params
+		$this->_data = $pheasant->schema($this)->defaults();
+
 		// call user-defined constructor
 		call_user_func_array(array($this,'construct'),
 			func_get_args());
@@ -249,18 +252,11 @@ class DomainObject
 
 	public function __get($key)
 	{
-		$closure = $this->schema()->{$key}->closureGet($this);
-		return $closure($key);
+		return call_user_func($this->schema()->getter($key), $this);
 	}
 
 	public function __set($key, $value)
 	{
-		$closure = $this->schema()->{$key}->closureSet($this);
-		return $closure($key, $value);
-	}
-
-	public function __isset($key)
-	{
-		return isset($this->schema()->$key);
+		return call_user_func($this->schema()->setter($key), $this, $value);
 	}
 }

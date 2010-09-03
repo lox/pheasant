@@ -20,23 +20,19 @@ class Relationship
 	// -------------------------------------
 	// delegate double dispatch calls to type
 
-	public function closureGet($object)
+	public function getter($key)
 	{
-		return $this->type->closureGet($object);
+		$type = $this->type;
+		return function($object) use($key, $type) {
+			return $type->get($object, $key);
+		};
 	}
 
-	public function closureSet($object)
+	public function setter($key)
 	{
-		return $this->type->closureSet($object);
-	}
-
-	public function closureAdd($object)
-	{
-		return $this->type->closureAdd($object);
-	}
-
-	public function closureRemove($object)
-	{
-		return $this->type->closureRemove($object);
+		$type = $this->type;
+		return function($object, $value) use($key, $type) {
+			return $type->set($object, $key, $value);
+		};
 	}
 }

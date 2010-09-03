@@ -153,6 +153,16 @@ Code can be triggered before and after create, update and delete operations.
 					));
 
 			$builder
+				->getters(array(
+					'myproperty'  => function() { },
+					));
+
+			$builder
+				->setters(array(
+					'myproperty'  => function() { },
+					));
+
+			$builder
 				->events(array(
 					'after_create' => function($d) { $d->timecreated = time(); }
 				));

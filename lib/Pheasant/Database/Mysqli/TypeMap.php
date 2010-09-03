@@ -73,7 +73,7 @@ class TypeMap
 					break;
 
 				case 'default':
-					$opts []= sprintf("default %s", $value);
+					$opts []= sprintf("default '%s'", $value);
 					break;
 			}
 		}

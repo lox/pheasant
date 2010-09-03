@@ -7,7 +7,9 @@ namespace Pheasant;
  */
 class SchemaBuilder
 {
-	private $_properties=array(), $_relationships=array();
+	private
+		$_properties=array(),
+		$_relationships=array();
 
 	/**
 	 * Sets the schema properties
@@ -45,6 +47,7 @@ class SchemaBuilder
 		if(!isset($this->_properties))
 			throw new Exception("A schema must have properties");
 
-		return new Schema($class, $this->_properties, $this->_relationships);
+		return new Schema($class,
+			$this->_properties, $this->_relationships, array(), array());
 	}
 }

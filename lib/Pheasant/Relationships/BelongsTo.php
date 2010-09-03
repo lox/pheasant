@@ -2,32 +2,35 @@
 
 namespace Pheasant\Relationships;
 
+/**
+ * A BelongsTo relationship represents the weak side of a 1->1 relationship
+ */
 class BelongsTo extends RelationshipType
 {
+	/**
+	 * Constructor
+	 */
 	public function __construct($class, $local, $foreign=null)
 	{
 		parent::__construct('belongsto', $class, $local, $foreign);
 	}
 
-	public function closureGet($object)
+	/* (non-phpdoc)
+	 * @see RelationshipType::get()
+	 */
+	public function get($object, $key)
 	{
-		$rel = $this;
-		$class = $this->class;
-		$finder = \Pheasant::instance()->finderFor($class);
+		$query = $this->query(
+			"{$this->foreign}=?", $object->get($this->local));
 
-		// TODO: rewrite this code when sober
-		return function($key) use($object, $finder, $rel, $class) {
-			$query = $finder->query("{$rel->foreign}=?", $object->get($rel->local));
-			return $class::fromArray($query->execute()->fetch(), true);
-		};
+		return $this->hydrate($query->execute()->fetch(), true);
 	}
 
-	public function closureSet($object)
+	/* (non-phpdoc)
+	 * @see RelationshipType::set()
+	 */
+	public function set($object, $key, $value)
 	{
-		$rel = $this;
-
-		return function($key, $value) use($object, $rel) {
-			$object->set($rel->local, $value->get($rel->foreign));
-		};
+		$object->set($this->local, $value->get($this->foreign));
 	}
 }

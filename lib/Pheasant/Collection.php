@@ -83,7 +83,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 
 	public function offsetSet($offset, $value)
 	{
-		if(!isset($this->_add) && is_null($offset))
+		if(empty($this->_add) && is_null($offset))
 			throw new \BadMethodCallException('Add not supported');
 		else if(is_null($offset))
 			return call_user_func($this->_add, $value);
@@ -100,6 +100,6 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	public function offsetUnset($offset)
 	{
 		if(!isset($this->_accessor))
-			throw new \BadMethodCallException('Remove not supported');
+			throw new \BadMethodCallException('Unset not supported');
 	}
 }

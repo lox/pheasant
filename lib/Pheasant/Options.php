@@ -75,6 +75,9 @@ class Options implements \IteratorAggregate
 		return new self($array, $default);
 	}
 
+	/**
+	 * Serializes the options to a string.
+	 */
 	public function toString($default=true)
 	{
 		$options = array();
@@ -84,7 +87,7 @@ class Options implements \IteratorAggregate
 		{
 			$options[] = ($value === $default)
 				? $key
-				: sprintf("%s=%s", $key, $binder->quote($value))
+				: sprintf("%s=%s", $key, urlencode($value))
 				;
 		}
 

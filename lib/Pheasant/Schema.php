@@ -2,35 +2,80 @@
 
 namespace Pheasant;
 
+/**
+ * A schema describes what a DomainObject can contain and how to access it's attributes.
+ */
 class Schema
 {
-	private $_class, $_all, $_properties, $_relationships;
+	private
+		$_class,
+		$_all=array(),
+		$_props=array(),
+		$_rels=array(),
+		$_getters=array(),
+		$_setters=array();
 
 	/**
 	 * Constructor
 	 */
-	public function __construct($class, $properties, $relationships=array())
+	public function __construct($class, $props, $rels, $getters, $setters)
 	{
 		$this->_class = $class;
-		$this->_properties = $properties;
-		$this->_relationships = $relationships;
-		$this->_all = array_merge($properties, $relationships);
+		$this->_props = $props;
+		$this->_rels = $rels;
+		$this->_getters = $getters;
+		$this->_setters = $setters;
 	}
 
+	/**
+	 * Returns an identity for a domain object
+	 * @return Identity
+	 */
 	public function identity($object)
 	{
-		$properties = array_filter($this->_properties, function($property) {
+		$properties = array_filter($this->_props, function($property) {
 			return $property->type->options->primary;
 		});
 
 		return new Identity($properties, $object);
 	}
 
-	public function properties()
+	/**
+	 * Returns an array with property defaults
+	 * @return array
+	 */
+	public function defaults()
 	{
-		return $this->_properties;
+		$defaults = array();
+
+		foreach($this->_props as $key=>$prop)
+			$defaults[$key] = $prop->defaultValue();
+
+		return $defaults;
 	}
 
+	/**
+	 * Returns the Property objects for the schema
+	 * @return array
+	 */
+	public function properties()
+	{
+		return $this->_props;
+	}
+
+	/**
+	 * Returns the Relationship objects for the schema
+	 * @return array
+	 */
+	public function relationships()
+	{
+		return $this->_rels;
+	}
+
+	/**
+	 * Hydrates an array into the domain object of the schema
+	 * @return object
+	 */
 	public function hydrate($row, $saved=true)
 	{
 		$class = $this->_class;
@@ -40,16 +85,39 @@ class Schema
 	// ------------------------------------
 	// route primitives to properties and relationships
 
-	public function __get($key)
+	/**
+	 * Return a closure for getting an attribute from a domain object
+	 * @return closure
+	 */
+	public function getter($attr)
 	{
-		if(!isset($this->_all[$key]))
-			throw new Exception("{$this->_class} schema has no attribute for '$key'");
+		if(isset($this->_getters[$attr]))
+			return $this->_getters[$attr];
 
-		return $this->_all[$key];
+		else if(isset($this->_props[$attr]))
+			return $this->_props[$attr]->getter($attr);
+
+		else if(isset($this->_rels[$attr]))
+			return $this->_rels[$attr]->getter($attr);
+
+		throw new Exception("No getter available for $attr");
 	}
 
-	public function __isset($key)
+	/**
+	 * Return a closure for setting an attribute on a domain object
+	 * @return closure
+	 */
+	public function setter($attr)
 	{
-		return isset($this->_all[$key]);
+		if(isset($this->_setters[$attr]))
+			return $this->_setters[$attr];
+
+		else if(isset($this->_props[$attr]))
+			return $this->_props[$attr]->setter($attr);
+
+		else if(isset($this->_rels[$attr]))
+			return $this->_rels[$attr]->setter($attr);
+
+		throw new Exception("No setter available for $attr");
 	}
 }
