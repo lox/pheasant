@@ -7,8 +7,11 @@ namespace Pheasant\Database\Mysqli;
  */
 class Connection
 {
-	private $_dsn;
-	private $_link;
+	private
+		$_dsn,
+		$_link;
+
+	public $debug=false;
 
 	/**
 	 * Constructor
@@ -78,18 +81,37 @@ class Connection
 		if(!is_array($params))
 			$params = array_slice(func_get_args(),1);
 
-		//echo "-----------\n";
-		//printf("sql: %s\nparams: ", $sql);
-		//var_dump($params);
-		//echo "\n";
-
-		if($params)
-			$sql = $this->binder()->bind($sql, $params);
-
-		if(!$result = $this->_mysqli()->query($sql, MYSQLI_STORE_RESULT))
-			throw new Exception($this->_link->error, $this->_link->errno);
+		$result = $this->_query($params
+			? $this->binder()->bind($sql, $params) : $sql);
 
 		return new ResultSet($this->_link, $result === true ? false : $result);
+	}
+
+	/**
+	 * Executes an SQL query, outputs debugging if needed
+	 * @return MySQLi_Result
+	 */
+	private function _query($sql)
+	{
+		if($this->debug)
+			$timer = microtime(true);
+
+		$result = $this->_mysqli()->query($sql, MYSQLI_STORE_RESULT);
+
+		if($this->debug)
+		{
+			printf("-------------------------------\n");
+			printf("sql: %s\ntime: %.2fms\n",
+				$sql, (microtime(true) - $timer) * 1000);
+
+			if(is_object($result))
+				printf("returned %d rows\n", $result->num_rows);
+		}
+
+		if(!$result)
+			throw new Exception($this->_link->error, $this->_link->errno);
+
+		return $result;
 	}
 
 	/**

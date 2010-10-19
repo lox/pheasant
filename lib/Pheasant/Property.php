@@ -43,8 +43,12 @@ class Property
 	 */
 	public function getter($key)
 	{
-		return function($object) use($key) {
-			return $object->get($key);
+		$property = $this;
+		return function($object) use($key, $property) {
+			return $object->get($key) === null
+				? new Future($property, $object)
+				: $object->get($key)
+				;
 		};
 	}
 

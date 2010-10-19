@@ -116,7 +116,12 @@ class DomainObject
 	 */
 	public function toArray()
 	{
-		return $this->_data;
+		$array = array();
+
+		foreach($this->_data as $key=>$value)
+			$array[$key] = is_object($value) ? $value->value() : $value;
+
+		return $array;
 	}
 
 	/**
@@ -206,7 +211,10 @@ class DomainObject
 	 */
 	public function get($prop)
 	{
-		return isset($this->_data[$prop]) ? $this->_data[$prop] : null;
+		$value = isset($this->_data[$prop]) ? $this->_data[$prop] : null;
+
+		// sometimes a Future object is stored here
+		return is_object($value) ? $value->value() : $value;
 	}
 
 	/**
@@ -220,11 +228,11 @@ class DomainObject
 	}
 
 	/**
-	 * Whether the object has a property
+	 * Whether the object has a property, even if it's null
 	 */
 	public function has($prop)
 	{
-		return isset($this->_data[$prop]);
+		return array_key_exists($prop, $this->_data);
 	}
 
 	/**

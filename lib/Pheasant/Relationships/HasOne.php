@@ -2,34 +2,38 @@
 
 namespace Pheasant\Relationships;
 
-use \Pheasant\Collection;
-
+/**
+ * A BelongsTo relationship represents a 1->1 relationship
+ */
 class HasOne extends RelationshipType
 {
+	/**
+	 * Constructor
+	 */
 	public function __construct($class, $local, $foreign=null)
 	{
 		parent::__construct('hasone', $class, $local, $foreign);
 	}
 
-	public function closureGet($object)
+	/* (non-phpdoc)
+	 * @see RelationshipType::get()
+	 */
+	public function get($object, $key)
 	{
-		$rel = $this;
-		$class = $this->class;
-		$finder = \Pheasant::instance()->finderFor($class);
+		$query = $this->query(
+			"{$this->foreign}=?", $object->get($this->local));
 
-		// TODO: rewrite this code when sober
-		return function($key) use($object, $finder, $rel, $class) {
-			$query = $finder->query("{$rel->foreign}=?", $object->get($rel->local));
-			return $class::fromArray($query->execute()->fetch(), true);
-		};
+		return $this->hydrate($query->execute()->fetch(), true);
 	}
 
-	public function closureSet($object)
+	/* (non-phpdoc)
+	 * @see RelationshipType::set()
+	 */
+	public function set($object, $key, $value)
 	{
-		$rel = $this;
+		var_dump("setting ".get_class($object),$object,$key,$value);
+		var_dump($this->local, $this->foreign);
 
-		return function($key, $value) use($object, $rel) {
-			$object->set($rel->local, $value->get($rel->foreign));
-		};
+		$object->set($this->local, $value->get($this->foreign));
 	}
 }

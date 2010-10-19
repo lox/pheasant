@@ -18,7 +18,7 @@ class Animal extends DomainObject
 
 		$builder
 			->properties(array(
-				'animalid' => new Types\Integer(11, 'primary auto_increment'),
+				'id' => new Types\Integer(11, 'primary auto_increment'),
 				'type' => new Types\String(255, 'required default=llama'),
 			));
 	}
@@ -39,7 +39,7 @@ class DomainObjectTestCase extends \Pheasant\Tests\MysqlTestCase
 		$animal = new Animal();
 		$this->assertEqual($animal->type, 'llama');
 		$this->assertEqual($animal->toArray(),
-			array('animalid'=>NULL, 'type'=>'llama'));
+			array('id'=>NULL, 'type'=>'llama'));
 
 		$llama = new Animal(array('type'=>'llama'));
 		$frog = new Animal(Array('type'=>'frog'));

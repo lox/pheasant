@@ -97,5 +97,21 @@ class BasicMappingTestCase extends \Pheasant\Tests\MysqlTestCase
 		$this->assertTrue($posts[0]->isSaved());
 		$this->assertTrue($posts[1]->isSaved());
 	}
+
+	public function testFutures()
+	{
+		$post = new Post('first post');
+		$future = $post->postid;
+
+		$this->assertTrue($future, is_object($future));
+		$this->assertNull($future->value());
+		$this->assertNull($post->get('postid'));
+
+		$post->save();
+
+		$this->assertEqual($post->postid, 1);
+		$this->assertEqual($future->value(), 1);
+		$this->assertEqual($post->get('postid'), 1);
+	}
 }
 
