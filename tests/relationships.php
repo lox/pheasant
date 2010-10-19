@@ -26,8 +26,8 @@ class Hero extends DomainObject
 			->hasMany(array(
 				'Powers' => array(Power::className(),'heroid')
 				))
-			->hasOne(array(
-				'SecretIdentity' => array(Power::className(),'identityid'),
+			->belongsTo(array(
+				'SecretIdentity' => array(SecretIdentity::className(),'identityid'),
 				));
 	}
 }
@@ -116,7 +116,7 @@ class RelationshipsTestCase extends \Pheasant\Tests\MysqlTestCase
 
 	public function testHasOneRelationship()
 	{
-		$this->connection()->debug = true;
+		//$this->connection()->debug = true;
 
 		$hero = new Hero(array('alias'=>'Spider Man'));
 		$hero->save();
@@ -125,10 +125,11 @@ class RelationshipsTestCase extends \Pheasant\Tests\MysqlTestCase
 		$identity->Hero = $hero;
 		$identity->save();
 
-		//$this->assertEqual(count($hero->Powers), 1);
-		//$this->assertTrue($identity->equals($power->Hero));
+		var_dump($hero);
 
-		//var_dump($hero);
+		//$this->assertEqual($hero->identityid, $identity->identityid);
+		//$this->assertTrue($hero->SecretIdentity->equals($identity));
+		$this->assertTrue($identity->Hero->equals($hero));
 	}
 
 	/*

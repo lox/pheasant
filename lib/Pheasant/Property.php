@@ -7,7 +7,7 @@ namespace Pheasant;
  */
 class Property
 {
-	public $name, $type;
+	public $name, $type, $futures=array();
 
 	/**
 	 * Constructor
@@ -45,8 +45,8 @@ class Property
 	{
 		$property = $this;
 		return function($object) use($key, $property) {
-			return $object->get($key) === null
-				? new Future($property, $object)
+			return is_null($object->get($key))
+				? $property->future($object)
 				: $object->get($key)
 				;
 		};
@@ -61,5 +61,13 @@ class Property
 		return function($object, $value) use($key) {
 			return $object->set($key, $value);
 		};
+	}
+
+	/**
+	 * Returns a future reference to the property value
+	 */
+	public function future($object)
+	{
+		return $this->futures[] = new Future($this, $object);
 	}
 }

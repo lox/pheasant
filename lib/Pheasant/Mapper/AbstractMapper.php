@@ -1,7 +1,6 @@
 <?php
 
 namespace Pheasant\Mapper;
-use Pheasant\Pheasant;
 
 /**
  * A generic mapper object that provides infrastructure for other mappers
@@ -17,6 +16,17 @@ abstract class AbstractMapper implements Mapper
 		else if($changes = $object->changes())
 		{
 			$this->update($object, $changes);
+		}
+
+		// cascade saves to any futures
+		foreach($object->schema()->properties() as $key=>$property)
+		{
+			// TODO: dedupe these
+			foreach($property->futures as $idx=>$future)
+			{
+				unset($property->futures[$idx]);
+				$future->save();
+			}
 		}
 
 		return $this;

@@ -208,13 +208,16 @@ class DomainObject
 
 	/**
 	 * Gets a property
+	 * @param string the property to get the value of
+	 * @param bool whether to resolve futures to a value
+	 * @return mixed
 	 */
-	public function get($prop)
+	public function get($prop, $resolveFuture=true)
 	{
 		$value = isset($this->_data[$prop]) ? $this->_data[$prop] : null;
 
 		// sometimes a Future object is stored here
-		return is_object($value) ? $value->value() : $value;
+		return is_object($value) && $resolveFuture ? $value->value() : $value;
 	}
 
 	/**
@@ -258,11 +261,17 @@ class DomainObject
 	// ----------------------------------------
 	// object interface
 
+	/**
+	 * Magic method, delegates to the schema for getters
+	 */
 	public function __get($key)
 	{
 		return call_user_func($this->schema()->getter($key), $this);
 	}
 
+	/**
+	 * Magic method, delegates to the schema for setters
+	 */
 	public function __set($key, $value)
 	{
 		return call_user_func($this->schema()->setter($key), $this, $value);

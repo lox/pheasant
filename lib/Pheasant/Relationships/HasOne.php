@@ -3,7 +3,8 @@
 namespace Pheasant\Relationships;
 
 /**
- * A BelongsTo relationship represents a 1->1 relationship
+ * A HasOne relationship represents a 1->1 relationship. The foreign domain object
+ * is responsible for maintaining a key referencing a local attribute.
  */
 class HasOne extends RelationshipType
 {
@@ -20,8 +21,14 @@ class HasOne extends RelationshipType
 	 */
 	public function get($object, $key)
 	{
-		$query = $this->query(
-			"{$this->foreign}=?", $object->get($this->local));
+		$result = $this
+			->query("{$this->foreign}=?", $object->{$this->local})
+			->execute();
+			;
+
+		// TODO: is this the correct behaviour?
+		if(!count($result))
+			throw new \Pheasant\Exception("Failed to find a $key (via $this->foreign)");
 
 		return $this->hydrate($query->execute()->fetch(), true);
 	}
@@ -31,9 +38,6 @@ class HasOne extends RelationshipType
 	 */
 	public function set($object, $key, $value)
 	{
-		var_dump("setting ".get_class($object),$object,$key,$value);
-		var_dump($this->local, $this->foreign);
-
-		$object->set($this->local, $value->get($this->foreign));
+		$value->set($this->local, $object->{$this->foreign});
 	}
 }

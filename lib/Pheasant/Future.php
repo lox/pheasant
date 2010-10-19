@@ -9,7 +9,7 @@ class Future
 {
 	private
 		$_property,
-		$object;
+		$_object;
 
 	/**
 	 * Constructor
@@ -34,5 +34,17 @@ class Future
 	public function __toString()
 	{
 		return (string) $this->value();
+	}
+
+	/**
+	 * Saves the internal object
+	 * @chainable
+	 */
+	public function save()
+	{
+		var_dump('saving',$this);
+
+		$this->_object->save();
+		return $this;
 	}
 }

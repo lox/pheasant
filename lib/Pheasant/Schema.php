@@ -91,8 +91,6 @@ class Schema
 	 */
 	public function getter($attr)
 	{
-		var_dump("getter for $attr on {$this->_class}");
-
 		if(isset($this->_getters[$attr]))
 			return $this->_getters[$attr];
 
@@ -111,9 +109,6 @@ class Schema
 	 */
 	public function setter($attr)
 	{
-		var_dump("setter for $attr on {$this->_class}");
-		var_dump($this->_rels[$attr]);
-
 		if(isset($this->_setters[$attr]))
 			return $this->_setters[$attr];
 
