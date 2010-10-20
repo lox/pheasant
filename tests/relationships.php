@@ -81,8 +81,6 @@ class RelationshipsTestCase extends \Pheasant\Tests\MysqlTestCase
 			;
 	}
 
-	/*
-
 	public function testOneToManyViaPropertySetting()
 	{
 		$hero = new Hero(array('alias'=>'Spider Man'));
@@ -112,12 +110,8 @@ class RelationshipsTestCase extends \Pheasant\Tests\MysqlTestCase
 		$this->assertTrue($hero->Powers[0]->equals($power));
 	}
 
-	*/
-
 	public function testHasOneRelationship()
 	{
-		//$this->connection()->debug = true;
-
 		$hero = new Hero(array('alias'=>'Spider Man'));
 		$hero->save();
 
@@ -125,14 +119,10 @@ class RelationshipsTestCase extends \Pheasant\Tests\MysqlTestCase
 		$identity->Hero = $hero;
 		$identity->save();
 
-		var_dump($hero);
-
-		//$this->assertEqual($hero->identityid, $identity->identityid);
-		//$this->assertTrue($hero->SecretIdentity->equals($identity));
+		$this->assertEqual($hero->identityid, $identity->identityid);
+		$this->assertTrue($hero->SecretIdentity->equals($identity));
 		$this->assertTrue($identity->Hero->equals($hero));
 	}
-
-	/*
 
 	public function testPropertyReferencesResolvedInMapping()
 	{
@@ -148,6 +138,4 @@ class RelationshipsTestCase extends \Pheasant\Tests\MysqlTestCase
 		$this->assertEqual($identity->identityid, 1);
 		$this->assertEqual($hero->identityid, 1);
 	}
-
-	*/
 }

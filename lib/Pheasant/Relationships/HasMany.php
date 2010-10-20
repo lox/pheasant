@@ -14,7 +14,7 @@ class HasMany extends RelationshipType
 	 */
 	public function __construct($class, $local, $foreign=null)
 	{
-		parent::__construct('hasmany', $class, $local, $foreign);
+		parent::__construct($class, $local, $foreign);
 	}
 
 	/* (non-phpdoc)
@@ -33,6 +33,11 @@ class HasMany extends RelationshipType
 	 */
 	public function add($object, $value)
 	{
-		$value->set($this->foreign, $object->get($this->local));
+		$newValue = $object->{$this->local};
+
+		if($newValue instanceof PropertyReference)
+			$object->saveAfter($value);
+
+		$value->set($this->foreign, $newValue);
 	}
 }

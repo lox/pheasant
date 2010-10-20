@@ -1,6 +1,7 @@
 <?php
 
 namespace Pheasant\Relationships;
+use \Pheasant\PropertyReference;
 
 /**
  * A HasOne relationship represents a 1->1 relationship. The foreign domain object
@@ -13,7 +14,7 @@ class HasOne extends RelationshipType
 	 */
 	public function __construct($class, $local, $foreign=null)
 	{
-		parent::__construct('hasone', $class, $local, $foreign);
+		parent::__construct($class, $local, $foreign);
 	}
 
 	/* (non-phpdoc)
@@ -30,7 +31,7 @@ class HasOne extends RelationshipType
 		if(!count($result))
 			throw new \Pheasant\Exception("Failed to find a $key (via $this->foreign)");
 
-		return $this->hydrate($query->execute()->fetch(), true);
+		return $this->hydrate($result->fetch(), true);
 	}
 
 	/* (non-phpdoc)
@@ -38,6 +39,11 @@ class HasOne extends RelationshipType
 	 */
 	public function set($object, $key, $value)
 	{
-		$value->set($this->local, $object->{$this->foreign});
+		$newValue = $object->{$this->foreign};
+
+		if($newValue instanceof PropertyReference)
+			$object->saveAfter($value);
+
+		$value->set($this->local, $newValue);
 	}
 }

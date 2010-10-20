@@ -2,6 +2,7 @@
 
 namespace Pheasant;
 use \Pheasant;
+use \Pheasant\PropertyReference;
 
 /**
  * An object which represents an entity in the problem domain.
@@ -10,6 +11,8 @@ class DomainObject
 {
 	private $_data = array();
 	private $_changed = array();
+	private $_before = array();
+	private $_after = array();
 	private $_saved=false;
 
 	/**
@@ -70,10 +73,15 @@ class DomainObject
 	 */
 	public function save()
 	{
+		foreach($this->_before as $obj) $obj->save();
+
 		$mapper = Pheasant::instance()->mapperFor($this);
 		$mapper->save($this);
 		$this->_saved = true;
 		$this->_changed = array();
+
+		foreach($this->_after as $obj) $obj->save();
+
 		return $this;
 	}
 
@@ -133,6 +141,31 @@ class DomainObject
 		return Pheasant::instance()->schema(isset($this)
 			? $this : get_called_class());
 	}
+
+	// ----------------------------------------
+	// event related functions
+
+	/**
+	 * Adds a domain object as a dependancy which must be saved before the
+	 * object can be saved.
+	 * @chainable
+	 */
+	public function saveBefore($object)
+	{
+		$this->_before []= $object;
+		return $this;
+	}
+
+	/**
+	 * Adds a domain object as a dependancy which must be saved after the object is saved.
+	 * @chainable
+	 */
+	public function saveAfter($object)
+	{
+		$this->_after []= $object;
+		return $this;
+	}
+
 
 	// ----------------------------------------
 	// static helpers
@@ -209,15 +242,14 @@ class DomainObject
 	/**
 	 * Gets a property
 	 * @param string the property to get the value of
-	 * @param bool whether to resolve futures to a value
 	 * @return mixed
 	 */
-	public function get($prop, $resolveFuture=true)
+	public function get($prop)
 	{
 		$value = isset($this->_data[$prop]) ? $this->_data[$prop] : null;
 
-		// sometimes a PropertyReference object is stored here
-		return is_object($value) && $resolvePropertyReference ? $value->value() : $value;
+		// dereference property reference values
+		return $value instanceof PropertyReference ? $value->value() : $value;
 	}
 
 	/**

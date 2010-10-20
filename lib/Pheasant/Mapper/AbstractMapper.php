@@ -18,17 +18,6 @@ abstract class AbstractMapper implements Mapper
 			$this->update($object, $changes);
 		}
 
-		// cascade saves to any futures
-		foreach($object->schema()->properties() as $key=>$property)
-		{
-			// TODO: dedupe these
-			foreach($property->futures as $idx=>$future)
-			{
-				unset($property->futures[$idx]);
-				$future->save();
-			}
-		}
-
 		return $this;
 	}
 

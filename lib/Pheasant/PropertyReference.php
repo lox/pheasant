@@ -3,7 +3,9 @@
 namespace Pheasant;
 
 /**
- * A handle to a property in a particular object, for future dereferencing
+ * A handle to a property in a particular object, for future dereferencing. Used for
+ * one domain object to hold a reference to a property that hasn't been set yet, for instance
+ * a primary key.
  */
 class PropertyReference
 {

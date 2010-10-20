@@ -4,11 +4,10 @@ namespace Pheasant\Relationships;
 
 class RelationshipType
 {
-	public $type, $class, $local, $foreign;
+	public $class, $local, $foreign;
 
-	public function __construct($type, $class, $local, $foreign=null)
+	public function __construct($class, $local, $foreign=null)
 	{
-		$this->type = $type;
 		$this->class = $class;
 		$this->local = $local;
 		$this->foreign = empty($foreign) ? $local : $foreign;
