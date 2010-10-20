@@ -35,7 +35,7 @@ class DomainObject
 	/**
 	 * Template function for configuring a domain object.
 	 */
-	protected static function initialize($builder, $pheasant)
+	public static function initialize($builder, $pheasant)
 	{
 	}
 

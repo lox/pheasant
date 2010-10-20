@@ -15,7 +15,7 @@ Still very much alpha. Presently at proof-of-concept phase, examples below are o
 partially implemented.
 
 - Mapping (working)
-- Relationships (HasMany implemented, HasOne still to-do)
+- Relationships (HasMany, HasOne and BelongsTo implemented)
 - Custom Mappers/Finders (todo)
 - Events (todo)
 
