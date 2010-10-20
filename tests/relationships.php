@@ -134,7 +134,7 @@ class RelationshipsTestCase extends \Pheasant\Tests\MysqlTestCase
 
 	/*
 
-	public function testFuturesResolvedInMapping()
+	public function testPropertyReferencesResolvedInMapping()
 	{
 		$identity = new SecretIdentity(array('realname'=>'Peter Parker'));
 		$hero = new Hero(array('alias'=>'Spider Man'));

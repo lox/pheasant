@@ -68,6 +68,6 @@ class Property
 	 */
 	public function future($object)
 	{
-		return $this->futures[] = new Future($this, $object);
+		return $this->futures[] = new PropertyReference($this, $object);
 	}
 }

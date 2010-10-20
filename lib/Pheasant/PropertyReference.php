@@ -5,7 +5,7 @@ namespace Pheasant;
 /**
  * A handle to a property in a particular object, for future dereferencing
  */
-class Future
+class PropertyReference
 {
 	private
 		$_property,

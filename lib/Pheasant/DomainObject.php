@@ -216,8 +216,8 @@ class DomainObject
 	{
 		$value = isset($this->_data[$prop]) ? $this->_data[$prop] : null;
 
-		// sometimes a Future object is stored here
-		return is_object($value) && $resolveFuture ? $value->value() : $value;
+		// sometimes a PropertyReference object is stored here
+		return is_object($value) && $resolvePropertyReference ? $value->value() : $value;
 	}
 
 	/**

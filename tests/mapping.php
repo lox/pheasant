@@ -98,7 +98,7 @@ class BasicMappingTestCase extends \Pheasant\Tests\MysqlTestCase
 		$this->assertTrue($posts[1]->isSaved());
 	}
 
-	public function testFutures()
+	public function testPropertyReferences()
 	{
 		$post = new Post('first post');
 		$future = $post->postid;
