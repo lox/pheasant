@@ -1,6 +1,6 @@
 <?php
 
-namespace Pheasant\Tests\Relationships;
+namespace Pheasan:dTests\Relationships;
 
 use \Pheasant\DomainObject;
 use \Pheasant\Mapper\RowMapper;

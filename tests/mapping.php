@@ -112,6 +112,17 @@ class BasicMappingTestCase extends \Pheasant\Tests\MysqlTestCase
 		$this->assertEqual($post->postid, 1);
 		$this->assertEqual($future->value(), 1);
 		$this->assertEqual($post->get('postid'), 1);
-	}
+    }
+
+    public function testRemoving()
+    {
+        $post = Post::create('first post');
+
+        var_dump($post);
+
+		$this->assertEqual($post->postid, 1);
+        $this->assertEqual($post->title, 'first post');
+
+    }
 }
 

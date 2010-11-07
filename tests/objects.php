@@ -52,7 +52,13 @@ class DomainObjectTestCase extends \Pheasant\Tests\MysqlTestCase
 	{
 		$animal = Animal::import(array(array('type'=>'Hippo')));
 		$this->expectException();
-		$animal[0]->unknownKey;
+        $animal[0]->unknownKey;
+
+        // try non-saved objects
+        $another = new Animal();
+        $this->expectException();
+        $another->unknown;
+        return $instance->save();
 	}
 }
 
