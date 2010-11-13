@@ -11,6 +11,14 @@ require_once(__DIR__.'/base.php');
 
 \Mock::generate('\Pheasant\Mapper\Mapper','MockMapper');
 
+class MyDomainObject extends DomainObject
+{
+	public function afterSave()
+	{
+		$this->test = 'blargh';
+	}
+}
+
 class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
@@ -21,11 +29,11 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 	/**
 	 * Initialize DomainObject
 	 */
-	public function initialize($callback=null)
+	public function initialize($class, $callback=null)
 	{
 		Pheasant::instance()
-			->register('Pheasant\DomainObject', $this->mapper)
-			->initialize('Pheasant\DomainObject', $callback)
+			->register($class, $this->mapper)
+			->initialize($class, $callback)
 			;
 	}
 
@@ -34,7 +42,7 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 		$events = array();
 		$callback = function($e) use(&$events) { $events[]=$e; };
 
-		$this->initialize(function($builder) use($callback) {
+		$this->initialize('Pheasant\DomainObject', function($builder) use($callback) {
 			$builder->properties(array(
 				'test' => new Types\String()
 				));
@@ -55,7 +63,7 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 	{
 		$events = array();
 
-		$this->initialize(function($builder) {
+		$this->initialize('Pheasant\DomainObject', function($builder) {
 			$builder->properties(array(
 				'test' => new Types\String()
 				));
@@ -77,5 +85,19 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 
 		$this->assertEqual($events, array('do1.afterSave', 'do2.afterSave'));
 	}
-}
 
+	public function testBuiltInEventMethods()
+	{
+		$this->initialize('Pheasant\Tests\Events\MyDomainObject', function($builder) {
+			$builder->properties(array(
+				'test' => new Types\String()
+				));
+		});
+
+		$do = new MyDomainObject();
+		$do->test = 'Llamas';
+		$do->save();
+
+		$this->assertEqual($do->test, 'blargh');
+	}
+}

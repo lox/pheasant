@@ -78,6 +78,7 @@ class Events
 	public function register($event, $callback)
 	{
 		$this->_handlers[$event][] = $callback;
+		return $this;
 	}
 
 	/**

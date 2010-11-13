@@ -24,11 +24,18 @@ class DomainObject
 		$pheasant->initialize($this);
 
 		// pull default values from schema
-		$this->_data = $pheasant->schema($this)->defaults();
+		$schema = $pheasant->schema($this);
+		$this->_data = $schema->defaults();
 
 		// call user-defined constructor
 		call_user_func_array(array($this,'construct'),
 			func_get_args());
+
+		// set up events
+		$this->events()
+			->register('*', array($this, 'eventHandler'))
+			->trigger('afterInitialize', $this)
+			;
 	}
 
 	/**
@@ -152,10 +159,7 @@ class DomainObject
 	public function events($events=array())
 	{
 		if(!isset($this->_events))
-		{
 			$this->_events = clone $this->schema()->events();
-			$this->_events->register('*', array($this, 'eventHandler'));
-		}
 
 		if(count($events))
 			foreach($events as $event=>$callback)
@@ -182,6 +186,8 @@ class DomainObject
 	 */
 	public function eventHandler($e)
 	{
+		if(method_exists($this, $e))
+			call_user_func(array($this, $e), $e);
 	}
 
 	// ----------------------------------------
@@ -212,7 +218,7 @@ class DomainObject
 	 * Delegates find calls through to the finder
 	 */
 	public static function __callStatic($method, $params)
-{
+	{
 		if(preg_match('/^find/',$method))
 		{
 			$class = get_called_class();

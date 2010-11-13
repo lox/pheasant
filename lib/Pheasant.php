@@ -36,8 +36,8 @@ class Pheasant
 
 	/**
 	 * Initializes a domain objects schema if it has not yet been initialized
-     * @param $subject either an object or classname to initialize
-     * @param $callback a callback to call instead of the initialize method
+	 * @param $subject either an object or classname to initialize
+	 * @param $callback a callback to call instead of the initialize method
 	 * @return string the classname of the object
 	 */
 	public function initialize($subject, $callback=null)
@@ -49,8 +49,8 @@ class Pheasant
 		{
 			if(!is_object($subject)) $subject = $class::fromArray(array());
 
-            $builder = new \Pheasant\SchemaBuilder();
-            $initializer = $callback ? $callback : array($subject, 'initialize');
+			$builder = new \Pheasant\SchemaBuilder();
+			$initializer = $callback ? $callback : array($subject, 'initialize');
 
 			call_user_func($initializer, $builder, $this);
 			$this->_schema[$class] = $builder->build($class);
