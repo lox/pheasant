@@ -4,7 +4,7 @@ Pheasant
 Pheasant is an object relational mapper written to take advantage of PHP 5.3. Simple relationships
 are supported, with the emphasis being on scalability and performance over complexity.
 
-The entire codebase will always be less than 5000 lines, excluding tests. Currently only compatible with
+The entire codebase will always be less than 3000 lines, excluding tests. Currently only compatible with
 InnoDb/Mysql 5+.
 
 Status of Development
@@ -16,7 +16,7 @@ partially implemented.
 - Mapping (working)
 - Relationships (HasMany, HasOne and BelongsTo implemented)
 - Custom Mappers/Finders (todo)
-- Events (todo)
+- Events (working)
 
 Persisting Objects
 ---------------------------------

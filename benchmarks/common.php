@@ -39,8 +39,6 @@ function benchmark($times, $callback)
 	// run it for real
 	for($i=0; $i<$times; $i++)
 	{
-		gc_collect_cycles();
-
 		$timestart = microtime(true);
 		$memstart = memory_get_usage();
 		$memory_peak = 0;

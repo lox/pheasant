@@ -11,6 +11,8 @@ define('BENCHMARK_QTY', 1000);
 
 class Test extends \Pheasant\DomainObject
 {
+	public static $destructs=0, $constructs=0;
+
 	public static function initialize($builder, $pheasant)
 	{
 		$pheasant
@@ -21,6 +23,16 @@ class Test extends \Pheasant\DomainObject
 				'testid' => new \Pheasant\Types\Sequence(),
 				'blargh' => new \Pheasant\Types\String(),
 				));
+	}
+
+	public function construct()
+	{
+		self::$constructs++;
+	}
+
+	public function __destruct()
+	{
+		self::$destructs++;
 	}
 }
 
@@ -57,3 +69,6 @@ printf("iterated over %d objects in in %.2fms (%.2f/ms)\n",
 
 printf("used %s bytes of memory\n",
 	number_format(memory_get_usage(true)-$memory));
+
+printf("constructs: %d destructs: %d\n",
+	Test::$constructs, Test::$destructs);
