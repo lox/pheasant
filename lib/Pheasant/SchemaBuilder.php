@@ -9,7 +9,11 @@ class SchemaBuilder
 {
 	private
 		$_properties=array(),
-		$_relationships=array();
+        $_relationships=array(),
+        $_events=array(),
+        $_getters=array(),
+        $_setters=array()
+        ;
 
 	/**
 	 * Sets the schema properties
@@ -33,7 +37,35 @@ class SchemaBuilder
 			$this->_relationships[$name] = new Relationship($name, $type);
 
 		return $this;
-	}
+    }
+
+	/**
+	 * Sets the schema events
+	 * @chainable
+	 */
+	public function events($map)
+	{
+		foreach($map as $name=>$callback)
+			$this->_events[$name] = $callback;
+
+		return $this;
+    }
+
+    public function getters($map)
+    {
+        foreach($map as $name=>$callback)
+			$this->_getters[$name] = $callback;
+
+		return $this;
+    }
+
+    public function setters($map)
+    {
+        foreach($map as $name=>$callback)
+			$this->_setters[$name] = $callback;
+
+		return $this;
+    }
 
 	/**
 	 * Adds a collection of {@link HasOne} relationships
@@ -89,7 +121,12 @@ class SchemaBuilder
 		if(!isset($this->_properties))
 			throw new Exception("A schema must have properties");
 
-		return new Schema($class,
-			$this->_properties, $this->_relationships, array(), array());
+		return new Schema($class, array(
+			'properties' => $this->_properties,
+			'relationships' => $this->_relationships,
+			'getters' => $this->_getters,
+			'setters' => $this->_setters,
+			'events' => $this->_events
+			));
 	}
 }

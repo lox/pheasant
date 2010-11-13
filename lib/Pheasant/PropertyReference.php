@@ -44,8 +44,6 @@ class PropertyReference
 	 */
 	public function save()
 	{
-		var_dump('saving',$this);
-
 		$this->_object->save();
 		return $this;
 	}

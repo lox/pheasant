@@ -36,7 +36,7 @@ class HasMany extends RelationshipType
 		$newValue = $object->{$this->local};
 
 		if($newValue instanceof PropertyReference)
-			$object->saveAfter($value);
+			$value->saveAfter($object);
 
 		$value->set($this->foreign, $newValue);
 	}

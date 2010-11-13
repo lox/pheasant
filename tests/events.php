@@ -13,24 +13,69 @@ require_once(__DIR__.'/base.php');
 
 class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 {
-    public function setUp()
-    {
-        $this->mapper = new \MockMapper(); 
-        
-        Pheasant::instance()
-            ->register('Pheasant\DomainObject', $this->mapper)
-            ->initialize('Pheasant\DomainObject', function($builder, $pheasant) {
-                $builder->properties(array(
-                    'test' => new Types\String()
-                    ));
-            });
-    }
+	public function setUp()
+	{
+		$this->mapper = new \MockMapper();
+	}
 
-    public function testBasicEvents()
-    {
-        $do = new DomainObject();    
-        $do->test = "blargh";
-        $do->save();
+	/**
+	 * Initialize DomainObject
+	 */
+	public function initialize($callback=null)
+	{
+		Pheasant::instance()
+			->register('Pheasant\DomainObject', $this->mapper)
+			->initialize('Pheasant\DomainObject', $callback)
+			;
+	}
+
+	public function testEventsBoundToSchema()
+	{
+		$events = array();
+		$callback = function($e) use(&$events) { $events[]=$e; };
+
+		$this->initialize(function($builder) use($callback) {
+			$builder->properties(array(
+				'test' => new Types\String()
+				));
+			$builder->events(array(
+				'afterCreate' => $callback,
+				));
+		});
+
+		$do = new DomainObject();
+		$do->test = "blargh";
+		$do->save();
+
+		$this->assertEqual($do->test, "blargh");
+		$this->assertEqual($events, array('afterCreate'));
+	}
+
+	public function testEventsBoundToObject()
+	{
+		$events = array();
+
+		$this->initialize(function($builder) {
+			$builder->properties(array(
+				'test' => new Types\String()
+				));
+		});
+
+		$do1 = new DomainObject();
+		$do2 = new DomainObject();
+
+		$do1->events(array(
+			'afterSave'=>function($e) use(&$events) { $events[] = "do1.$e"; },
+			));
+
+		$do2->events(array(
+			'afterSave'=>function($e) use(&$events) { $events[] = "do2.$e"; },
+			));
+
+		$do1->save();
+		$do2->save();
+
+		$this->assertEqual($events, array('do1.afterSave', 'do2.afterSave'));
 	}
 }
 

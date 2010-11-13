@@ -7,10 +7,10 @@ namespace Pheasant\Mapper;
  */
 abstract class AbstractMapper implements Mapper
 {
-	public function save($object)
-	{
+    public function save($object)
+    {
 		if(!$object->isSaved())
-		{
+        {
 			$this->insert($object);
 		}
 		else if($changes = $object->changes())

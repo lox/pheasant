@@ -68,7 +68,6 @@ class TypeMap
 					break;
 
 				case 'auto_increment':
-				case 'unsigned':
 					$opts []= $key;
 					break;
 

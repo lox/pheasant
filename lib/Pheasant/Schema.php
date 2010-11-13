@@ -9,22 +9,36 @@ class Schema
 {
 	private
 		$_class,
-		$_all=array(),
 		$_props=array(),
 		$_rels=array(),
 		$_getters=array(),
-		$_setters=array();
+		$_setters=array(),
+		$_events
+		;
 
 	/**
 	 * Constructor
+	 * @param string the classname for the described domain object
+	 * @param array an array of parameters
 	 */
-	public function __construct($class, $props, $rels, $getters, $setters)
+	 public function __construct($class, $params=array())
 	{
 		$this->_class = $class;
-		$this->_props = $props;
-		$this->_rels = $rels;
-		$this->_getters = $getters;
-		$this->_setters = $setters;
+
+		// split params into private props
+		$this->_props = $this->_param($params, 'properties');
+		$this->_rels = $this->_param($params, 'relationships');
+		$this->_getters = $this->_param($params, 'getters');
+		$this->_setters = $this->_param($params, 'setters');
+		$this->_events = new Events($this->_param($params, 'events'));
+	}
+
+	/**
+	 * Helper for dealing with missing params in constructor
+	 */
+	private function _param($params, $param, $default=array())
+	{
+		return isset($params[$param]) ? $params[$param] : $default;
 	}
 
 	/**
@@ -80,6 +94,15 @@ class Schema
 	{
 		$class = $this->_class;
 		return $class::fromArray($row, $saved);
+	}
+
+	/**
+	 * Return the internal {@link Events} object
+	 * @return Events
+	 */
+	public function events()
+	{
+		return $this->_events;
 	}
 
 	// ------------------------------------

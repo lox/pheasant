@@ -11,9 +11,8 @@ class DomainObject
 {
 	private $_data = array();
 	private $_changed = array();
-	private $_before = array();
-	private $_after = array();
 	private $_saved=false;
+	private $_events;
 
 	/**
 	 * The final constructer which initializes the object. Subclasses
@@ -24,7 +23,7 @@ class DomainObject
 		$pheasant = Pheasant::instance();
 		$pheasant->initialize($this);
 
-		// set default params
+		// pull default values from schema
 		$this->_data = $pheasant->schema($this)->defaults();
 
 		// call user-defined constructor
@@ -73,15 +72,15 @@ class DomainObject
 	 */
 	public function save()
 	{
-		foreach($this->_before as $obj) $obj->save();
+      $event = $this->isSaved() ? 'Update' : 'Create';
+      $mapper = Pheasant::instance()->mapperFor($this);
 
-		$mapper = Pheasant::instance()->mapperFor($this);
-		$mapper->save($this);
+      $this->events()->wrap(array($event, 'Save'), $this, function($obj) use($mapper) {
+      		$mapper->save($obj);
+      });
+
 		$this->_saved = true;
 		$this->_changed = array();
-
-		foreach($this->_after as $obj) $obj->save();
-
 		return $this;
 	}
 
@@ -143,29 +142,47 @@ class DomainObject
 	}
 
 	// ----------------------------------------
-	// event related functions
+	// event helper functions
 
 	/**
-	 * Adds a domain object as a dependancy which must be saved before the
-	 * object can be saved.
-	 * @chainable
+	 * Returns the domain objects event collection, optionally registering any passed
+	 * events
+	 * @return Events
 	 */
-	public function saveBefore($object)
+	public function events($events=array())
 	{
-		$this->_before []= $object;
-		return $this;
+		if(!isset($this->_events))
+		{
+			$this->_events = clone $this->schema()->events();
+			$this->_events->register('*', array($this, 'eventHandler'));
+		}
+
+		if(count($events))
+			foreach($events as $event=>$callback)
+				$this->_events->register($event, $callback);
+
+		return $this->_events;
 	}
 
 	/**
-	 * Adds a domain object as a dependancy which must be saved after the object is saved.
+	 * Register a domain object to be saved after the current domain object is saved
 	 * @chainable
 	 */
 	public function saveAfter($object)
 	{
-		$this->_after []= $object;
+		$this->events()->register('afterSave', function() use($object) {
+			$object->save();
+		});
+
 		return $this;
 	}
 
+	/**
+	 * Handles events for the domain object
+	 */
+	public function eventHandler($e)
+	{
+	}
 
 	// ----------------------------------------
 	// static helpers
@@ -195,7 +212,7 @@ class DomainObject
 	 * Delegates find calls through to the finder
 	 */
 	public static function __callStatic($method, $params)
-	{
+{
 		if(preg_match('/^find/',$method))
 		{
 			$class = get_called_class();
@@ -229,9 +246,9 @@ class DomainObject
     }
 
     /**
-     * Static helper for creating a domain object, the same as calling 
+     * Static helper for creating a domain object, the same as calling
      * the constructor. Useful for chaining.
-     * @return object 
+     * @return object
      */
     public static function create()
     {
