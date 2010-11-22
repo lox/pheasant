@@ -18,7 +18,7 @@ and not try and do everything. More than 3,000 lines is too much!
 Installation
 ------------
 
-{% hightlight bash %}
+{% highlight bash %}
 pear channel-discover pearhub.org
 pear install pearhub/Pheasant
 {% endhighlight %}
