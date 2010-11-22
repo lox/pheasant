@@ -1,0 +1,17 @@
+body {
+  background: #fff;
+  color: #000;
+  font: 14px/1.5 FreeSans, Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  width: 750px;
+  margin: 2em auto;
+}
+
+div#header a {
+  display: block;
+  height: 201px;
+  width: 644px;
+  background: #fff url(/static/pheasant.png) no-repeat top left;
+  text-indent: -99999px;
+}
