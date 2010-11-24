@@ -15,3 +15,27 @@ div#header a {
   background: #fff url(/static/pheasant.png) no-repeat top left;
   text-indent: -99999px;
 }
+
+#content .highlight {
+	padding: 0.5em;
+	overflow: hidden;
+}
+
+#content .highlight, .highlight pre, .highlight code {
+	margin: 0 0 1em 0;
+	padding: 0;
+}
+
+#content .highlight code.php {
+	display: block;
+	margin-top: -2.5em;
+}
+
+#content .highlight .err {
+  background-color: transparent;
+  color: #000;
+}
+
+#content .highlight .nc, #content .highlight .nf {
+  color: #214530;
+}

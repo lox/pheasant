@@ -19,14 +19,15 @@ Installation
 ------------
 
 {% highlight bash %}
-pear channel-discover pearhub.org
-pear install pearhub/Pheasant
+$ pear channel-discover pearhub.org
+$ pear install pearhub/Pheasant
 {% endhighlight %}
 
 Usage
 -----
 
 {% highlight php %}
+<?php
 
 use \Pheasant;
 use \Pheasant\Types;
@@ -35,17 +36,17 @@ class Post extends Pheasant\DomainObject
 {
   public static function initialize($builder, $pheasant)
   {
-    $pheasant
-      ->register(__CLASS__, new Pheasant\RowMapper('posts'))
-      ;
+	$pheasant
+	  ->register(__CLASS__, new Pheasant\RowMapper('posts'))
+	  ;
 
-    $builder
-      ->properties(array(
-        'postid'   => new Types\Sequence(),
-        'title'    => new Types\String(255, 'required'),
-        'authorid  => new Types\Integer(11),
-      ))
-      ;
+	$builder
+	  ->properties(array(
+		'postid'   => new Types\Sequence(),
+		'title'    => new Types\String(255, 'required'),
+		'authorid'  => new Types\Integer(11),
+	  ))
+	  ;
   }
 }
 
