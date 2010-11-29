@@ -17,6 +17,10 @@ partially implemented.
 - Relationships (HasMany, HasOne and BelongsTo implemented)
 - Custom Mappers/Finders (todo)
 - Events (working)
+- Raw Queries (partially working)
+- Data Types (Sequence, Integer and String implemented)
+- Delete/Remove
+- Documentation
 
 Persisting Objects
 ---------------------------------
@@ -151,18 +155,8 @@ Code can be triggered before and after create, update and delete operations.
 					));
 
 			$builder
-				->getters(array(
-					'myproperty'  => function() { },
-					));
-
-			$builder
-				->setters(array(
-					'myproperty'  => function() { },
-					));
-
-			$builder
 				->events(array(
-					'after_create' => function($d) { $d->timecreated = time(); }
+					'beforeCreate' => function($e, $d) { $d->timecreated = time(); }
 				));
 		}
 	}

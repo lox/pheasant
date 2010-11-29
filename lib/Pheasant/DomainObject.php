@@ -49,7 +49,7 @@ class DomainObject
 		$instance = $class::fromArray(array());
 
 		if(method_exists($instance, 'tableName'))
-		$pheasant->register($class, new Pheasant\Mapper\RowMapper($instance->tableName()));
+			$pheasant->register($class, new Pheasant\Mapper\RowMapper($instance->tableName()));
 
 		if(method_exists($class, 'properties'))
 			$builder->properties($instance->properties());
