@@ -39,10 +39,23 @@ class DomainObject
 	}
 
 	/**
-	 * Template function for configuring a domain object.
+	 * Template function for configuring a domain object, by default uses
+	 * {@link tableName()}, {@link properties()} and {@link relationships()} if
+	 * they exist.
 	 */
 	public static function initialize($builder, $pheasant)
 	{
+		$class = get_called_class();
+		$instance = $class::fromArray(array());
+
+		if(method_exists($instance, 'tableName'))
+		$pheasant->register($class, new Pheasant\Mapper\RowMapper($instance->tableName()));
+
+		if(method_exists($class, 'properties'))
+			$builder->properties($instance->properties());
+
+		if(method_exists($class, 'relationships'))
+			$builder->relationships($instance->relationships());
 	}
 
 	/**
@@ -79,12 +92,12 @@ class DomainObject
 	 */
 	public function save()
 	{
-      $event = $this->isSaved() ? 'Update' : 'Create';
-      $mapper = Pheasant::instance()->mapperFor($this);
+		$event = $this->isSaved() ? 'Update' : 'Create';
+		$mapper = Pheasant::instance()->mapperFor($this);
 
-      $this->events()->wrap(array($event, 'Save'), $this, function($obj) use($mapper) {
-      		$mapper->save($obj);
-      });
+		$this->events()->wrap(array($event, 'Save'), $this, function($obj) use($mapper) {
+			$mapper->save($obj);
+		});
 
 		$this->_saved = true;
 		$this->_changed = array();
@@ -258,8 +271,8 @@ class DomainObject
      */
     public static function create()
     {
-        $refl = new \ReflectionClass(get_called_class());
-        return $refl->newInstanceArgs(func_get_args())->save();
+		$refl = new \ReflectionClass(get_called_class());
+		return $refl->newInstanceArgs(func_get_args())->save();
     }
 
 	/**

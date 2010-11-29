@@ -3,7 +3,7 @@
 namespace Pheasant\Tests\Transaction;
 use \Pheasant\Database\Mysqli\Transaction;
 
-require_once('autorun.php');
+require_once(__DIR__.'/../vendor/simpletest/autorun.php');
 require_once(__DIR__.'/base.php');
 
 class TransactionTestCase extends \Pheasant\Tests\MysqlTestCase

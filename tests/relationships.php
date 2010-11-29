@@ -7,7 +7,7 @@ use \Pheasant\Mapper\RowMapper;
 use \Pheasant\Types;
 use \Pheasant\Relationships;
 
-require_once('autorun.php');
+require_once(__DIR__.'/../vendor/simpletest/autorun.php');
 require_once(__DIR__.'/base.php');
 
 class Hero extends DomainObject

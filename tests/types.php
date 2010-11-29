@@ -5,7 +5,7 @@ namespace Pheasant\Tests\Types;
 use \Pheasant\Types;
 use \Pheasant\Database\Mysqli;
 
-require_once('autorun.php');
+require_once(__DIR__.'/../vendor/simpletest/autorun.php');
 require_once(__DIR__.'/base.php');
 
 class TypesTestCase extends \Pheasant\Tests\MysqlTestCase

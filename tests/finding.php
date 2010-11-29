@@ -7,7 +7,7 @@ use \Pheasant\Types\String;
 use \Pheasant\DomainObject;
 use \Pheasant;
 
-require_once('autorun.php');
+require_once(__DIR__.'/../vendor/simpletest/autorun.php');
 require_once(__DIR__.'/base.php');
 
 class User extends DomainObject

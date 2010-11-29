@@ -6,7 +6,7 @@ use \Pheasant\DomainObject;
 use \Pheasant\Types;
 use \Pheasant\Mapper\RowMapper;
 
-require_once('autorun.php');
+require_once(__DIR__.'/../vendor/simpletest/autorun.php');
 require_once(__DIR__.'/base.php');
 
 class Animal extends DomainObject
@@ -21,6 +21,22 @@ class Animal extends DomainObject
 				'id' => new Types\Integer(11, 'primary auto_increment'),
 				'type' => new Types\String(255, 'required default=llama'),
 			));
+	}
+}
+
+class AnotherAnimal extends DomainObject
+{
+	public function tableName()
+	{
+		return 'animal';
+	}
+
+	public function properties()
+	{
+		return array(
+			'id' => new Types\Integer(11, 'primary auto_increment'),
+			'type' => new Types\String(255, 'required default=llama'),
+		);
 	}
 }
 
@@ -52,13 +68,23 @@ class DomainObjectTestCase extends \Pheasant\Tests\MysqlTestCase
 	{
 		$animal = Animal::import(array(array('type'=>'Hippo')));
 		$this->expectException();
-        $animal[0]->unknownKey;
+		$animal[0]->unknownKey;
 
-        // try non-saved objects
-        $another = new Animal();
-        $this->expectException();
-        $another->unknown;
-        return $instance->save();
+		// try non-saved objects
+		$another = new Animal();
+		$this->expectException();
+		$another->unknown;
+		return $instance->save();
+	}
+
+	public function testInitializeDefaults()
+	{
+		$animal = new AnotherAnimal();
+		$animal->type = 'llama';
+		$animal->save();
+
+		$this->assertEqual($animal->type, 'llama');
+		$this->assertEqual($animal->tableName(), 'animal');
 	}
 }
 

@@ -4,7 +4,7 @@ namespace Pheasant\Tests\Criteria;
 use \Pheasant;
 use \Pheasant\Query\Criteria;
 
-require_once('autorun.php');
+require_once(__DIR__.'/../vendor/simpletest/autorun.php');
 require_once(__DIR__.'/base.php');
 
 class CriteriaTestCase extends \Pheasant\Tests\MysqlTestCase

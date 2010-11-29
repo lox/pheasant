@@ -1,6 +1,6 @@
 <?php
 
-require_once('autorun.php');
+require_once(__DIR__.'/../vendor/simpletest/autorun.php');
 
 class AllTests extends TestSuite
 {
