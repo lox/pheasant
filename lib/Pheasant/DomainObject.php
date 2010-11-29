@@ -262,18 +262,18 @@ class DomainObject
 		}
 
 		return $objects;
-    }
+	}
 
-    /**
-     * Static helper for creating a domain object, the same as calling
-     * the constructor. Useful for chaining.
-     * @return object
-     */
-    public static function create()
-    {
+	/**
+	* Static helper for creating a domain object, the same as calling
+	* the constructor. Useful for chaining.
+	* @return object
+	*/
+	public static function create()
+	{
 		$refl = new \ReflectionClass(get_called_class());
 		return $refl->newInstanceArgs(func_get_args())->save();
-    }
+	}
 
 	/**
 	 * Return the class name of the domain object
