@@ -18,6 +18,8 @@ and not try and do everything. More than 3,000 lines is too much!
 Installation
 ------------
 
+The project is available on [github](https://github.com/lox/pheasant), or available via pear:
+
 {% highlight bash %}
 $ pear channel-discover pearhub.org
 $ pear install pearhub/Pheasant
@@ -34,35 +36,29 @@ use \Pheasant\Types;
 
 class Post extends Pheasant\DomainObject
 {
-  public static function initialize($builder, $pheasant)
+  public function properties()
   {
-	$pheasant
-	  ->register(__CLASS__, new Pheasant\RowMapper('posts'))
-	  ;
-
-	$builder
-	  ->properties(array(
-		'postid'   => new Types\Sequence(),
-		'title'    => new Types\String(255, 'required'),
-		'authorid'  => new Types\Integer(11),
-	  ))
-	  ;
+    return array(
+      'postid'   => new Types\Sequence(),
+      'title'    => new Types\String(255, 'required'),
+      'authorid' => new Types\Integer(11)
+    );
   }
 }
 
-// configure pheasant
-Pheasant::initialize('mysql://localhost:/mydatabase');
+// configure database connection
+Pheasant::initialize('mysql://user:pass@localhost:/mydb');
 
-// create some objects
 $post = new Post(array('title'=>'My Post'));
 $post->save();
 
 echo $post->title; // returns 'My Post'
 {% endhighlight %}
 
+More documentation is available, along with examples in the [README](https://github.com/lox/pheasant/blob/master/README.md).
+
 
 Project Status
 --------------
 
-Pheasant is still very much alpha, as far as I know it's not being used in production.
-
+Pheasant is still under development and isn't in any production use, yet!
