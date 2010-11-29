@@ -33,30 +33,29 @@ and loading of objects.
 
 	class Post extends DomainObject
 	{
-		public static function initialize($builder, $pheasant)
+		public function properties()
 		{
-			$pheasant
-				->register(__CLASS__, new RowMapper('posts'))
-				;
+			return array(
+				'postid'   => new Types\Sequence(),
+				'title'    => new Types\String(255, 'required'),
+				'subtitle' => new Types\String(255),
+				'status    => new Types\Enum(array('closed','open')),
+				'authorid  => new Types\Integer(11),
+				);
+		}
 
-			$builder
-				->properties(array(
-					'postid'   => new Types\Sequence(),
-					'title'    => new Types\String(255, 'required'),
-					'subtitle' => new Types\String(255),
-					'status    => new Types\Enum(array('closed','open')),
-					'authorid  => new Types\Integer(11),
-				))
-				->relationships(array(
-					'Author'   => new Relationships\HasOne('Author', 'author_id')
-				))
-				;
+		public function relationships()
+		{
+			return array(
+				'Author'   => new Relationships\HasOne('Author', 'author_id')
+				);
 		}
 	}
 
 	class Author extends DomainObject
 	{
-		public static function configure($builder, $pheasant)
+		// using the alternative initialize method
+		public static function initialize($builder, $pheasant)
 		{
 			$pheasant
 				->register(__CLASS__, new RowMapper('author'))
