@@ -18,7 +18,6 @@ partially implemented.
 - Custom Mappers/Finders (todo)
 - Events (working)
 - Raw Queries (partially working)
-- Data Types (Sequence, Integer and String implemented)
 - Delete/Remove
 - Documentation
 

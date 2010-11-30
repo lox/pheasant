@@ -26,12 +26,19 @@ class TypeMap
 	{
 		$type = $this->_types[$colname];
 		$options = $this->_nativeOptions($type);
+		$length = $type->length;
+		$format = '`%s` %s(%s)';
 
-		return sprintf('`%s` %s(%d)',
-			$colname,
+		switch($type->type)
+		{
+			case 'decimal':
+				$length = sprintf('%d,%d',$type->length,$type->scale);
+				break;
+		}
+
+		return sprintf($format,$colname,
 			$this->_nativeType($type),
-			$type->length) .
-				(strlen($options) ? " $options" : '');
+			$length).(strlen($options) ? " $options" : '');
 	}
 
 	/**
@@ -89,6 +96,8 @@ class TypeMap
 		{
 			case 'string': return 'varchar';
 			case 'integer': return 'int';
+			case 'decimal': return 'decimal';
+			case 'character': return 'char';
 
 			// fail if there is no match
 			default: throw new Exception("Unknown type {$type->type}");

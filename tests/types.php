@@ -49,4 +49,29 @@ class TypesTestCase extends \Pheasant\Tests\MysqlTestCase
 		$this->assertEqual($map->columnDef('test'),
 			'`test` int(11) primary key not null');
 	}
+
+	public function testDecimal()
+	{
+		$type = new Types\Decimal(12, 4);
+		$this->assertEqual($type->type, Types\Decimal::TYPE);
+		$this->assertEqual($type->length, 12);
+		$this->assertEqual($type->scale, 4);
+
+		// check the type conversion
+		$map = new Mysqli\TypeMap(array('test'=>$type));
+		$this->assertEqual($map->columnDef('test'),
+			'`test` decimal(12,4)');
+	}
+
+	public function testCharacter()
+	{
+		$type = new Types\Character(4);
+		$this->assertEqual($type->type, Types\Character::TYPE);
+		$this->assertEqual($type->length, 4);
+
+		// check the type conversion
+		$map = new Mysqli\TypeMap(array('test'=>$type));
+		$this->assertEqual($map->columnDef('test'),
+			'`test` char(4)');
+	}
 }
