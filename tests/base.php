@@ -5,6 +5,9 @@ namespace
 	define('BASEDIR', __DIR__.'/../');
 	define('LIBDIR', BASEDIR.'lib/');
 
+	// show all errors
+	error_reporting(E_ALL);
+
 	// set up autoload
 	function __autoload($className)
 	{

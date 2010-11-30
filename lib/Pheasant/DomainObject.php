@@ -39,23 +39,35 @@ class DomainObject
 	}
 
 	/**
-	 * Template function for configuring a domain object, by default uses
-	 * {@link tableName()}, {@link properties()} and {@link relationships()} if
-	 * they exist.
+	 * Template function for configuring a domain object. Looks for either
+	 * a tableName() method or a mapper() method, a properties() method and a
+	 * relationships() method.
 	 */
 	public static function initialize($builder, $pheasant)
 	{
 		$class = get_called_class();
 		$instance = $class::fromArray(array());
 
-		if(method_exists($instance, 'tableName'))
-			$pheasant->register($class, new Pheasant\Mapper\RowMapper($instance->tableName()));
+		$pheasant->register($class,
+			method_exists($class, 'mapper')
+				? $instance->mapper()
+				: new Pheasant\Mapper\RowMapper($instance->tableName())
+				);
 
 		if(method_exists($class, 'properties'))
 			$builder->properties($instance->properties());
 
 		if(method_exists($class, 'relationships'))
 			$builder->relationships($instance->relationships());
+	}
+
+	/**
+	 * Used by the default initialize() method, returns the table name to use
+	 */
+	public function tableName()
+	{
+		$tokens = explode('\\', get_class($this));
+		return strtolower(array_pop($tokens));
 	}
 
 	/**
@@ -238,6 +250,12 @@ class DomainObject
 			$finder = Pheasant::instance()->finderFor($class);
 			array_unshift($params, $class);
 			return call_user_func_array(array($finder, $method), $params);
+		}
+		else if(preg_match('/^(hasOne|hasMany|belongsTo)$/',$method))
+		{
+			$refl = new \ReflectionClass('\Pheasant\\Relationships\\'.ucfirst($method));
+			array_unshift($params, get_called_class());
+			return $refl->newInstanceArgs($params);
 		}
 		else
 		{

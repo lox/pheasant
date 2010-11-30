@@ -32,7 +32,6 @@ and loading of objects.
 
 	use \Pheasant;
 	use \Pheasant\Types;
-	use \Pheasant\Relationships;
 
 	class Post extends DomainObject
 	{
@@ -50,32 +49,30 @@ and loading of objects.
 		public function relationships()
 		{
 			return array(
-				'Author'   => new Relationships\HasOne('Author', 'author_id')
+				'Author' => Author::hasOne('author_id');
 				);
 		}
 	}
 
 	class Author extends DomainObject
 	{
-		// using the alternative initialize method
-		public static function initialize($builder, $pheasant)
+		public function properties()
 		{
-			$pheasant
-				->register(__CLASS__, new RowMapper('author'))
-				;
+			return array(
+				'authorid' => new Types\Sequence(),
+				'fullname' => new Types\String(255, 'required')
+				);
+		}
 
-			$builder
-				->properties(array(
-					'authorid'  => new Types\Sequence(),
-					'fullname'  => new Types\String(255, 'required')
-					))
-				->relationships(array(
-					'Posts'     => new Relationships\HasOne('Post', 'author_id')
-					))
+		public function relationships()
+		{
+			return array(
+				'Posts' => Post::hasOne('author_id')
+				);
 		}
 	}
 
-	// configure pheasant
+	// configure database connection
 	Pheasant::initialize('mysql://localhost:/mydatabase');
 
 	// create some objects

@@ -5,67 +5,64 @@ namespace Pheasant\Tests\Relationships;
 use \Pheasant\DomainObject;
 use \Pheasant\Mapper\RowMapper;
 use \Pheasant\Types;
-use \Pheasant\Relationships;
 
 require_once(__DIR__.'/../vendor/simpletest/autorun.php');
 require_once(__DIR__.'/base.php');
 
 class Hero extends DomainObject
 {
-	public static function initialize($builder, $pheasant)
+	public function properties()
 	{
-		$pheasant
-			->register(__CLASS__, new RowMapper('hero'));
+		return array(
+			'heroid' => new Types\Sequence(),
+			'alias' => new Types\String(),
+			'identityid' => new Types\Integer(),
+			);
+	}
 
-		$builder
-			->properties(array(
-				'heroid' => new Types\Sequence(),
-				'alias' => new Types\String(),
-				'identityid' => new Types\Integer(),
-				))
-			->hasMany(array(
-				'Powers' => array(Power::className(),'heroid')
-				))
-			->belongsTo(array(
-				'SecretIdentity' => array(SecretIdentity::className(),'identityid'),
-				));
+	public function relationships()
+	{
+		return array(
+			'Powers' => Power::hasMany('heroid'),
+			'SecretIdentity' => SecretIdentity::belongsTo('identityid'),
+			);
 	}
 }
 
 class Power extends DomainObject
 {
-	public static function initialize($builder, $pheasant)
+	public function properties()
 	{
-		$pheasant
-			->register(__CLASS__, new RowMapper('power'));
+		return array(
+			'powerid' => new Types\Sequence(),
+			'description' => new Types\String(),
+			'heroid' => new Types\Integer()
+			);
+	}
 
-		$builder
-			->properties(array(
-				'powerid' => new Types\Sequence(),
-				'description' => new Types\String(),
-				'heroid' => new Types\Integer()
-				))
-			->belongsTo(array(
-				'Hero' => array(Hero::className(), 'heroid')
-				));
+	public function relationships()
+	{
+		return array(
+			'Hero' => Hero::belongsTo('heroid')
+			);
 	}
 }
 
 class SecretIdentity extends DomainObject
 {
-	public static function initialize($builder, $pheasant)
+	public function properties()
 	{
-		$pheasant
-			->register(__CLASS__, new RowMapper('secretidentity'));
+		return array(
+			'identityid' => new Types\Sequence(),
+			'realname' => new Types\String(),
+			);
+	}
 
-		$builder
-			->properties(array(
-				'identityid' => new Types\Sequence(),
-				'realname' => new Types\String(),
-				))
-			->hasOne(array(
-				'Hero' => array(Hero::className(), 'identityid')
-				));
+	public function relationships()
+	{
+		return array(
+			'Hero' => Hero::hasOne('identityid')
+			);
 	}
 }
 
