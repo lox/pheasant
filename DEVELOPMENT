@@ -1,0 +1,10 @@
+Running Tests
+=============
+
+- Install the latest SimpleTest in the vendors directory
+- Set up MySQL 5.1+ with a database of 'pheasanttest', with the user and password of 'pheasant'
+
+```sql
+CREATE DATABASE pheasanttest;
+GRANT ALL ON pheasanttest.* TO 'pheasant'@'%' IDENTIFIED BY 'pheasant';
+```

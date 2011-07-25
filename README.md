@@ -28,65 +28,63 @@ Each domain object has a set of properties and relationships that are defined in
 configure method. Each domain object delegates to a mapper object for the actual saving
 and loading of objects.
 
-	<?php
+```php
+use \Pheasant;
+use \Pheasant\Types;
 
-	use \Pheasant;
-	use \Pheasant\Types;
-
-	class Post extends DomainObject
+class Post extends DomainObject
+{
+	public function properties()
 	{
-		public function properties()
-		{
-			return array(
-				'postid'   => new Types\Sequence(),
-				'title'    => new Types\String(255, 'required'),
-				'subtitle' => new Types\String(255),
-				'status    => new Types\Enum(array('closed','open')),
-				'authorid  => new Types\Integer(11),
-				);
-		}
-
-		public function relationships()
-		{
-			return array(
-				'Author' => Author::hasOne('author_id');
-				);
-		}
+		return array(
+			'postid'   => new Types\Sequence(),
+			'title'    => new Types\String(255, 'required'),
+			'subtitle' => new Types\String(255),
+			'status    => new Types\Enum(array('closed','open')),
+			'authorid  => new Types\Integer(11),
+			);
 	}
 
-	class Author extends DomainObject
+	public function relationships()
 	{
-		public function properties()
-		{
-			return array(
-				'authorid' => new Types\Sequence(),
-				'fullname' => new Types\String(255, 'required')
-				);
-		}
+		return array(
+			'Author' => Author::hasOne('author_id');
+			);
+	}
+}
 
-		public function relationships()
-		{
-			return array(
-				'Posts' => Post::hasOne('author_id')
-				);
-		}
+class Author extends DomainObject
+{
+	public function properties()
+	{
+		return array(
+			'authorid' => new Types\Sequence(),
+			'fullname' => new Types\String(255, 'required')
+			);
 	}
 
-	// configure database connection
-	Pheasant::initialize('mysql://localhost:/mydatabase');
+	public function relationships()
+	{
+		return array(
+			'Posts' => Post::hasOne('author_id')
+			);
+	}
+}
 
-	// create some objects
-	$author = new Author(array('fullname'=>'Lachlan'));
-	$post = new Post(array('title'=>'My Post', 'author'=>$author));
+// configure database connection
+Pheasant::initialize('mysql://localhost:/mydatabase');
 
-	// save objects
-	$author->save();
-	$post->save();
+// create some objects
+$author = new Author(array('fullname'=>'Lachlan'));
+$post = new Post(array('title'=>'My Post', 'author'=>$author));
 
-	echo $post->title; // returns 'My Post'
-	echo $post->Author->fullname; // returns 'Lachlan'
+// save objects
+$author->save();
+$post->save();
 
-	?>
+echo $post->title; // returns 'My Post'
+echo $post->Author->fullname; // returns 'Lachlan'
+```
 
 Raw Queries
 ---------------------------------
