@@ -29,6 +29,8 @@ configure method. Each domain object delegates to a mapper object for the actual
 and loading of objects.
 
 ```php
+<?php
+
 use \Pheasant;
 use \Pheasant\Types;
 
@@ -91,74 +93,79 @@ Raw Queries
 
 It's easy to take an existing query and hydrate the results into a domain object.
 
-	<?php
+```php
+<?php
 
-	use Pheasant\Query;
+use Pheasant\Query;
 
-	// all users
-	$users = User::find();
+// all users
+$users = User::find();
 
-	// all users named frank
-	$users = User::find('firstname = ?', 'frank');
+// all users named frank
+$users = User::find('firstname = ?', 'frank');
 
-	// this requires two queries
-	foreach(User::find() as $user)
-	{
-		printf("User %s has %d posts\n", $user->fullname, $user->Posts->count());
-	}
+// this requires two queries
+foreach(User::find() as $user)
+{
+	printf("User %s has %d posts\n", $user->fullname, $user->Posts->count());
+}
 
-	// custom queries for complex joins
-	$query = new Query();
-	$query
-		->from('user u')
-		->innerJoin('post p', 'on u.userid=p.userid and p.title like ?', array('Llama%'))
-		;
+// custom queries for complex joins
+$query = new Query();
+$query
+	->from('user u')
+	->innerJoin('post p', 'on u.userid=p.userid and p.title like ?', array('Llama%'))
+	;
 
-	// builds in one query
-	foreach($query as $user)
-	{
-		printf("User %s has posts about llamas\n',$user->fullname,$user->Posts);
-	}
-
-	?>
+// builds in one query
+foreach($query as $user)
+{
+	printf("User %s has posts about llamas\n',$user->fullname,$user->Posts);
+}
+```
 
 Events
 ---------------------------------
 
 Code can be triggered before and after create, update and delete operations.
 
-	<?php
+```php
+<?php
 
-	use \Pheasant;
-	use \Pheasant\Events;
-	use \Pheasant\Types;
+use \Pheasant;
+use \Pheasant\Events;
+use \Pheasant\Types;
 
-	class Post extends DomainObject
+class Post extends DomainObject
+{
+	public static function configure($builder, $pheasant)
 	{
-		public static function configure($builder, $pheasant)
-		{
-			$pheasant
-				->register(__CLASS__, new RowMapper('post'))
-				;
+		$pheasant
+			->register(__CLASS__, new RowMapper('post'))
+			;
 
-			$builder
-				->properties(array(
-					'postid'      => new Types\Sequence(),
-					'title'       => new Types\String(255),
-					'timecreated' => new Types\Integer(11),
-					));
-
-			$builder
-				->events(array(
-					'beforeCreate' => function($e, $d) { $d->timecreated = time(); }
+		$builder
+			->properties(array(
+				'postid'      => new Types\Sequence(),
+				'title'       => new Types\String(255),
+				'timecreated' => new Types\Integer(11),
 				));
-		}
+
+		$builder
+			->events(array(
+				'beforeCreate' => function($e, $d) { $d->timecreated = time(); }
+			));
 	}
+}
+```
 
-	?>
+Optionally, domain objects provide the following implicit hooks which can be overriden:
 
-Optionally, domain objects can have the methods afterCreate, beforeUpdate, afterUpdate,
-beforeDelete, afterDelete and they will be implicitly called.
+- afterCreate
+- beforeUpdate, afterUpdate
+- beforeSave, afterSave
+- beforeDelete, afterDelete 
+
 
 Custom Finder Methods
 ---------------------------------
@@ -166,21 +173,21 @@ Custom Finder Methods
 Finders and mappers are decoupled from each other, so implementing custom finder methods
 is straight forward.
 
-	<?php
+```php
+<?php
 
-	use \Pheasant\Finder;
+use \Pheasant\Finder;
 
-	class CustomPostFinder extends Finder\RowFinder
+class CustomPostFinder extends Finder\RowFinder
+{
+	public function findByAuthorId($definition, $id)
 	{
-		public function findByAuthorId($definition, $id)
-		{
-			return $this->find('author_id = ?', $id);
-		}
+		return $this->find('author_id = ?', $id);
 	}
+}
 
-	$pheasant->registerFinder('Post', new CustomPostFinder('post'));
+$pheasant->registerFinder('Post', new CustomPostFinder('post'));
 
-	// finds single posts by author id (magic methods still work)
-	$posts = Post::findOneByAuthorId(55);
-
-	?>
+// finds single posts by author id (magic methods still work)
+$posts = Post::findOneByAuthorId(55);
+```
