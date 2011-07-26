@@ -42,8 +42,8 @@ class Post extends DomainObject
 			'postid'   => new Types\Sequence(),
 			'title'    => new Types\String(255, 'required'),
 			'subtitle' => new Types\String(255),
-			'status    => new Types\Enum(array('closed','open')),
-			'authorid  => new Types\Integer(11),
+			'status'   => new Types\Enum(array('closed','open')),
+			'authorid' => new Types\Integer(11),
 			);
 	}
 
@@ -99,10 +99,13 @@ It's easy to take an existing query and hydrate the results into a domain object
 use Pheasant\Query;
 
 // all users
-$users = User::find();
+$users = User::all();
 
 // all users named frank
 $users = User::find('firstname = ?', 'frank');
+
+// a single user named frank
+$users = User::one('firstname = ?', 'frank');
 
 // this requires two queries
 foreach(User::find() as $user)
@@ -110,7 +113,7 @@ foreach(User::find() as $user)
 	printf("User %s has %d posts\n", $user->fullname, $user->Posts->count());
 }
 
-// custom queries for complex joins
+// hydrating custom queries
 $query = new Query();
 $query
 	->from('user u')
@@ -118,9 +121,9 @@ $query
 	;
 
 // builds in one query
-foreach($query as $user)
+foreach($query as $row)
 {
-	printf("User %s has posts about llamas\n',$user->fullname,$user->Posts);
+	printf("User %s has posts about llamas\n',$user->fullname);
 }
 ```
 

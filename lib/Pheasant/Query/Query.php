@@ -28,7 +28,7 @@ class Query
 	}
 
 	/**
-	 * Sets the SELECT clause, either a single table, an array or varargs.
+	 * Sets the SELECT clause, either a single column, an array or varargs.
 	 * @chainable
 	 */
 	public function select($table)
