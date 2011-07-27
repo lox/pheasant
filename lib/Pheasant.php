@@ -26,6 +26,15 @@ class Pheasant
 	}
 
 	/**
+	 * Returns a the connection manager
+	 * @return object
+	 */
+	public function connections()
+	{
+		return $this->_connections;
+	}
+
+	/**
 	 * Returns a connection by name
 	 * @return object
 	 */
