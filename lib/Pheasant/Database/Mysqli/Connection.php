@@ -2,6 +2,8 @@
 
 namespace Pheasant\Database\Mysqli;
 
+use Pheasant\Database\Dsn;
+
 /**
  * A connection to a MySql database
  */
@@ -9,7 +11,8 @@ class Connection
 {
 	private
 		$_dsn,
-		$_link;
+		$_link,
+		$_charset;
 
 	public $debug=false;
 
@@ -19,28 +22,9 @@ class Connection
 	 */
 	public function __construct($dsn)
 	{
-		$this->_dsn = $this->_parseDsn($dsn);
-	}
-
-	/**
-	 * Parses a DSN and applies defaults
-	 * @return object
-	 */
-	private function _parseDsn($dsn)
-	{
-		$array = parse_url($dsn);
-		$params = array();
-
-		if(isset($array['query']))
-			parse_str($array['query'], $params);
-
-		return (object) array_merge(array(
-			'host'=>$array['host'],
-			'user'=>$array['user'],
-			'pass'=>$array['pass'],
-			'database'=>basename($array['path']),
-			'charset'=>'utf8',
-			), $params);
+		$this->_dsn = new Dsn($dsn);
+		$this->_charset = isset($this->_dsn->params['charset']) ?
+		 	$this->_dsn->params['charset'] : 'utf8';	
 	}
 
 	/**
@@ -49,7 +33,7 @@ class Connection
 	 */
 	public function charset()
 	{
-		return $this->_dsn->charset;
+		return $this->_charset;
 	}
 
 	/**
