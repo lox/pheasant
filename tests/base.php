@@ -79,7 +79,8 @@ namespace Pheasant\Tests
 
 		public function assertRowCount($sql, $count)
 		{
-			$this->assertTrue(false);
+			$result = $this->connection()->execute($sql);
+			$this->assertEqual($result->count(), $count);
 		}
 	}
 }

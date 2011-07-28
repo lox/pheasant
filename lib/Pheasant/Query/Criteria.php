@@ -15,9 +15,16 @@ class Criteria
 	/**
 	 * Constructor
 	 */
-	public function __construct($sql=null, $params=array())
+	public function __construct($where=null, $params=array())
 	{
-		$this->_sql = is_null($sql) ? '' : $this->bind($sql, $params);
+		if(is_array($where))
+		{
+			throw new \Pheasant\Exception("Array based criteria not supported");
+		}
+		else
+		{
+			$this->_sql = is_null($where) ? '' : $this->bind($where, $params);
+		}
 	}
 
 	/**

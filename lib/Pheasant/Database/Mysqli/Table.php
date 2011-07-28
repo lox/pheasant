@@ -2,6 +2,8 @@
 
 namespace Pheasant\Database\Mysqli;
 
+use \Pheasant\Query\Criteria;
+
 /**
  * A mysql table
  */
@@ -85,35 +87,56 @@ class Table
 			throw new Exception("Can't insert an empty row");
 
 		return $this->_connection->execute(sprintf(
-			'INSERT INTO `%s` (`%s`) VALUES (%s)',
+			'INSERT INTO `%s` SET %s',
 			$this->_name,
-			implode('`,`', array_keys($data)),
-			implode(', ', array_fill(0, count($data), '?'))
-			), array_values($data));
+			$this->_buildSet($data)
+			), array_values($data)
+		);
 	}
 
 	/**
 	 * Updates a row into the table
 	 */
-	public function update($data, $keys)
+	public function update($data, Criteria $where)
 	{
 		if(empty($data))
 			throw new Exception("Can't insert an empty row");
 
+		return $this->_connection->execute(sprintf(
+			'UPDATE `%s` SET %s WHERE %s',
+			$this->_name,
+			$this->_buildSet($data),
+			$where
+			), array_values($data)
+		);
+	}
+
+	/**
+	 * Tries to update a record, or inserts if it doesn't exist
+	 */
+	public function upsert($data)
+	{
+		if(empty($data))
+			throw new Exception("Can't insert an empty row");
+
+		return $this->_connection->execute(sprintf(
+			'INSERT INTO `%s` SET %2$s ON DUPLICATE KEY UPDATE %2$s',
+			$this->_name,
+			$this->_buildSet($data)
+			), array_merge(array_values($data),array_values($data))
+		);
+	}
+
+	/**
+	 * Builds a series of X=?, Y=?, Z=?
+	 */
+	private function _buildSet($data)
+	{
 		$columns = '';
-		$where = '';
 
 		foreach($data as $key=>$value)
 			$columns[] = sprintf('`%s`=?',$key);
 
-		foreach($keys as $key=>$value)
-			$where[] = sprintf('`%s`=?',$key);
-
-		return $this->_connection->execute(sprintf(
-			'UPDATE `%s` SET %s WHERE %s',
-			$this->_name,
-			implode(', ', $columns),
-			implode(' AND ', $where)
-			), array_merge(array_values($data), array_values($keys)));
+		return implode(', ', $columns);
 	}
 }

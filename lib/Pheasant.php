@@ -143,7 +143,7 @@ class Pheasant
 	 * Shortcut for initializing the static pheasant instance
 	 * @return Pheasant
 	 */
-	public static function setup($dsn)
+	public static function setup($dsn=null)
 	{
 		return self::reset(new Pheasant($dsn));
 	}

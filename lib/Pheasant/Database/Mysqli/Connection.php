@@ -12,7 +12,9 @@ class Connection
 	private
 		$_dsn,
 		$_link,
-		$_charset;
+		$_charset,
+		$_filter
+		;
 
 	public $debug=false;
 
@@ -22,7 +24,7 @@ class Connection
 	 */
 	public function __construct($dsn)
 	{
-		$this->_dsn = new Dsn($dsn);
+		$this->_dsn = is_string($dsn) ? new Dsn($dsn) : $dsn;
 		$this->_charset = isset($this->_dsn->params['charset']) ?
 		 	$this->_dsn->params['charset'] : 'utf8';	
 	}
@@ -45,7 +47,7 @@ class Connection
 		if(!isset($this->_link))
 		{
 			$this->_link = new \mysqli(
-				$this->_dsn->host, $this->_dsn->user, $this->_dsn->pass, $this->_dsn->database);
+				$this->_dsn->host, $this->_dsn->user, $this->_dsn->pass, $this->_dsn->database, $this->_dsn->port);
 
 			if ($this->_link->connect_error)
 				throw new Exception($this->_link->connect_error, $this->_link->connect_errno);
@@ -80,16 +82,21 @@ class Connection
 		if($this->debug)
 			$timer = microtime(true);
 
+		if(isset($this->_filter))
+			$sql = call_user_func($this->_filter, $sql);
+
 		$result = $this->_mysqli()->query($sql, MYSQLI_STORE_RESULT);
 
 		if($this->debug)
 		{
+			printf("<pre>\n");
 			printf("-------------------------------\n");
 			printf("sql: %s\ntime: %.2fms\n",
 				$sql, (microtime(true) - $timer) * 1000);
 
 			if(is_object($result))
 				printf("returned %d rows\n", $result->num_rows);
+			printf("</pre>\n");
 		}
 
 		if(!$result)
@@ -146,5 +153,15 @@ class Connection
 	public function typeMap($array)
 	{
 		return new TypeMap($array);
+	}
+
+	/**
+	 * Define a callback for filtering all queries
+	 * @return string
+	 */
+	public function filterCallback($callback)
+	{
+		$this->_filter = $callback;
+		return $this;
 	}
 }

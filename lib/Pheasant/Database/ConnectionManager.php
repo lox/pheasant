@@ -10,6 +10,7 @@ class ConnectionManager
 	public function addConnection($name, $dsn)
 	{
 		$this->_connections[$name][] = $dsn;
+		return $this;
 	}
 
 	public function connection($name)
@@ -27,9 +28,16 @@ class ConnectionManager
 		return $connection;
 	}
 
+	public function clear()
+	{
+		unset($this->_connections);
+		return $this;
+	}
+
 	public function addDriver($name, $class)
 	{
 		$this->_drivers[$name] = $class;
+		return $this;
 	}
 
 	private function _buildConnection($dsn)

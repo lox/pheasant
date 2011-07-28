@@ -40,7 +40,7 @@ class ResultIterator implements \SeekableIterator, \Countable
 	public function next()
 	{
 		$this->_currentRow = $this->_fetch();
-		++$this->_position;
+		$this->_position = ++$this->_position;
 	}
 
 	/**
@@ -79,6 +79,7 @@ class ResultIterator implements \SeekableIterator, \Countable
 		{
 			$this->_result->data_seek($this->_position = $position);
 			$this->_currentRow = $this->_fetch();
+			$this->_position = $position;
 		}
 	}
 
