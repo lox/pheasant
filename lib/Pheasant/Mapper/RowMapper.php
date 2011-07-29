@@ -85,7 +85,7 @@ class RowMapper extends AbstractMapper implements Finder
 	{
 		$schema = $object->schema();
 		$result = $this->table()->update($changes,
-			$object->identity()->toArray());
+			$object->identity()->toCriteria());
 
 		// check for auto-increment
 		foreach($object->identity() as $key=>$property)

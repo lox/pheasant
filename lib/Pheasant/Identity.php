@@ -26,4 +26,9 @@ class Identity implements \IteratorAggregate
 
 		return $array;
 	}
+
+	public function toCriteria()
+	{
+		return new Query\Criteria($this->toArray());
+	}
 }

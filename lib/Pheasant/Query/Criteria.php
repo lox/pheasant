@@ -14,12 +14,15 @@ class Criteria
 
 	/**
 	 * Constructor
+	 * @param $where either a query string, or a key=>val array
+	 * @param $params parameters to bind into the query string
 	 */
 	public function __construct($where=null, $params=array())
 	{
 		if(is_array($where))
 		{
-			throw new \Pheasant\Exception("Array based criteria not supported");
+			foreach($where as $key=>$val)
+				$this->and($this->bind($key.'=?', $val));
 		}
 		else
 		{

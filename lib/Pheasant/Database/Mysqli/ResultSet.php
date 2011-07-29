@@ -7,7 +7,7 @@ namespace Pheasant\Database\Mysqli;
  */
 class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 {
-	private $_link, $_result;
+	private $_link, $_result, $_affected;
 
 	/**
 	 * Constructor
@@ -18,6 +18,7 @@ class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 	{
 		$this->_link = $link;
 		$this->_result = $result;
+		$this->_affected = $link->affected_rows;
 	}
 
 	/**
@@ -82,7 +83,7 @@ class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 	 */
 	public function affectedRows()
 	{
-		return $this->_link->affected_rows;
+		return $this->_affected;
 	}
 
 	/**
@@ -90,7 +91,7 @@ class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 	 */
 	public function count()
 	{
-		return $this->affectedRows();
+		return $this->_affected;
 	}
 
 	/**

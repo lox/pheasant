@@ -86,5 +86,25 @@ class DomainObjectTestCase extends \Pheasant\Tests\MysqlTestCase
 		$this->assertEqual($animal->type, 'llama');
 		$this->assertEqual($animal->tableName(), 'animal');
 	}
+
+	public function testCountIsConsistent()
+	{
+		$animal = Animal::import(array(
+			array('type'=>'Hippo'),
+			array('type'=>'Cat'),
+			array('type'=>'Llama'),
+			array('type'=>'Raptor'),
+		));
+
+		$awesome = Animal::find("type = 'Cat' or type = 'Llama'");
+		$this->assertEqual($awesome->count(), 2);
+
+		$scary = Animal::find("type = ?", 'Raptor');
+		$this->assertEqual($scary->count(), 1);
+		$this->assertEqual($awesome->count(), 2);
+		$this->assertEqual($awesome[1]->type, 'Llama');
+		$this->assertEqual($scary[0]->type, 'Raptor');
+		$this->assertEqual($awesome[0]->type, 'Cat');
+	}
 }
 
