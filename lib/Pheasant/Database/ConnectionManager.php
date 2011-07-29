@@ -6,6 +6,7 @@ class ConnectionManager
 {
 	private $_connections=array();
 	private $_drivers=array();
+	private $_default;
 
 	public function addConnection($name, $dsn)
 	{
@@ -13,8 +14,16 @@ class ConnectionManager
 		return $this;
 	}
 
+	public function changeDefault($default)
+	{
+		$this->_default = $default;
+	}
+
 	public function connection($name)
 	{
+		if ($name == 'default' && isset($this->_default))
+			$name = $this->_default;
+
 		if(!isset($this->_connections[$name]))
 			throw new \Pheasant\Exception("No connection called $name registered");
 
