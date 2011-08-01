@@ -7,7 +7,7 @@ namespace Pheasant\Database\Mysqli;
  */
 class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 {
-	private $_link, $_result, $_affected;
+	private $_link, $_result, $_affected, $_hydrator;
 
 	/**
 	 * Constructor
@@ -21,26 +21,25 @@ class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 		$this->_affected = $link->affected_rows;
 	}
 
-	/**
-	 * Sets a closure to use to transform each row into an object
-	 * @chainable
-	 */
-	public function setHydrator($closure)
+	public function setHydrator($callback)
 	{
-		$this->_iterator->setHydrator($closure);
+		$this->_hydrator = $callback;
 		return $this;
 	}
-
+	
 	/* (non-phpdoc)
 	 * @see IteratorAggregate::getIterator()
 	 */
 	public function getIterator()
 	{
 		if(	$this->_result === false)
-			throw new Exception("ResultSet is not iteratable");
+			return new \EmptyIterator(array());;
 
 		if(!isset($this->_iterator))
+		{
 			$this->_iterator = new ResultIterator($this->_result);
+			$this->_iterator->setHydrator($this->_hydrator);
+		}
 
 		return $this->_iterator;
 	}

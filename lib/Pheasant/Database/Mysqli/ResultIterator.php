@@ -7,6 +7,7 @@ class ResultIterator implements \SeekableIterator, \Countable
 	private $_result;
 	private $_position;
 	private $_currentRow;
+	private $_hydrator;
 
 	/**
 	* Constructor
@@ -24,6 +25,14 @@ class ResultIterator implements \SeekableIterator, \Countable
 	public function __destruct()
 	{
 		$this->_result->free();
+	}
+
+	/**
+	 * Sets a hydrator
+	 */
+	public function setHydrator($callback)
+	{
+		$this->_hydrator = $callback;
 	}
 
 	/**
@@ -96,7 +105,10 @@ class ResultIterator implements \SeekableIterator, \Countable
 	 */
 	private function _fetch()
 	{
-		return $this->_result->fetch_array(MYSQLI_ASSOC);
+		return isset($this->_hydrator) 
+			? call_user_func($this->_hydrator, $this->_result->fetch_array(MYSQLI_ASSOC)) 
+		  : $this->_result->fetch_array(MYSQLI_ASSOC)
+			;
 	}
 }
 

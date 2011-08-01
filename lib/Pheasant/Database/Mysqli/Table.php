@@ -9,7 +9,7 @@ use \Pheasant\Query\Criteria;
  */
 class Table
 {
-	private $_name, $_connection;
+	private $_name, $_connection, $_columns;
 
 	/**
 	 * Constructor
@@ -72,11 +72,31 @@ class Table
 	public function exists()
 	{
 		return (bool) $this->_connection->execute(
-			'SELECT Table_Name from INFORMATION_SCHEMA.TABLES
-			WHERE Table_Name=? and TABLE_SCHEMA=DATABASE()',
+			'SELECT count(*) FROM INFORMATION_SCHEMA.TABLES
+			WHERE Table_Name=? AND TABLE_SCHEMA=DATABASE()',
 			$this->_name
-			)->count();
+			)->fetchOne();
 	}
+
+	/**
+	 * Returns all the database columns
+	 */
+	public function columns()
+	{
+		if(!isset($this->_columns))
+		{
+			$this->_columns = array();
+
+			foreach($this->_connection->execute("SHOW COLUMNS FROM `{$this->_name}`") as $c)
+			{
+				$column = $c['Field'];
+				unset($c['Field']);
+				$this->_columns[$column] = $c;
+			}
+		}
+	
+		return $this->_columns;
+	}	
 
 	/**
 	 * Inserts a row into the table
@@ -126,6 +146,22 @@ class Table
 			), array_merge(array_values($data),array_values($data))
 		);
 	}
+
+	/**
+	 * Inserts a row, or replaces it entirely if it exists 
+	 */
+	public function replace($data)
+	{
+		if(empty($data))
+			throw new Exception("Can't replace an empty row");
+
+		return $this->_connection->execute(sprintf(
+			'REPLACE INTO `%s` SET %s',
+			$this->_name,
+			$this->_buildSet($data)
+			), array_values($data)
+		);
+	}	
 
 	/**
 	 * Builds a series of X=?, Y=?, Z=?
