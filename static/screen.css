@@ -33,13 +33,13 @@ div#header a {
 }
 
 #content .highlight, .highlight pre, .highlight code {
-	margin: 0 0 1em 0;
+	margin: 0;
 	padding: 0;
 }
 
 #content .highlight code.php {
 	display: block;
-	margin-top: -2.5em;
+	margin-top: -3em;
 }
 
 #content .highlight .err {

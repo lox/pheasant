@@ -1,0 +1,9 @@
+.highlight {
+	border-top: 2px solid #CCC;
+	border-bottom: 2px solid #CCC;
+	background-color: #F0F0F0;
+}
+
+.highlight pre {
+	padding: 15px;
+}
