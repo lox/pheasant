@@ -4,22 +4,24 @@ Pheasant
 Pheasant is an object relational mapper written to take advantage of PHP 5.3. Simple relationships
 are supported, with the emphasis being on scalability and performance over complexity.
 
-The entire codebase will always be less than 3000 lines, excluding tests. Currently only compatible with
-InnoDb/Mysql 5+.
+Pheasant doesn't attempt to abstract the database and makes heavy use of
+MySQL/Innodb features. 
+
+More details available at http://getpheasant.com
+
 
 Status of Development
 ---------------------------------
 
-Still very much alpha. Presently at proof-of-concept phase, examples below are only
-partially implemented.
+Approaching a 1.0 release:
 
-- Mapping (working)
+- Mapping / Finding
 - Relationships (HasMany, HasOne and BelongsTo implemented)
-- Custom Mappers/Finders (todo)
-- Events (working)
-- Raw Queries (partially working)
-- Delete/Remove
+- Events
+- Query Builder 
 - Documentation
+
+See the ROADMAP for more details.
 
 Persisting Objects
 ---------------------------------
@@ -88,15 +90,13 @@ echo $post->title; // returns 'My Post'
 echo $post->Author->fullname; // returns 'Lachlan'
 ```
 
-Raw Queries
+Magical Finders
 ---------------------------------
 
-It's easy to take an existing query and hydrate the results into a domain object.
+Many variations of finders are available for locating objects:
 
 ```php
 <?php
-
-use Pheasant\Query;
 
 // all users
 $users = User::all();
@@ -104,27 +104,17 @@ $users = User::all();
 // all users named frank
 $users = User::find('firstname = ?', 'frank');
 
+// any fields can be used in finders, this translates to above
+$users = User::findByFirstName('frank');
+
 // a single user named frank
 $users = User::one('firstname = ?', 'frank');
 
-// this requires two queries
-foreach(User::find() as $user)
-{
-	printf("User %s has %d posts\n", $user->fullname, $user->Posts->count());
-}
+// the most recent user
+$user = User::last();
 
-// hydrating custom queries
-$query = new Query();
-$query
-	->from('user u')
-	->innerJoin('post p', 'on u.userid=p.userid and p.title like ?', array('Llama%'))
-	;
-
-// builds in one query
-foreach($query as $row)
-{
-	printf("User %s has posts about llamas\n',$user->fullname);
-}
+// the most recent user named either frank or bob
+$user = User::findByFirstName(array('Frank','Bob')->last();
 ```
 
 Events
@@ -166,31 +156,6 @@ Optionally, domain objects provide the following implicit hooks which can be ove
 
 - afterCreate
 - beforeUpdate, afterUpdate
-- beforeSave, afterSave
-- beforeDelete, afterDelete 
 
 
-Custom Finder Methods
----------------------------------
 
-Finders and mappers are decoupled from each other, so implementing custom finder methods
-is straight forward.
-
-```php
-<?php
-
-use \Pheasant\Finder;
-
-class CustomPostFinder extends Finder\RowFinder
-{
-	public function findByAuthorId($definition, $id)
-	{
-		return $this->find('author_id = ?', $id);
-	}
-}
-
-$pheasant->registerFinder('Post', new CustomPostFinder('post'));
-
-// finds single posts by author id (magic methods still work)
-$posts = Post::findOneByAuthorId(55);
-```
