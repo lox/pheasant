@@ -89,15 +89,12 @@ class Connection
 
 		if($this->debug)
 		{
-			printf("<pre>\n");
+			if(php_sapi_name() != 'cli') printf("<pre>\n");
 			printf("-------------------------------\n");
-			printf("database: %s\n",$this->_dsn->database);
-			printf("sql: %s\ntime: %.2fms\n",
-				$sql, (microtime(true) - $timer) * 1000);
-
-			if(is_object($result))
-				printf("returned %d rows\n", $result->num_rows);
-			printf("</pre>\n");
+			printf("database: %s thread_id: %d\n", $this->_dsn->database, $this->_link->thread_id);
+			printf("sql: %s\ntime: %.2fms\n", $sql, (microtime(true) - $timer) * 1000);
+			printf($this->_link->info);
+			if(php_sapi_name() != 'cli') printf("</pre>\n");
 		}
 
 		if(!$result)
