@@ -91,6 +91,7 @@ class Connection
 		{
 			printf("<pre>\n");
 			printf("-------------------------------\n");
+			printf("database: %s\n",$this->_dsn->database);
 			printf("sql: %s\ntime: %.2fms\n",
 				$sql, (microtime(true) - $timer) * 1000);
 
