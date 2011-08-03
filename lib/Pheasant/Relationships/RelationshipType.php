@@ -37,8 +37,9 @@ class RelationshipType
 	 */
 	protected function query($sql, $params)
 	{
-		$finder = \Pheasant::instance()->finderFor($this->class);
-		return $finder->query($sql, $params);
+		return \Pheasant::instance()->finderFor($this->class)
+			->query(new \Pheasant\Query\Criteria($sql, $params))
+			;
 	}
 
 	/**

@@ -7,25 +7,53 @@ namespace Pheasant\Database;
  */
 class Binder
 {
-	private $_params=array();
-
 	/**
-	 * Takes a fragment of sql with bind params (?) in it and binds in the
-	 * provided parameters.
+	 * Interpolates quoted values in a string with ? in it.
 	 * @return string
 	 */
-	public function bind($sql, $params=array())
+	public function bind($sql, array $params=array())
 	{
-		$this->_params = is_array($params) ? $params : array($params);
-		return preg_replace_callback('/\?/', array($this,'_bindCallback'), $sql);
+		$binder = $this;
+		$function = function($m) use($binder, &$params) {
+			if(!count($params))
+				throw new \InvalidArgumentException("Not enough params passed to bind()");
+			return $binder->quote($binder->escape(array_shift($params)));
+		};
+
+		return preg_replace_callback('/\?/', $function, $sql);
 	}
 
 	/**
-	 * called by preg_replace_callback
+	 * Like bind(), but adds some magic:
+	 * - a=? becomes a IS NULL if passed null 
+	 * - a!=? or a<>? becomes a IS NOT NULL if passed null 
+	 * - a=? becomes a IN (1, 2, 3) if passed array(1, 2, 3)
+	 * - a!=? or a<>? becomes a NOT IN (1, 2, 3) if passed array(1, 2, 3)
+	 * @return string
 	 */
-	private function _bindCallback($match)
+	public function magicBind($sql, array $params=array())
 	{
-		return $this->quote($this->escape(array_shift($this->_params)));
+		$binder = $this;
+		$function = function($m) use($binder, &$params) {
+			if(!count($params))
+				throw new \InvalidArgumentException("Not enough params passed to bind()");
+
+			$op = isset($m[3]) ? $m[3] : false;
+			$param = array_shift($params);
+
+			if(($op == '!=' || $op == '<>') && is_array($param))
+				return ' NOT IN ' . $binder->reduce($param);
+
+			if($op == '=' && is_array($param))
+				return ' IN ' . $binder->reduce($param);
+
+			if(is_null($param))
+				return ' IS'.($op == '=' ? '' : ' NOT').' NULL';
+
+			return (isset($m[1]) ? $m[1] : '') . $binder->quote($binder->escape($param));
+		};
+
+		return preg_replace_callback('/((\s*(!=|=|<>))?\s*)\?/', $function, $sql);
 	}
 
 	/**
@@ -44,5 +72,19 @@ class Binder
 	public function quote($string)
 	{
 		return is_null($string) ? 'NULL' : sprintf("'%s'", $string);
+	}
+
+	/**
+	 * Reduces an array of values into a bracketed, quoted, comma delimited list
+	 * @return string
+	 */
+	public function reduce($array)
+	{
+		$tokens = array();
+
+		foreach($array as $a) 
+			$tokens[] = $this->quote($this->escape($a));
+
+		return '('.implode(',', $tokens).')';
 	}
 }

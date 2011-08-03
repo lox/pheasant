@@ -11,10 +11,10 @@ class CriteriaTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function testBasicCriteria()
 	{
-		$criteria = new Criteria('?', 'test');
+		$criteria = new Criteria('?', array('test'));
 		$this->assertEqual("'test'", $criteria->toSql());
 
-		$criteria = new Criteria('column > ?', 55);
+		$criteria = new Criteria('column > ?', array(55));
 		$this->assertEqual("column > '55'", $criteria->toSql());
 
 		$criteria = new Criteria(55);
@@ -25,7 +25,7 @@ class CriteriaTestCase extends \Pheasant\Tests\MysqlTestCase
 	{
 		$cr = new Criteria();
 		$cr->or(
-			$cr->and('a > 1', $cr->bind('b != ?', 'blargh')),
+			$cr->and('a > 1', $cr->bind('b != ?', array('blargh'))),
 			'x = 1'
 			);
 

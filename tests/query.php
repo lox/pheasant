@@ -23,6 +23,7 @@ class QueryTestCase extends \Pheasant\Tests\MysqlTestCase
 		// create some users
 		$table->insert(array('userid'=>null,'firstname'=>'Frank','lastname'=>'Castle'));
 		$table->insert(array('userid'=>null,'firstname'=>'Cletus','lastname'=>'Kasady'));
+
 	}
 
 	public function testQuerying()

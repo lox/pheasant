@@ -19,7 +19,7 @@ namespace
 				require_once($path);
 
 			if(!class_exists($className) && !interface_exists($className))
-				throw new Exception("Unable to load $className");
+				return false;
 		}
 	}
 }
@@ -36,7 +36,7 @@ namespace Pheasant\Tests
 
 			// initialize a new pheasant
 			$this->pheasant = \Pheasant::setup(
-				'mysql://pheasant:pheasant@localhost:/pheasanttest?charset=utf8'
+				'mysql://pheasant:pheasant@localhost/pheasanttest?charset=utf8'
 				);
 
 			// wipe sequence pool

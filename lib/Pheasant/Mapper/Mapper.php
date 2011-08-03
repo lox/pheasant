@@ -2,6 +2,8 @@
 
 namespace Pheasant\Mapper;
 
+use \Pheasant\Query\Criteria;
+
 /**
  * A persistence interface for a domain object
  */
@@ -22,5 +24,5 @@ interface Mapper
 	 * Returns a query object for querying the datasource
 	 * @return Query
 	 */
-	public function query($sql, $params=array());
+	public function query(Criteria $criteria);
 }

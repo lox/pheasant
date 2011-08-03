@@ -72,8 +72,8 @@ class Table
 	public function exists()
 	{
 		return (bool) $this->_connection->execute(
-			'SELECT count(*) FROM INFORMATION_SCHEMA.TABLES
-			WHERE Table_Name=? AND TABLE_SCHEMA=DATABASE()',
+			'SELECT count(*) FROM INFORMATION_SCHEMA.TABLES '.
+			'WHERE Table_Name=? AND TABLE_SCHEMA=DATABASE()',
 			$this->_name
 			)->fetchOne();
 	}

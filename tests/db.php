@@ -12,7 +12,7 @@ class BindingTestCase extends \Pheasant\Tests\MysqlTestCase
 	{
 		$binder = new Binder();
 		$this->assertEqual(
-			$binder->bind('SELECT * FROM table WHERE column=?', 'test'),
+			$binder->bind('SELECT * FROM table WHERE column=?', array('test')),
 			"SELECT * FROM table WHERE column='test'"
 			);
 	}
@@ -21,7 +21,7 @@ class BindingTestCase extends \Pheasant\Tests\MysqlTestCase
 	{
 		$binder = new Binder();
 		$this->assertEqual(
-			$binder->bind('column=?', 24),
+			$binder->bind('column=?', array(24)),
 			"column='24'"
 			);
 	}
@@ -30,8 +30,8 @@ class BindingTestCase extends \Pheasant\Tests\MysqlTestCase
 	{
 		$binder = new Binder();
 		$this->assertEqual(
-			$binder->bind('column=?', null),
-			'column=NULL'
+			$binder->magicBind('column=?', array(null)),
+			'column IS NULL'
 			);
 	}
 
@@ -39,8 +39,34 @@ class BindingTestCase extends \Pheasant\Tests\MysqlTestCase
 	{
 		$binder = new Binder();
 		$this->assertEqual(
-			$binder->bind('a=? and b=?', array(24, 'test')),
+			$binder->magicBind('a=? and b=?', array(24, 'test')),
 			"a='24' and b='test'"
 			);
 	}
+
+	public function testArrayBinding()
+	{
+		$binder = new Binder();
+		$this->assertEqual(
+			$binder->magicBind('a=? and b=?', array(24, array(1, 2, "llama's"))),
+			"a='24' and b IN ('1','2','llama\'s')"
+			);
+	}
+
+	public function testInjectingStatements()
+	{
+		$binder = new Binder();
+		$this->assertEqual(
+			$binder->bind('x=?', array('10\'; DROP TABLE --')),
+			"x='10\'; DROP TABLE --'"
+			);
+	}
+
+	public function testBindMissingParameters()
+	{
+		$this->expectException('\InvalidArgumentException');
+
+		$binder = new Binder();
+		$binder->bind('x=? and y=?', array(24));
+	}	
 }

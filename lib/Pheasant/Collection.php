@@ -29,6 +29,18 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 		});
 	}
 
+	/**
+	 * Return one and one only object from a collection, throws an exception
+	 * if there is zero of >1 objects
+	 */
+	public function one()
+	{
+		if($this->count() != 1)
+			throw new Exception("Expected only 1 element, found ".$this->count());
+
+		return $this->offsetGet(0);
+	}
+
 	public function toArray()
 	{
 		return iterator_to_array($this->_iterator);

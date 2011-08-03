@@ -15,18 +15,18 @@ class Criteria
 	/**
 	 * Constructor
 	 * @param $where either a query string, or a key=>val array
-	 * @param $params parameters to bind into the query string
+	 * @param $params mixed, parameters to bind into the query string
 	 */
 	public function __construct($where=null, $params=array())
 	{
 		if(is_array($where))
 		{
 			foreach($where as $key=>$val)
-				$this->and($this->bind($key.'=?', $val));
+				$this->and($this->bind($key.'=?', array($val)));
 		}
 		else
 		{
-			$this->_sql = is_null($where) ? '' : $this->bind($where, $params);
+			$this->_sql = is_null($where) ? '' : $this->bind($where, (array)$params);
 		}
 	}
 
@@ -37,7 +37,7 @@ class Criteria
 	public function bind($sql, $params=array())
 	{
 		$binder = new Binder();
-		return $binder->bind($sql, $params);
+		return $binder->magicBind($sql, (array)$params);
 	}
 
 	/**

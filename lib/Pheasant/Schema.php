@@ -42,16 +42,33 @@ class Schema
 	}
 
 	/**
+	 * The name of the domain objectclass
+	 * @return string
+	 */
+	public function className()
+	{
+		return $this->_class;
+	}
+
+	/**
 	 * Returns an identity for a domain object
 	 * @return Identity
 	 */
 	public function identity($object)
 	{
-		$properties = array_filter($this->_props, function($property) {
+		return new Identity($this->primary(), $object);
+	}
+
+	/**
+	 * Returns an array of Properties that form the primary keys
+	 * @return array
+	 */
+	public function primary()
+	{
+		return array_filter($this->_props, function($property) {
 			return $property->type->options->primary;
 		});
 
-		return new Identity($properties, $object);
 	}
 
 	/**

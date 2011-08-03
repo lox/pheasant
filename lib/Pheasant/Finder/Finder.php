@@ -11,5 +11,5 @@ interface Finder
 	 * Finds a collection of domain objects
 	 * @return Collection
 	 */
-	public function find($class, $sql=null, $params=array());
+	public function find($class, \Pheasant\Query\Criteria $criteria=null);
 }

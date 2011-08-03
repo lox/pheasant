@@ -24,12 +24,10 @@ class DomainObject
 		$pheasant->initialize($this);
 
 		// pull default values from schema
-		$schema = $pheasant->schema($this);
-		$this->_data = $schema->defaults();
+		$this->_data = $pheasant->schema($this)->defaults();
 
 		// call user-defined constructor
-		call_user_func_array(array($this,'construct'),
-			func_get_args());
+		call_user_func_array(array($this, 'construct'), func_get_args());
 
 		// set up events
 		$this->events()
@@ -48,8 +46,7 @@ class DomainObject
 		$class = get_called_class();
 		$instance = $class::fromArray(array());
 
-		$pheasant->register($class,
-			method_exists($class, 'mapper')
+		$pheasant->register($class, method_exists($class, 'mapper')
 				? $instance->mapper()
 				: new Pheasant\Mapper\RowMapper($instance->tableName())
 				);
@@ -244,12 +241,9 @@ class DomainObject
 	 */
 	public static function __callStatic($method, $params)
 	{
-		if(preg_match('/^find/',$method))
+		if(preg_match('/^(find|all$|byId$|one)/',$method))
 		{
-			$class = get_called_class();
-			$finder = Pheasant::instance()->finderFor($class);
-			array_unshift($params, $class);
-			return call_user_func_array(array($finder, $method), $params);
+			return Finder\Wizard::fromClass(get_called_class())->dispatch($method, $params);
 		}
 		else if(preg_match('/^(hasOne|hasMany|belongsTo)$/',$method))
 		{

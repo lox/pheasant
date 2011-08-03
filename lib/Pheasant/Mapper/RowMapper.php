@@ -5,6 +5,7 @@ namespace Pheasant\Mapper;
 use Pheasant;
 use Pheasant\Collection;
 use Pheasant\Query\Query;
+use Pheasant\Query\Criteria;
 use Pheasant\Finder\Finder;
 
 /**
@@ -98,22 +99,22 @@ class RowMapper extends AbstractMapper implements Finder
 	/* (non-phpdoc)
 	 * @see Mapper::query()
 	 */
-	public function query($sql=null, $params=array())
+	public function query(Criteria $criteria=null)
 	{
 		$query = new Query();
 		$query->from($this->_tableName);
 
 		// add optional where clause
-		if($sql) $query->where($sql, $params);
+		if($criteria) $query->where($criteria->toSql());
 
 		return $query;
 	}
 
 	/* (non-phpdoc)
-	 * @see Mapper::find()
+	 * @see Finder::find()
 	 */
-	public function find($class, $sql=null, $params=array())
+	public function find($class, Criteria $criteria=null)
 	{
-		return new Collection($class, $this->query($sql, $params));
+		return new Collection($class, $this->query($criteria));
 	}
 }
