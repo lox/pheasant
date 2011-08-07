@@ -3,6 +3,7 @@
 namespace Pheasant\Database\Mysqli;
 
 use Pheasant\Database\Dsn;
+use Pheasant\Database\FilterChain;
 
 /**
  * A connection to a MySql database
@@ -16,8 +17,6 @@ class Connection
 		$_filter
 		;
 
-	public $debug=false;
-
 	/**
 	 * Constructor
 	 * @param string a database uri
@@ -25,6 +24,7 @@ class Connection
 	public function __construct(Dsn $dsn)
 	{
 		$this->_dsn = $dsn;
+		$this->_filter = new FilterChain();
 		$this->_charset = isset($this->_dsn->params['charset']) ?
 		 	$this->_dsn->params['charset'] : 'utf8';	
 	}
@@ -91,43 +91,22 @@ class Connection
 		if(!is_array($params))
 			$params = array_slice(func_get_args(),1);
 
-		$result = $this->_query($params
-			? $this->binder()->bind($sql, $params) : $sql);
+		$mysqli = $this->_mysqli();
+		$sql = count($params) ? $this->binder()->bind($sql, $params) : $sql;
+
+		// delegate execution to the filter chain
+		$result = $this->_filter->execute($sql, function($sql) use($mysqli) {
+			try
+			{
+				return $mysqli->query($sql, MYSQLI_STORE_RESULT);
+			}
+			catch(\mysqli_sql_exception $e)
+			{
+				throw new \Exception($e->getMessage(), $e->getCode());
+			}
+		});
 
 		return new ResultSet($this->_link, $result === true ? false : $result);
-	}
-
-	/**
-	 * Executes an SQL query, outputs debugging if needed
-	 * @return MySQLi_Result
-	 */
-	private function _query($sql)
-	{
-		if($this->debug)
-			$timer = microtime(true);
-
-		if(isset($this->_filter))
-			$sql = call_user_func($this->_filter, $sql);
-
-		$result = $this->_mysqli()->query($sql, MYSQLI_STORE_RESULT);
-
-		if($this->debug)
-		{
-			printf("<pre>\n");
-			printf("-------------------------------\n");
-			printf("database: %s\n",$this->_dsn->database);
-			printf("sql: %s\ntime: %.2fms\n",
-				$sql, (microtime(true) - $timer) * 1000);
-
-			if(is_object($result))
-				printf("returned %d rows\n", $result->num_rows);
-			printf("</pre>\n");
-		}
-
-		if(!$result)
-			throw new Exception($this->_link->error, $this->_link->errno);
-
-		return $result;
 	}
 
 	/**
@@ -181,12 +160,11 @@ class Connection
 	}
 
 	/**
-	 * Define a callback for filtering all queries
-	 * @return string
+	 * Returns the internal filter chain 
+	 * @return FilterChain 
 	 */
-	public function filterCallback($callback)
+	public function filterChain()
 	{
-		$this->_filter = $callback;
-		return $this;
+		return $this->_filter;
 	}
 }
