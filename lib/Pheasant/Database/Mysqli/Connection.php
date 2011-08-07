@@ -22,11 +22,22 @@ class Connection
 	 * Constructor
 	 * @param string a database uri
 	 */
-	public function __construct($dsn)
+	public function __construct(Dsn $dsn)
 	{
-		$this->_dsn = is_string($dsn) ? new Dsn($dsn) : $dsn;
+		$this->_dsn = $dsn;
 		$this->_charset = isset($this->_dsn->params['charset']) ?
 		 	$this->_dsn->params['charset'] : 'utf8';	
+	}
+
+	/**
+	 * Forces a connection, re-connects if already connected
+	 * @chainable
+	 */
+	public function connect()
+	{
+		unset($this->_link);
+		$this->_mysqli();
+		return $this;
 	}
 
 	/**
@@ -46,13 +57,26 @@ class Connection
 	{
 		if(!isset($this->_link))
 		{
-			$this->_link = new \mysqli(
-				$this->_dsn->host, $this->_dsn->user, $this->_dsn->pass, $this->_dsn->database, $this->_dsn->port);
+			if(!$this->_link = mysqli_init())
+				throw new Exception("Mysql initialization failed");
 
-			if ($this->_link->connect_error)
-				throw new Exception($this->_link->connect_error, $this->_link->connect_errno);
+			// this is per process in 5.3.4+
+			mysqli_report(MYSQLI_REPORT_STRICT);
 
-			$this->execute('SET NAMES ?', $this->charset());
+			$this->_link->options(MYSQLI_INIT_COMMAND, 'SET NAMES '. $this->charset());
+			$this->_link->options(MYSQLI_OPT_CONNECT_TIMEOUT, 5);
+
+			try
+			{
+				$this->_link->real_connect(
+					$this->_dsn->host, $this->_dsn->user, $this->_dsn->pass, 
+					$this->_dsn->database, $this->_dsn->port
+				);
+			}
+			catch(\mysqli_sql_exception $e)
+			{
+				throw new Exception($e->getMessage(), $e->getCode());
+			}
 		}
 
 		return $this->_link;
@@ -89,12 +113,15 @@ class Connection
 
 		if($this->debug)
 		{
-			if(php_sapi_name() != 'cli') printf("<pre>\n");
+			printf("<pre>\n");
 			printf("-------------------------------\n");
-			printf("database: %s thread_id: %d\n", $this->_dsn->database, $this->_link->thread_id);
-			printf("sql: %s\ntime: %.2fms\n", $sql, (microtime(true) - $timer) * 1000);
-			printf($this->_link->info);
-			if(php_sapi_name() != 'cli') printf("</pre>\n");
+			printf("database: %s\n",$this->_dsn->database);
+			printf("sql: %s\ntime: %.2fms\n",
+				$sql, (microtime(true) - $timer) * 1000);
+
+			if(is_object($result))
+				printf("returned %d rows\n", $result->num_rows);
+			printf("</pre>\n");
 		}
 
 		if(!$result)

@@ -62,4 +62,26 @@ class Dsn
 			$this->scheme, $userpass, $this->host, $this->port, $dbname, $qs
 		);
 	}	
+
+	/**
+	 * Returns a clone with certain parameters changed
+	 */
+	public function copy($alter=array())
+	{
+		$clone = clone $this;
+
+		foreach($alter as $prop=>$value)
+			$clone->$prop = $value;
+
+		return $clone;
+	}
+
+	/**
+	 * Static constructor
+	 * @return Dsn
+	 */
+	public static function fromString($dsn)
+	{
+		return new self($dsn);
+	}
 }
