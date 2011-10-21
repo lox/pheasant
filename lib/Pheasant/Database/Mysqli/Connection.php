@@ -60,23 +60,16 @@ class Connection
 			if(!$this->_link = mysqli_init())
 				throw new Exception("Mysql initialization failed");
 
-			// this is per process in 5.3.4+
-			mysqli_report(MYSQLI_REPORT_STRICT);
-
 			$this->_link->options(MYSQLI_INIT_COMMAND, 'SET NAMES '. $this->charset());
 			$this->_link->options(MYSQLI_OPT_CONNECT_TIMEOUT, 5);
 
-			try
-			{
-				$this->_link->real_connect(
-					$this->_dsn->host, $this->_dsn->user, $this->_dsn->pass, 
-					$this->_dsn->database, $this->_dsn->port
-				);
-			}
-			catch(\mysqli_sql_exception $e)
-			{
-				throw new Exception($e->getMessage(), $e->getCode());
-			}
+			$this->_link->real_connect(
+				$this->_dsn->host, $this->_dsn->user, $this->_dsn->pass, 
+				$this->_dsn->database, $this->_dsn->port
+			);
+
+			if ($this->_link->connect_error)
+				throw new Exception($this->_link->connect_error, $this->_link->connect_errno);
 		}
 
 		return $this->_link;
@@ -96,14 +89,12 @@ class Connection
 
 		// delegate execution to the filter chain
 		$result = $this->_filter->execute($sql, function($sql) use($mysqli) {
-			try
-			{
-				return $mysqli->query($sql, MYSQLI_STORE_RESULT);
-			}
-			catch(\mysqli_sql_exception $e)
-			{
-				throw new \Exception($e->getMessage(), $e->getCode());
-			}
+			$r = $mysqli->query($sql, MYSQLI_STORE_RESULT);
+
+			if($mysqli->error)
+				throw new \Exception($mysqli->error, $mysqli->errno);
+
+			return $r;
 		});
 
 		return new ResultSet($this->_link, $result === true ? false : $result);

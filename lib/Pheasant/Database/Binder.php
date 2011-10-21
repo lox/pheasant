@@ -13,6 +13,9 @@ class Binder
 	 */
 	public function bind($sql, array $params=array())
 	{
+		if(count($params)==0)
+			return $sql;
+
 		$binder = $this;
 		$function = function($m) use($binder, &$params) {
 			if(!count($params))
@@ -33,6 +36,9 @@ class Binder
 	 */
 	public function magicBind($sql, array $params=array())
 	{
+		if(count($params) == 0)
+			return $sql;
+
 		$binder = $this;
 		$function = function($m) use($binder, &$params) {
 			if(!count($params))

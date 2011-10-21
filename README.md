@@ -76,7 +76,7 @@ class Author extends DomainObject
 }
 
 // configure database connection
-Pheasant::initialize('mysql://localhost:/mydatabase');
+Pheasant::setup('mysql://localhost:/mydatabase');
 
 // create some objects
 $author = new Author(array('fullname'=>'Lachlan'));
