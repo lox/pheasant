@@ -1,6 +1,6 @@
 <?php
 
-namespace Pheasant\Database\Mysqli;
+namespace Pheasant\Database\Sqlite;
 
 class ResultIterator implements \SeekableIterator, \Countable
 {
@@ -8,14 +8,16 @@ class ResultIterator implements \SeekableIterator, \Countable
 	private $_position;
 	private $_currentRow;
 	private $_hydrator;
+	private $_count;
 
 	/**
 	* Constructor
-	* @param MySQLi_Result $result
+	* @param SQLite3Result $result
 	*/
-	public function __construct($result, )
+	public function __construct($result, $count)
 	{
 		$this->_result = $result;
+		$this->_count = $count;
 	}
 
 	/**
@@ -24,7 +26,7 @@ class ResultIterator implements \SeekableIterator, \Countable
 	*/
 	public function __destruct()
 	{
-		$this->_result->free();
+		$this->_result->finalize();
 	}
 
 	/**
@@ -58,7 +60,7 @@ class ResultIterator implements \SeekableIterator, \Countable
 	*/
 	public function valid()
 	{
-		return $this->_position < $this->_result->num_rows;
+		return $this->_position < $this->_count;
 	}
 
 	/**
@@ -86,9 +88,11 @@ class ResultIterator implements \SeekableIterator, \Countable
 	{
 		if($this->_position !== $position)
 		{
+			/*
 			$this->_result->data_seek($this->_position = $position);
 			$this->_currentRow = $this->_fetch();
 			$this->_position = $position;
+			 */
 		}
 	}
 
@@ -97,7 +101,7 @@ class ResultIterator implements \SeekableIterator, \Countable
 	 */
 	public function count()
 	{
-		return $this->_result->num_rows;
+		return $this->_count;
 	}
 
 	/**
@@ -106,9 +110,10 @@ class ResultIterator implements \SeekableIterator, \Countable
 	private function _fetch()
 	{
 		return isset($this->_hydrator) 
-			? call_user_func($this->_hydrator, $this->_result->fetch_array(MYSQLI_ASSOC)) 
-		  : $this->_result->fetch_array(MYSQLI_ASSOC)
+			? call_user_func($this->_hydrator, $this->_result->fetchArray(SQLITE3_ASSOC)) 
+		  : $this->_result->fetchArray(SQLITE3_ASSOC)
 			;
 	}
 }
+
 

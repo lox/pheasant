@@ -7,7 +7,7 @@ use \Pheasant\Database\Dsn;
 require_once(__DIR__.'/../vendor/simpletest/autorun.php');
 require_once(__DIR__.'/base.php');
 
-class DsnTestCase extends \Pheasant\Tests\MysqlTestCase
+class DsnTestCase extends \Pheasant\Tests\DbTestCase
 {
 	public function testParsingADsn()
 	{

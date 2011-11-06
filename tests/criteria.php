@@ -7,7 +7,7 @@ use \Pheasant\Query\Criteria;
 require_once(__DIR__.'/../vendor/simpletest/autorun.php');
 require_once(__DIR__.'/base.php');
 
-class CriteriaTestCase extends \Pheasant\Tests\MysqlTestCase
+class CriteriaTestCase extends \Pheasant\Tests\DbTestCase
 {
 	public function testBasicCriteria()
 	{

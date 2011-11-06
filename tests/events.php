@@ -19,7 +19,7 @@ class MyDomainObject extends DomainObject
 	}
 }
 
-class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
+class EventsTestCase extends \Pheasant\Tests\DbTestCase
 {
 	public function setUp()
 	{

@@ -66,7 +66,7 @@ class SecretIdentity extends DomainObject
 	}
 }
 
-class RelationshipsTestCase extends \Pheasant\Tests\MysqlTestCase
+class RelationshipsTestCase extends \Pheasant\Tests\DbTestCase
 {
 	public function setUp()
 	{

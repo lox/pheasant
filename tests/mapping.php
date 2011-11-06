@@ -30,7 +30,7 @@ class Post extends DomainObject
 	}
 }
 
-class BasicMappingTestCase extends \Pheasant\Tests\MysqlTestCase
+class BasicMappingTestCase extends \Pheasant\Tests\DbTestCase
 {
 	public function setUp()
 	{

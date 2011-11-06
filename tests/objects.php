@@ -40,7 +40,7 @@ class AnotherAnimal extends DomainObject
 	}
 }
 
-class DomainObjectTestCase extends \Pheasant\Tests\MysqlTestCase
+class DomainObjectTestCase extends \Pheasant\Tests\DbTestCase
 {
 	public function setUp()
 	{

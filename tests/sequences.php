@@ -25,7 +25,7 @@ class Person extends DomainObject
 	}
 }
 
-class SequenceTestCase extends \Pheasant\Tests\MysqlTestCase
+class SequenceTestCase extends \Pheasant\Tests\DbTestCase
 {
 	public function setUp()
 	{
@@ -47,7 +47,7 @@ class SequenceTestCase extends \Pheasant\Tests\MysqlTestCase
 	}
 }
 
-class DomainObjectSequenceTestCase extends \Pheasant\Tests\MysqlTestCase
+class DomainObjectSequenceTestCase extends \Pheasant\Tests\DbTestCase
 {
 	public function setUp()
 	{

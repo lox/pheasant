@@ -1,19 +1,18 @@
 <?php
 
-namespace Pheasant\Database\Mysqli;
+namespace Pheasant\Database\Sqlite;
 
 use Pheasant\Database\Dsn;
 use Pheasant\Database\FilterChain;
 
 /**
- * A connection to a MySql database
+ * A connection to a Sqlite database
  */
 class Connection
 {
 	private
 		$_dsn,
 		$_link,
-		$_charset,
 		$_filter
 		;
 
@@ -25,8 +24,6 @@ class Connection
 	{
 		$this->_dsn = $dsn;
 		$this->_filter = new FilterChain();
-		$this->_charset = isset($this->_dsn->params['charset']) ?
-		 	$this->_dsn->params['charset'] : 'utf8';	
 	}
 
 	/**
@@ -36,7 +33,7 @@ class Connection
 	public function connect()
 	{
 		unset($this->_link);
-		$this->_mysqli();
+		$this->_sqlite();
 		return $this;
 	}
 
@@ -46,30 +43,18 @@ class Connection
 	 */
 	public function charset()
 	{
-		return $this->_charset;
+		return 'utf8';
 	}
 
 	/**
-	 * Lazily creates the internal mysqli object
-	 * @return MySQLi
+	 * Lazily creates the internal sqlite connection
+	 * @return Sqlite3
 	 */
-	private function _mysqli()
+	private function _sqlite()
 	{
 		if(!isset($this->_link))
 		{
-			if(!$this->_link = mysqli_init())
-				throw new Exception("Mysql initialization failed");
-
-			$this->_link->options(MYSQLI_INIT_COMMAND, 'SET NAMES '. $this->charset());
-			$this->_link->options(MYSQLI_OPT_CONNECT_TIMEOUT, 5);
-
-			@$this->_link->real_connect(
-				$this->_dsn->host, $this->_dsn->user, $this->_dsn->pass, 
-				$this->_dsn->database, $this->_dsn->port
-			);
-
-			if ($this->_link->connect_error)
-				throw new Exception("Pheasant connect error: {$this->_link->connect_error}", $this->_link->connect_errno);
+			$this->_link = new \SQLite3(':memory:');
 		}
 
 		return $this->_link;
@@ -84,15 +69,15 @@ class Connection
 		if(!is_array($params))
 			$params = array_slice(func_get_args(),1);
 
-		$mysqli = $this->_mysqli();
+		$sqlite = $this->_sqlite();
 		$sql = count($params) ? $this->binder()->bind($sql, $params) : $sql;
 
 		// delegate execution to the filter chain
-		$result = $this->_filter->execute($sql, function($sql) use($mysqli) {
-			$r = @$mysqli->query($sql, MYSQLI_STORE_RESULT);
+		$result = $this->_filter->execute($sql, function($sql) use($sqlite) {
+			$r = @$sqlite->query($sql);
 
-			if($mysqli->error)
-				throw new \Exception($mysqli->error, $mysqli->errno);
+			if(!$r)
+				throw new Exception($sqlite->lastErrorMsg());
 
 			return $r;
 		});
@@ -122,7 +107,7 @@ class Connection
 	 */
 	public function binder()
 	{
-		return new Binder($this->_mysqli());
+		return new \Pheasant\Database\Binder();
 	}
 
 	/**
@@ -159,3 +144,4 @@ class Connection
 		return $this->_filter;
 	}
 }
+

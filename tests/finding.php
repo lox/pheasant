@@ -48,7 +48,7 @@ class UserPref extends DomainObject
 	}	
 }
 
-class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
+class FindingTestCase extends \Pheasant\Tests\DbTestCase
 {
 	public function setUp()
 	{

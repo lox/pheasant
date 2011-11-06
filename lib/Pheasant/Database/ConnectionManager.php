@@ -93,6 +93,8 @@ class ConnectionManager
 			case 'mysql':
 			case 'mysqli':
 				return new Mysqli\Connection($dsn);
+			case 'sqlite':
+				return new Sqlite\Connection($dsn);
 		}
 
 		throw new \Pheasant\Exception("Unknown driver $driver");

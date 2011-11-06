@@ -28,16 +28,26 @@ namespace Pheasant\Tests
 {
 	\Mock::generate('\Pheasant\Database\Mysqli\Connection','MockConnection');
 
-	class MysqlTestCase extends \UnitTestCase
+	class DbTestCase extends \UnitTestCase
 	{
 		public function before($method)
 		{
 			parent::before($method);
 
+			switch(strtolower(getenv('PHEASANT_DRIVER')))
+			{
+				case 'mysql': 
+					$dsn = 'mysql://pheasant:pheasant@localhost/pheasanttest?charset=utf8';
+					break;
+				case 'sqlite':
+					$dsn = 'sqlite://memory';
+					break;
+				default:
+					throw new \InvalidArgumentException("Unsupported driver ".getenv('PHEASANT_DRIVER'));	
+			}
+
 			// initialize a new pheasant
-			$this->pheasant = \Pheasant::setup(
-				'mysql://pheasant:pheasant@localhost/pheasanttest?charset=utf8'
-				);
+			$this->pheasant = \Pheasant::setup($dsn);
 
 			// wipe sequence pool
 			$this->pheasant->connection()

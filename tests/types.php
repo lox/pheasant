@@ -8,7 +8,7 @@ use \Pheasant\Database\Mysqli;
 require_once(__DIR__.'/../vendor/simpletest/autorun.php');
 require_once(__DIR__.'/base.php');
 
-class TypesTestCase extends \Pheasant\Tests\MysqlTestCase
+class TypesTestCase extends \Pheasant\Tests\DbTestCase
 {
 	public function testInteger()
 	{

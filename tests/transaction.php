@@ -6,7 +6,7 @@ use \Pheasant\Database\Mysqli\Transaction;
 require_once(__DIR__.'/../vendor/simpletest/autorun.php');
 require_once(__DIR__.'/base.php');
 
-class TransactionTestCase extends \Pheasant\Tests\MysqlTestCase
+class TransactionTestCase extends \Pheasant\Tests\DbTestCase
 {
 	public function testBasicSuccessfulTransaction()
 	{
