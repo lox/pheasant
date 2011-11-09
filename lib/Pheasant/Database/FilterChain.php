@@ -51,16 +51,16 @@ class FilterChain
 	public function execute($sql, $executor)
 	{
 		foreach($this->_onquery as $callback)
-			$sql = $callback($sql);
+			call_user_func($callback, $sql);
 
 		try
 		{
-			return $executor($sql);
+			return call_user_func($executor, $sql);
 		}
 		catch(\Exception $e)
 		{
 			foreach($this->_onerror as $callback)
-				$callback($e);
+				call_user_func($callback, $e);
 
 			throw $e;
 		}
