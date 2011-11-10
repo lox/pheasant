@@ -69,4 +69,13 @@ class BindingTestCase extends \Pheasant\Tests\MysqlTestCase
 		$binder = new Binder();
 		$binder->bind('x=? and y=?', array(24));
 	}	
+
+	public function testBoolBinding()
+	{
+		$binder = new Binder();
+		$this->assertEqual(
+			$binder->bind('column1=? and column2=?', array(false, true)),
+			"column1=0 and column2=1"
+		);
+	}
 }

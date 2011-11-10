@@ -42,7 +42,7 @@ class Binder
 		$binder = $this;
 		$function = function($m) use($binder, &$params) {
 			if(!count($params))
-				throw new \InvalidArgumentException("Not enough params passed to bind()");
+				throw new \InvalidArgumentException("Not enough params passed to magicBind()");
 
 			$op = isset($m[3]) ? $m[3] : false;
 			$param = array_shift($params);
@@ -68,16 +68,22 @@ class Binder
 	 */
 	public function escape($string)
 	{
-		return is_null($string) ? $string : addslashes($string);
+		return is_string($string) ? addslashes($string) : $string;
 	}
 
 	/**
-	 * Surrounds a string with quote marks, null is returned as NULL
+	 * Surrounds a string with quote marks, null is returned as NULL, bools 
+	 * converted to 1|0
 	 * @return string
 	 */
 	public function quote($string)
 	{
-		return is_null($string) ? 'NULL' : sprintf("'%s'", $string);
+		if(is_null($string))
+			return 'NULL';
+		else if(is_bool($string))
+			return $string === true ? 1 : 0;
+		else
+			return sprintf("'%s'", $string);
 	}
 
 	/**
