@@ -51,7 +51,7 @@ class FilterChain
 	public function execute($sql, $executor)
 	{
 		foreach($this->_onquery as $callback)
-			call_user_func($callback, $sql);
+			$sql = call_user_func($callback, $sql);
 
 		try
 		{
