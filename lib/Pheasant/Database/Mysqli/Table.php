@@ -132,7 +132,8 @@ class Table
 	}
 
 	/**
-	 * Tries to update a record, or inserts if it doesn't exist
+	 * Tries to update a record, or inserts if it doesn't exist. Worth noting 
+	 * that affectedRows will be 2 on an update, 1 on an insert.
 	 */
 	public function upsert($data)
 	{
