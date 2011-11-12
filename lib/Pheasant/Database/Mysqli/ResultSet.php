@@ -53,7 +53,7 @@ class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 	}
 
 	/**
-	 * Fetch the next row
+	 * Fetch the next row as an associative array
 	 */
 	public function fetch()
 	{
@@ -74,6 +74,16 @@ class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 	{
 		$row = $this->fetch();
 		return $row ? array_pop(array_values($row)) : null;
+	}
+
+	/**
+	 * Fetches an iterator that only returns a particular column, defaults to the 
+	 * first
+	 * @return Iterator
+	 */
+	public function column($column=null)
+	{
+		return new ColumnIterator($this->getIterator(), $column);	
 	}
 
 	/**
