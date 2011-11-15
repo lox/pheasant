@@ -17,7 +17,7 @@ class BelongsTo extends HasOne
 		$query = $this->query(
 			"{$this->foreign}=?", $object->get($this->local));
 
-		return $this->hydrate($query->execute()->fetch(), true);
+		return $this->hydrate($query->execute()->row(), true);
 	}
 
 	/* (non-phpdoc)

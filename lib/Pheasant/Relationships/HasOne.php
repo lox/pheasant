@@ -31,7 +31,7 @@ class HasOne extends RelationshipType
 		if(!count($result))
 			throw new \Pheasant\Exception("Failed to find a $key (via $this->foreign)");
 
-		return $this->hydrate($result->fetch(), true);
+		return $this->hydrate($result->row(), true);
 	}
 
 	/* (non-phpdoc)

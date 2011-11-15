@@ -75,7 +75,7 @@ class Table
 			'SELECT count(*) FROM INFORMATION_SCHEMA.TABLES '.
 			'WHERE Table_Name=? AND TABLE_SCHEMA=DATABASE()',
 			$this->_name
-			)->fetchOne();
+			)->scalar();
 	}
 
 	/**

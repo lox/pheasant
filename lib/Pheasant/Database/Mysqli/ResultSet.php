@@ -53,9 +53,10 @@ class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 	}
 
 	/**
-	 * Fetch the next row as an associative array
+	 * Returns the next available row as an associative array.
+	 * @return array or NULL on EOF
 	 */
-	public function fetch()
+	public function row()
 	{
 		$iterator = $this->getIterator();
 
@@ -64,16 +65,23 @@ class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 
 		$value = $iterator->current();
 		$iterator->next();
+
 		return $value;
 	}
 
 	/**
-	 * Fetch the next row, return the first column
+	 * Returns the nth column from the current row.
+	 * @return scalar or NULL on EOF
 	 */
-	public function fetchOne()
+	public function scalar($idx=0)
 	{
-		$row = $this->fetch();
-		return $row ? array_pop(array_values($row)) : null;
+		$row = $this->row();
+
+		if(is_null($row)) 
+			return NULL;
+
+		$values = is_numeric($idx) ? array_values($row) : $row;
+		return $values[$idx];
 	}
 
 	/**
@@ -84,6 +92,16 @@ class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 	public function column($column=null)
 	{
 		return new ColumnIterator($this->getIterator(), $column);	
+	}
+
+	/**
+	 * Seeks to a particular row offset
+	 * @chainable
+	 */
+	public function seek($offset)
+	{
+		$this->getIterator()->seek($offset);
+		return $this;
 	}
 
 	/**

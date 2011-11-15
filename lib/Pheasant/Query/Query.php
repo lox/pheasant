@@ -192,7 +192,7 @@ class Query
 		return $query
 			->select("count(*) count")->limit(1)
 			->execute()
-			->fetchOne()
+			->scalar()
 			;
 	}
 }

@@ -26,7 +26,7 @@ class TableTestCase extends \Pheasant\Tests\MysqlTestCase
 		$this->table->insert(array('firstname'=>'Llama', 'lastname'=>'Herder'));
 		$this->assertRowCount('select * from user', 1);
 		$this->assertEqual(
-			$this->connection()->execute("select * from user where userid=1")->fetch(),
+			$this->connection()->execute("select * from user where userid=1")->row(),
 			array('userid'=>1, 'firstname'=>'Llama', 'lastname'=>'Herder')
 		);
 	}
@@ -39,7 +39,7 @@ class TableTestCase extends \Pheasant\Tests\MysqlTestCase
 		$this->table->update(array('firstname'=>'Bob'), new Pheasant\Query\Criteria('userid=?', 1));
 
 		$this->assertEqual(
-			$this->connection()->execute("select * from user where userid=1")->fetch(),
+			$this->connection()->execute("select * from user where userid=1")->row(),
 			array('userid'=>1, 'firstname'=>'Bob', 'lastname'=>'Herder')
 		);
 	}	
@@ -50,7 +50,7 @@ class TableTestCase extends \Pheasant\Tests\MysqlTestCase
 		$this->assertRowCount('select * from user', 1);
 
 		$this->assertEqual(
-			$this->connection()->execute("select * from user where userid=1")->fetch(),
+			$this->connection()->execute("select * from user where userid=1")->row(),
 			array('userid'=>1, 'firstname'=>'Llama', 'lastname'=>'Herder')
 		);
 	}		
