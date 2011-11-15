@@ -74,4 +74,24 @@ class TypesTestCase extends \Pheasant\Tests\MysqlTestCase
 		$this->assertEqual($map->columnDef('test'),
 			'`test` char(4)');
 	}
+
+	public function testBoolean()
+	{
+		$type = new Types\Boolean();
+		$this->assertEqual($type->type, Types\Boolean::TYPE);
+		$this->assertEqual($type->length, NULL);
+
+		// check the type conversion
+		$map = new Mysqli\TypeMap(array('test'=>$type));
+		$this->assertEqual($map->columnDef('test'),
+			'`test` boolean');
+
+		$notnull = new Types\Boolean('notnull');
+
+		// check not-null works
+		$map = new Mysqli\TypeMap(array('test'=>$notnull));
+		$this->assertEqual($map->columnDef('test'),
+			'`test` boolean not null');
+
+	}	
 }

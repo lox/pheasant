@@ -27,7 +27,9 @@ class TypeMap
 		$type = $this->_types[$colname];
 		$options = $this->_nativeOptions($type);
 		$length = $type->length;
-		$format = '`%s` %s(%s)';
+
+		// null lengths don't have a width specifier
+		$format = is_null($length) ? '`%s` %s' : '`%s` %s(%s)';
 
 		switch($type->type)
 		{
@@ -98,6 +100,7 @@ class TypeMap
 			case 'integer': return 'int';
 			case 'decimal': return 'decimal';
 			case 'character': return 'char';
+			case 'boolean' : return 'boolean';
 
 			// fail if there is no match
 			default: throw new Exception("Unknown type {$type->type}");
