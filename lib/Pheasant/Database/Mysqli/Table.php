@@ -162,7 +162,16 @@ class Table
 			$this->_buildSet($data)
 			), array_values($data)
 		);
-	}	
+	}		
+
+	/**
+	 * Builds a Query object for the table
+	 */
+	public function query()
+	{
+		$query = new \Pheasant\Query\Query($this->_connection);
+		return $query->from($this->_name);
+	}
 
 	/**
 	 * Builds a series of X=?, Y=?, Z=?

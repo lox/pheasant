@@ -17,6 +17,12 @@ class Connection
 		$_filter
 		;
 
+	public static 
+		$counter=0, 
+		$timer=0,
+		$debug=false
+		;
+
 	/**
 	 * Constructor
 	 * @param string a database uri
@@ -89,7 +95,19 @@ class Connection
 
 		// delegate execution to the filter chain
 		$result = $this->_filter->execute($sql, function($sql) use($mysqli) {
+
+			\Pheasant\Database\Mysqli\Connection::$counter++;
+
+			$timer = microtime(true);
 			$r = $mysqli->query($sql, MYSQLI_STORE_RESULT);
+
+			\Pheasant\Database\Mysqli\Connection::$timer += microtime(true)-$timer;
+
+			if(\Pheasant\Database\Mysqli\Connection::$debug)
+			{
+				printf('<pre>Pheasant executed <code>%s</code> in %.2fms, returned %d rows</pre>',
+					$sql, (microtime(true)-$timer)*1000, is_object($r) ? $r->num_rows : 0);
+			}
 
 			if($mysqli->error)
 				throw new \Exception($mysqli->error, $mysqli->errno);
