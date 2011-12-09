@@ -14,7 +14,8 @@ class Connection
 		$_dsn,
 		$_link,
 		$_charset,
-		$_filter
+		$_filter,
+		$_sequencePool
 		;
 
 	public static 
@@ -105,8 +106,8 @@ class Connection
 
 			if(\Pheasant\Database\Mysqli\Connection::$debug)
 			{
-				printf('<pre>Pheasant executed <code>%s</code> in %.2fms, returned %d rows</pre>',
-					$sql, (microtime(true)-$timer)*1000, is_object($r) ? $r->num_rows : 0);
+				printf('<pre>Pheasant executed <code>%s</code> on thread #%d in %.2fms, returned %d rows</pre>',
+					$sql, $mysqli->thread_id, (microtime(true)-$timer)*1000, is_object($r) ? $r->num_rows : 0);
 			}
 
 			if($mysqli->error)
@@ -156,7 +157,14 @@ class Connection
 	 */
 	public function sequencePool()
 	{
-		return new SequencePool($this);
+		if(!isset($this->_sequencePool))
+		{
+			// use a seperate connection, ensures transaction rollback
+			// doesn't clobber sequences
+			$this->_connectionPool = new SequencePool(new self($this->_dsn)); 
+		}
+
+		return $this->_connectionPool;
 	}
 
 	/**

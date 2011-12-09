@@ -73,7 +73,7 @@ class Binder
 
 	/**
 	 * Surrounds a string with quote marks, null is returned as NULL, bools 
-	 * converted to 1|0
+	 * converted to 1|empty string for compatibility
 	 * @return string
 	 */
 	public function quote($string)
@@ -81,7 +81,7 @@ class Binder
 		if(is_null($string))
 			return 'NULL';
 		else if(is_bool($string))
-			return $string === true ? 1 : 0;
+			return $string === true ? 1 : "''";
 		else
 			return sprintf("'%s'", $string);
 	}
