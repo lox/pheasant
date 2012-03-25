@@ -46,11 +46,11 @@ class Wizard
 		// handle find or one with sql params
 		else if(($method == 'find' || $method == 'one') && is_string($params[0]))
 		{
-			$rs = $this->find(new Criteria(array_shift($params), $params)); 
+			$rs = $this->find(new Criteria(array_shift($params), $params));
 			return $method == 'one' ? $rs->one() : $rs;
 		}
 
-		// handle magical finders  
+		// handle magical finders
 		else if(preg_match('/^(findBy|one)/', $method))
 		{
 			$rs = $this->find(new Criteria($this->_sqlFromMethod($method), $params));
@@ -85,11 +85,11 @@ class Wizard
 		return new self(
 			\Pheasant::instance()->schema($className),
 			\Pheasant::instance()->finderFor($className)
-		);	
+		);
 	}
 
 	/**
-	 * Find an object by primary key 
+	 * Find an object by primary key
 	 */
 	private function _findById($params)
 	{
@@ -102,7 +102,7 @@ class Wizard
 	}
 
 	/**
-	 * Derives an sql clause from a finder method 
+	 * Derives an sql clause from a finder method
 	 * e.g findByLlamaAndBlargh becomes llama=? and blargh=?
 	 */
 	private function _sqlFromMethod($method)
@@ -114,8 +114,8 @@ class Wizard
 		$sql = strtolower(preg_replace('/(?<=[a-z0-9\b])(Or|And)(?=[A-Z])/',' $1 ',$m[2]));
 
 		// add parameter binds
-		return preg_replace_callback('/\b([\w-]+)\b/', function($m) { 
+		return preg_replace_callback('/\b([\w-]+)\b/', function($m) {
 			return ($m[0] != 'or' && $m[0] != 'and') ? "{$m[0]}=?" : $m[0];
-		}, $sql); 
+		}, $sql);
 	}
 }
