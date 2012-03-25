@@ -51,10 +51,10 @@ class Wizard
 		}
 
 		// handle magical finders
-		else if(preg_match('/^(findBy|one)/', $method))
+		else if(preg_match('/^(findBy|oneBy)/', $method))
 		{
 			$rs = $this->find(new Criteria($this->_sqlFromMethod($method), $params));
-			return $method == 'one' ? $rs->one() : $rs;
+			return preg_match('/^(oneBy)/', $method) ? $rs->one() : $rs;
 		}
 
 		// handle byId
@@ -107,7 +107,7 @@ class Wizard
 	 */
 	private function _sqlFromMethod($method)
 	{
-		if(!preg_match('/^(findBy|one)(.*?)$/', $method, $m))
+		if(!preg_match('/^(findBy|oneBy)(.*?)$/', $method, $m))
 			throw new \BadMethodCallException("Unable to parse $method");
 
 		// split on AND or OR and case boundries
