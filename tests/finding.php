@@ -45,7 +45,7 @@ class UserPref extends DomainObject
 		return array(
 			'User' => User::belongsTo('userid')
 			);
-	}	
+	}
 }
 
 class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
@@ -103,7 +103,7 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
 		$cletus = User::one('lastname = ?', 'Kasady');
 		$this->assertEqual($cletus->firstname, 'Cletus');
 		$this->assertEqual($cletus->lastname, 'Kasady');
-	}	
+	}
 
 	public function testFindManyByCriteria()
 	{
@@ -111,7 +111,7 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
 		$this->assertEqual(count($users), 1);
 		$this->assertEqual($users[0]->firstname, 'Cletus');
 		$this->assertEqual($users[0]->lastname, 'Kasady');
-	}	
+	}
 
 	public function testFindManyByMagicalColumn()
 	{
@@ -119,27 +119,34 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
 		$this->assertEqual(count($users), 1);
 		$this->assertEqual($users[0]->firstname, 'Cletus');
 		$this->assertEqual($users[0]->lastname, 'Kasady');
-	}		
+	}
 
 	public function testFindManyByMultipleMagicalColumns()
 	{
 		$users = User::findByLastNameOrFirstName('Kasady', 'Frank');
 		$this->assertEqual(count($users), 2);
-	}	
+	}
 
 	public function testFindById()
 	{
 		$cletus = User::byId(2);
 		$this->assertEqual($cletus->firstname, 'Cletus');
 		$this->assertEqual($cletus->lastname, 'Kasady');
-	}	
+	}
+
+	public function testOneByMagicalColumn()
+	{
+		$cletus = User::oneByFirstName('Cletus');
+		$this->assertEqual($cletus->firstname, 'Cletus');
+		$this->assertEqual($cletus->lastname, 'Kasady');
+	}
 
 	public function testFindByIn()
 	{
 		$cletus = User::one('lastname = ?', array('Llamas','Kasady'));
 		$this->assertEqual($cletus->firstname, 'Cletus');
 		$this->assertEqual($cletus->lastname, 'Kasady');
-	}	
+	}
 
 	// ----------------------------------
 	// Test other collection methods
