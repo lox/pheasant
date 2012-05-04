@@ -59,6 +59,17 @@ class SequencePool
 	}
 
 	/**
+	 * Returns the current integer in the sequence
+	 */
+	public function current($sequence)
+	{
+		$result = $this->_connection->execute(
+			"SELECT id FROM sequences WHERE name=?", $sequence);
+
+		return $result[0]['id'] - 1;
+	}
+
+	/**
 	 * Called within a transaction, gets the next sequence value
 	 * @access private
 	 */
