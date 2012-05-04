@@ -97,6 +97,13 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
 		$this->assertEqual($user->lastname, 'Kasady');
 	}
 
+	public function testFindLastAfterManny()
+	{
+		$user = $users = User::findByLastNameOrFirstName('Frank', 'Cletus')->last();
+		$this->assertEqual($user->firstname, 'Cletus');
+		$this->assertEqual($user->lastname, 'Kasady');
+	}
+
 	public function testFindMany()
 	{
 		$users = User::find("lastname = ? and firstname = ?", 'Kasady', 'Cletus');
