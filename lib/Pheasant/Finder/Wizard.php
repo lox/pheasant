@@ -43,6 +43,19 @@ class Wizard
 			return $this->find();
 		}
 
+		else if($method == 'last' && empty($params))
+		{
+			$where = array();
+			$object = new $this->_class();
+			foreach ($object->identity() as $key=>$property) {
+				$sequence = sprintf("%s_%s_seq", $object->tableName(), $key);
+				$sequencePool = \Pheasant::instance()->connection()->sequencePool();
+				$id = $sequencePool->current($sequence);
+				$where[] = "`$key` = $id";
+			};
+			return $this->_finder->find($this->_class, new Criteria(implode(' AND ', $where)))->one();
+		}
+
 		// handle find or one with sql params
 		else if(($method == 'find' || $method == 'one') && is_string($params[0]))
 		{
