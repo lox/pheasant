@@ -41,6 +41,11 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 		return $this->offsetGet(0);
 	}
 
+	public function last()
+	{
+		return $this->offsetGet($this->count());
+	}
+
 	public function toArray()
 	{
 		return iterator_to_array($this->_iterator);
