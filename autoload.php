@@ -2,7 +2,12 @@
 
 require_once __DIR__.'/lib/Pheasant/ClassLoader.php';
 
-$classloader = new \Pheasant\ClassLoader();
-$classloader->register();
+function __pheasant_classloader_register()
+{
+	$classloader = new \Pheasant\ClassLoader();
+	$classloader->register();
+}
+
+__pheasant_classloader_register();
 
  __HALT_COMPILER();
