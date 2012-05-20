@@ -7,7 +7,7 @@ namespace Pheasant\Database\Mysqli;
  */
 class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 {
-	private $_link, $_result, $_affected, $_hydrator;
+	private $_link, $_result, $_affected, $_hydrator, $_fields;
 
 	/**
 	 * Constructor
@@ -115,12 +115,15 @@ class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 
 	/**
 		* The fields returned in the result set as an array of fields
-		* @return array
+		* @return Fields object 
 	  */
 	public function fields()
 	{
-		return $this->_result ? $this->_result->fetch_fields() : array();
-	}	
+		if(!isset($this->_fields))
+			$this->_fields = new Fields($this->_result);
+
+		return $this->_fields;
+	}
 
 	/**
 	 * The number of rows in the result set, or the number of affected rows
