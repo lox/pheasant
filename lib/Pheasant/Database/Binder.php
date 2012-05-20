@@ -132,7 +132,7 @@ class Binder
 			$char = $sql[$i];
 
 			// end an existing quote
-			if($quoteStart !== false && $char == $quoteStart)
+			if($quoteStart !== false && $char == $quoteStart && $lastChar != '\\')
 			{
 				$quoteStart = false;
 				$replacement = sprintf('[[[[P#%d]]]]', count($placeholders)+1);

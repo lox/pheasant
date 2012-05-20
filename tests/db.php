@@ -89,10 +89,22 @@ class BindingTestCase extends \Pheasant\Tests\MysqlTestCase
 		);
 	}
 
+	public function testBindIntoAQueryWithQuotedQuestionMarksInStrings()
+	{
+		$binder = new Binder();
+
+		$this->assertEqual(
+			$binder->bind("name='\'7r' and llamas=?", array(24)),
+			"name='\'7r' and llamas='24'"
+		);
+	}
+
+/*	
 	public function testBindIntoAQueryFailsWithUnmatchedQuotes()
 	{
 		$this->expectException('InvalidArgumentException');
 		$binder = new Binder();
 		$binder->bind("name=' and llamas=?", array(24));
 	}	
+ */
 }
