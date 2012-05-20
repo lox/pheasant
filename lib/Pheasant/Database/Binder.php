@@ -16,6 +16,8 @@ class Binder
 		if(count($params)==0)
 			return $sql;
 
+		list($sql,$placeholders,$quotes) = $this->_extractQuotedStrings($sql);
+
 		$binder = $this;
 		$function = function($m) use($binder, &$params) {
 			if(!count($params))
@@ -23,13 +25,18 @@ class Binder
 			return $binder->quote($binder->escape(array_shift($params)));
 		};
 
-		return preg_replace_callback('/\?/', $function, $sql);
+		$result = preg_replace_callback('/\?/', $function, $sql);
+
+		if(count($placeholders))
+			$result = str_replace($placeholders, $quotes, $result);
+
+		return $result;
 	}
 
 	/**
 	 * Like bind(), but adds some magic:
-	 * - a=? becomes a IS NULL if passed null 
-	 * - a!=? or a<>? becomes a IS NOT NULL if passed null 
+	 * - a=? becomes a IS NULL if passed null
+	 * - a!=? or a<>? becomes a IS NOT NULL if passed null
 	 * - a=? becomes a IN (1, 2, 3) if passed array(1, 2, 3)
 	 * - a!=? or a<>? becomes a NOT IN (1, 2, 3) if passed array(1, 2, 3)
 	 * @return string
@@ -38,6 +45,8 @@ class Binder
 	{
 		if(count($params) == 0)
 			return $sql;
+
+		list($sql,$placeholders,$quotes) = $this->_extractQuotedStrings($sql);
 
 		$binder = $this;
 		$function = function($m) use($binder, &$params) {
@@ -59,7 +68,12 @@ class Binder
 			return (isset($m[1]) ? $m[1] : '') . $binder->quote($binder->escape($param));
 		};
 
-		return preg_replace_callback('/((\s*(!=|=|<>))?\s*)\?/', $function, $sql);
+		$result = preg_replace_callback('/((\s*(!=|=|<>))?\s*)\?/', $function, $sql);
+
+		if(count($placeholders))
+			$result = str_replace($placeholders, $quotes, $result);
+
+		return $result;
 	}
 
 	/**
@@ -98,5 +112,58 @@ class Binder
 			$tokens[] = $this->quote($this->escape($a));
 
 		return '('.implode(',', $tokens).')';
+	}
+
+	/**
+	 * Extracts quoted strings from sql, replaces with placeholders.
+	 * @return array
+	 */
+	private function _extractQuotedStrings($sql)
+	{
+		$result = NULL;
+		$placeholders = array();
+		$quotes = array();
+		$lastChar = NULL;
+		$buffer = NULL;
+		$quoteStart = false;
+
+		for($i=0; $i<strlen($sql); $i++)
+		{
+			$char = $sql[$i];
+
+			// end an existing quote
+			if($quoteStart !== false && $char == $quoteStart)
+			{
+				$quoteStart = false;
+				$replacement = sprintf('[[[[P#%d]]]]', count($placeholders)+1);
+				$result .= $replacement;
+				$placeholders[] = $replacement;
+				$quotes[] = $buffer.$char;
+				$buffer = NULL;
+			}
+			// inside a quote
+			else if($quoteStart !== false)
+			{
+				$buffer .= $char;
+			}
+			// start of a new quote
+			else if($lastChar != '\\' && ($char == '"' || $char == "'" || $char == '`'))
+			{
+				$quoteStart = $char;
+				$buffer .= $char;
+			}
+			else
+			{
+				$result .= $char;
+			}
+
+			$lastChar = $char;
+		}
+
+		// unmatched quotes
+		if($quoteStart !== false)
+			throw new \InvalidArgumentException("Unmatched quotes in string '$sql'");
+
+		return array($result, $placeholders, $quotes);
 	}
 }

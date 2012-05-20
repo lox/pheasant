@@ -78,4 +78,21 @@ class BindingTestCase extends \Pheasant\Tests\MysqlTestCase
 			"column1='' and column2=1"
 		);
 	}
+
+	public function testBindIntoAQueryWithQuestionMarks()
+	{
+		$binder = new Binder();
+
+		$this->assertEqual(
+			$binder->bind("name='???' and llamas=?", array(24)),
+			"name='???' and llamas='24'"
+		);
+	}
+
+	public function testBindIntoAQueryFailsWithUnmatchedQuotes()
+	{
+		$this->expectException('InvalidArgumentException');
+		$binder = new Binder();
+		$binder->bind("name=' and llamas=?", array(24));
+	}	
 }
