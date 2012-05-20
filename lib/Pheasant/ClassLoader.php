@@ -16,10 +16,13 @@ class ClassLoader
 			$path = $this->classFile($className);
 
 			if(file_exists($path))
+			{
 				require_once($path);
+				return true;
+			}
 
 			if(!class_exists($className) && !interface_exists($className))
-				throw new Exception("Unable to load $className");
+				return false;
 		}
 	}
 

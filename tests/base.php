@@ -8,9 +8,7 @@ namespace
 	// show all errors
 	error_reporting(E_ALL);
 
-	// set up autoload
-	function __autoload($className)
-	{
+	spl_autoload_register(function($className){
 		if(!class_exists($className))
 		{
 			$path = LIBDIR . str_replace('\\','/',$className).'.php';
@@ -21,7 +19,7 @@ namespace
 			if(!class_exists($className) && !interface_exists($className))
 				return false;
 		}
-	}
+	});
 }
 
 namespace Pheasant\Tests
