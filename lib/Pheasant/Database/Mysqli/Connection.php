@@ -111,7 +111,7 @@ class Connection
 			}
 
 			if($mysqli->error)
-				throw new \Exception($mysqli->error, $mysqli->errno);
+				throw new Exception($mysqli->error, $mysqli->errno);
 
 			return $r;
 		});
