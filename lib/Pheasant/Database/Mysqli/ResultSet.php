@@ -119,7 +119,7 @@ class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 	  */
 	public function fields()
 	{
-		return $this->_result->fetch_fields();
+		return $this->_result ? $this->_result->fetch_fields() : array();
 	}	
 
 	/**
