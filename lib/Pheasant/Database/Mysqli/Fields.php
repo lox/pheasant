@@ -7,39 +7,42 @@ namespace Pheasant\Database\Mysqli;
  */
 class Fields implements \IteratorAggregate, \Countable, \ArrayAccess
 {
-	private $_resultSet, $_fields=array(), $_fieldCount, $_iterator;
+	private $_resultSet, $_count, $_fields=array();
 
 	public function __construct($resultSet)
 	{
 		$this->_resultSet = $resultSet;
-		$this->_fieldCount = $resultSet ? $resultSet->field_count : 0;
+		$this->_count = $resultSet ? $resultSet->field_count : 0;
 	}		
 
 	public function count()
 	{
-		return $this->_fieldCount;
+		return $this->_count;
 	}
 
 	public function getIterator()
 	{
-		if(!isset($this->_iterator))
-		{
-			if(empty($this->_fields) && $this->_fieldCount)
-				$this->_fields = $this->_resultSet->fetch_fields();
+		$fields = array();
 
-			$this->_iterator = new \ArrayIterator($this->_fields);
-		}
+		// make sure we have all of the lazy-loaded fields
+		for($i=0; $i<$this->_count; $i++)
+			$fields[$i] = $this->offsetGet($i);
 
-		return $this->_iterator;
+		return new \ArrayIterator($fields);
 	}
 
 	// ----------------------------------
 	// array access
 
 	public function offsetGet($offset)
-	{
-		$this->getIterator()->seek($offset);
-		return $this->getIterator()->current();
+	{	
+		if($offset >= $this->_count)
+			throw new \OutOfRangeException("No field exists at offset $offset");
+
+		if(!isset($this->_fields[$offset]))
+			$this->_fields[$offset] = $this->_resultSet->fetch_field_direct($offset);
+
+		return $this->_fields[$offset];
 	}
 
 	public function offsetSet($offset, $value)
@@ -49,8 +52,7 @@ class Fields implements \IteratorAggregate, \Countable, \ArrayAccess
 
 	public function offsetExists($offset)
 	{
-		$this->getIterator()->seek($offset);
-		return $this->getIterator()->valid();
+		return $offset < $this->_count;
 	}
 
 	public function offsetUnset($offset)
