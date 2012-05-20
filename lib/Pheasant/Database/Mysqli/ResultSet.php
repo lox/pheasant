@@ -114,6 +114,15 @@ class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 	}
 
 	/**
+		* The fields returned in the result set as an array of fields
+		* @return array
+	  */
+	public function fields()
+	{
+		return $this->_result->fetch_fields();
+	}	
+
+	/**
 	 * The number of rows in the result set, or the number of affected rows
 	 */
 	public function count()

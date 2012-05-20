@@ -55,6 +55,30 @@ class ResultSetTestCase extends \Pheasant\Tests\MysqlTestCase
 		$rs = $this->connection()->execute('SELECT name,value,active FROM user');
 
 		$this->assertEqual(iterator_to_array($rs->column()), array('Llama', 'Drama'));
-	}	
+	}
+
+	public function testGettingFieldsWithResults()
+	{
+		$rs = $this->connection()->execute('SELECT name,value,active FROM user');
+		$fields = $rs->fields();
+
+		$this->assertEqual(count($fields), 3);
+		$this->assertEqual($fields[0]->name, 'name');
+		$this->assertEqual($fields[1]->name, 'value');
+		$this->assertEqual($fields[2]->name, 'active');
+	}
+
+	public function testGettingFieldsWithNoResults()
+	{
+		$rs = $this->connection()->execute('SELECT name,value,active FROM user WHERE 1=0');
+		$fields = $rs->fields();
+
+		$this->assertEqual(count($rs), 0);
+		$this->assertEqual(count($fields), 3);
+		$this->assertEqual($fields[0]->name, 'name');
+		$this->assertEqual($fields[1]->name, 'value');
+		$this->assertEqual($fields[2]->name, 'active');
+	}
+
 }
 
