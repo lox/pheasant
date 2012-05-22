@@ -47,6 +47,18 @@ class Connection
 		return $this;
 	}
 
+
+	/**
+	 * Closes a connection 
+	 * @chainable
+	 */
+	public function close()
+	{
+		if(isset($this->_link))
+			$this->_link->close();
+		return $this;
+	}
+
 	/**
 	 * The charset used by the database connection
 	 * @return string
