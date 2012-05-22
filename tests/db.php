@@ -97,14 +97,22 @@ class BindingTestCase extends \Pheasant\Tests\MysqlTestCase
 			$binder->bind("name='\'7r' and llamas=?", array(24)),
 			"name='\'7r' and llamas='24'"
 		);
+
+		$this->assertEqual(
+			$binder->bind("name='\'7r\\\\' and llamas=?", array(24)),
+			"name='\'7r\\\\' and llamas='24'"
+		);
+
+		$this->assertEqual(
+			$binder->bind("name='\'7r\\\\' and x='\'7r' and llamas=?", array(24)),
+			"name='\'7r\\\\' and x='\'7r' and llamas='24'"
+		);
 	}
 
-/*	
 	public function testBindIntoAQueryFailsWithUnmatchedQuotes()
 	{
-		$this->expectException('InvalidArgumentException');
+		$this->expectException('\Pheasant\Database\Exception');
 		$binder = new Binder();
 		$binder->bind("name=' and llamas=?", array(24));
-	}	
- */
+	}
 }

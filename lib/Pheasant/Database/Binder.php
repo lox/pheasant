@@ -123,18 +123,31 @@ class Binder
 		$result = NULL;
 		$placeholders = array();
 		$quotes = array();
-		$lastChar = NULL;
 		$buffer = NULL;
-		$quoteStart = false;
+
+		// state markers
+		$inQuote = false;
 
 		for($i=0; $i<strlen($sql); $i++)
 		{
 			$char = $sql[$i];
 
-			// end an existing quote
-			if($quoteStart !== false && $char == $quoteStart && $lastChar != '\\')
+			// handle escape characters
+			if($inQuote && $char == '\\')
 			{
-				$quoteStart = false;
+				$buffer .= $char;
+				$buffer .= $sql[++$i];
+			}
+			// start of a new quote
+			else if(!$inQuote && ($char == '"' || $char == "'"))
+			{
+				$inQuote = $char;
+				$buffer .= $char;
+			}
+			// end an existing quote
+			else if($inQuote !== false && ($char == '"' || $char == "'"))
+			{
+				$inQuote = false;
 				$replacement = sprintf('[[[[P#%d]]]]', count($placeholders)+1);
 				$result .= $replacement;
 				$placeholders[] = $replacement;
@@ -142,27 +155,20 @@ class Binder
 				$buffer = NULL;
 			}
 			// inside a quote
-			else if($quoteStart !== false)
+			else if($inQuote)
 			{
 				$buffer .= $char;
 			}
-			// start of a new quote
-			else if($lastChar != '\\' && ($char == '"' || $char == "'" || $char == '`'))
-			{
-				$quoteStart = $char;
-				$buffer .= $char;
-			}
+
 			else
 			{
 				$result .= $char;
 			}
-
-			$lastChar = $char;
 		}
 
 		// unmatched quotes
-		if($quoteStart !== false)
-			throw new \InvalidArgumentException("Unmatched quotes in string '$sql'");
+		if($inQuote !== false)
+			throw new Exception("Unmatched quotes in string '$sql'");
 
 		return array($result, $placeholders, $quotes);
 	}
