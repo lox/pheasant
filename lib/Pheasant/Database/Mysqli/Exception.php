@@ -2,6 +2,6 @@
 
 namespace Pheasant\Database\Mysqli;
 
-class Exception extends \Pheasant\Exception
+class Exception extends \Pheasant\Database\Exception
 {
 }
