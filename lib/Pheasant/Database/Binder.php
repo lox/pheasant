@@ -145,7 +145,7 @@ class Binder
 				$buffer .= $char;
 			}
 			// end an existing quote
-			else if($inQuote !== false && ($char == '"' || $char == "'"))
+			else if($inQuote !== false && ($char === $inQuote))
 			{
 				$inQuote = false;
 				$replacement = sprintf('[[[[P#%d]]]]', count($placeholders)+1);

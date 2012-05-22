@@ -79,7 +79,7 @@ class BindingTestCase extends \Pheasant\Tests\MysqlTestCase
 		);
 	}
 
-	public function testBindIntoAQueryWithQuestionMarks()
+	public function testBindIntoAQueryWithQuestionMarksInQuotes()
 	{
 		$binder = new Binder();
 
@@ -89,7 +89,7 @@ class BindingTestCase extends \Pheasant\Tests\MysqlTestCase
 		);
 	}
 
-	public function testBindIntoAQueryWithQuotedQuestionMarksInStrings()
+	public function testBindIntoAQueryWithEscapedQuotesInStrings()
 	{
 		$binder = new Binder();
 
@@ -106,6 +106,16 @@ class BindingTestCase extends \Pheasant\Tests\MysqlTestCase
 		$this->assertEqual(
 			$binder->bind("name='\'7r\\\\' and x='\'7r' and llamas=?", array(24)),
 			"name='\'7r\\\\' and x='\'7r' and llamas='24'"
+		);
+	}
+
+	public function testBindIntoAQueryWithQuotesInQuotes()
+	{
+		$binder = new Binder();
+
+		$this->assertEqual(
+			$binder->bind("name='\"' and llamas=?", array(24)),
+			"name='\"' and llamas='24'"
 		);
 	}
 
