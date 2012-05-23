@@ -118,11 +118,4 @@ class BindingTestCase extends \Pheasant\Tests\MysqlTestCase
 			"name='\"' and llamas='24'"
 		);
 	}
-
-	public function testBindIntoAQueryFailsWithUnmatchedQuotes()
-	{
-		$this->expectException('\Pheasant\Database\Exception');
-		$binder = new Binder();
-		$binder->bind("name=' and llamas=?", array(24));
-	}
 }
