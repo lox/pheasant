@@ -9,5 +9,3 @@ function __pheasant_classloader_register()
 }
 
 __pheasant_classloader_register();
-
- __HALT_COMPILER();
