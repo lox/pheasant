@@ -94,9 +94,9 @@ class Table
 				$this->_columns[$column] = $c;
 			}
 		}
-	
+
 		return $this->_columns;
-	}	
+	}
 
 	/**
 	 * Inserts a row into the table
@@ -132,7 +132,7 @@ class Table
 	}
 
 	/**
-	 * Tries to update a record, or inserts if it doesn't exist. Worth noting 
+	 * Tries to update a record, or inserts if it doesn't exist. Worth noting
 	 * that affectedRows will be 2 on an update, 1 on an insert.
 	 */
 	public function upsert($data)
@@ -149,7 +149,24 @@ class Table
 	}
 
 	/**
-	 * Inserts a row, or replaces it entirely if it exists 
+	 * Deletes rows in the table
+	 */
+	public function delete($criteria=NULL)
+	{
+		$where = !is_null($criteria)
+			? 'WHERE '.$criteria->toSql()
+			: NULL
+			;
+
+		return $this->_connection->execute(sprintf(
+			'DELETE FROM %s %s',
+			$this->_name,
+			$where
+			));
+	}
+
+	/**
+	 * Inserts a row, or replaces it entirely if it exists
 	 */
 	public function replace($data)
 	{
@@ -162,7 +179,8 @@ class Table
 			$this->_buildSet($data)
 			), array_values($data)
 		);
-	}		
+	}
+
 
 	/**
 	 * Builds a Query object for the table
@@ -171,6 +189,14 @@ class Table
 	{
 		$query = new \Pheasant\Query\Query($this->_connection);
 		return $query->from($this->_name);
+	}
+
+	/**
+	 * Builds a TableCriteria object for the table
+	 */
+	public function where($where, $params=array())
+	{
+		return new \Pheasant\Query\TableCriteria($this, $where, $params);
 	}
 
 	/**

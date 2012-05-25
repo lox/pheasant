@@ -19,7 +19,11 @@ class Criteria
 	 */
 	public function __construct($where=null, $params=array())
 	{
-		if(is_array($where))
+		if(is_object($where))
+		{
+			$this->_sql = $where->toSql();
+		}
+		else if(is_array($where))
 		{
 			foreach($where as $key=>$val)
 				$this->and($this->bind($key.'=?', array($val)));

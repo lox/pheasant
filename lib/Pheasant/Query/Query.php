@@ -6,7 +6,7 @@ use \Pheasant;
 /**
  * A query builder for generating SQL '92 SELECT statements
  */
-class Query
+class Query implements \IteratorAggregate
 {
 	// query builder
 	private $_select='*';
@@ -147,6 +147,25 @@ class Query
 	public function execute()
 	{
 		return $this->_connection->execute($this->toSql());
+	}
+
+	/* (non-phpdoc)
+	 * @see \IteratorAggregate
+	 */
+	public function getIterator()
+	{
+		return $this->execute();
+	}
+
+	/**
+	 * Kicker methods trigger execution
+	 */
+	public function __call($method, $params)
+	{
+		if(!in_array($method, array('row', 'scalar', 'column', 'count')))
+			throw new \BadMethodCallException("$method not implemented on Query or ResultSet");
+
+		return call_user_func_array(array($this->execute(), $method), $params);
 	}
 
 	// -------------------------------------------
