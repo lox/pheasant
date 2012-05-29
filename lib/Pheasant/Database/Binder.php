@@ -13,17 +13,9 @@ class Binder
 	 */
 	public function bind($sql, array $params=array())
 	{
-		if(count($params)==0)
-			return $sql;
-
-		$binder = $this;
-		$function = function($m) use($binder, &$params, $sql) {
-			if(!count($params))
-				throw new \InvalidArgumentException("Not enough params to bind '$sql'");
-			return $binder->quote($binder->escape(array_shift($params)));
-		};
-
-		return $this->_quoteSafeReplace('/\?/', $function, $sql);
+		return $this->_bindInto('\?', $sql, $params, function($binder, $param) use($sql) {
+			return $binder->quote($binder->escape($param));
+		});
 	}
 
 	/**
@@ -36,30 +28,32 @@ class Binder
 	 */
 	public function magicBind($sql, array $params=array())
 	{
-		if(count($params) == 0)
-			return $sql;
+		return $this->_bindInto('\w+\s*(?:!=|=|<>)\s*\?|\?', $sql, $params, function($binder, $param, $token) use($sql) {
+			if($token == '?')
+			{
+				return $binder->quote($param);
+			}
+			else
+			{
+				if(!preg_match("/^(.+?)(\s*(?:!=|=|<>)\s*)(.+?)$/", $token, $m))
+					throw new \InvalidArgumentException("Failed to parse magic token $token");
 
-		$binder = $this;
-		$function = function($m) use($binder, &$params, $sql) {
-			if(!count($params))
-				throw new \InvalidArgumentException("Not enough params to magicBind '$sql'");
+				$lhs = $m[1];
+				$op = trim($m[2]);
+				$rhs = $m[3];
 
-			$op = isset($m[3]) ? $m[3] : false;
-			$param = array_shift($params);
+				if(($op == '!=' || $op == '<>') && is_array($param))
+					return $lhs . ' NOT IN ' . $binder->reduce($param);
 
-			if(($op == '!=' || $op == '<>') && is_array($param))
-				return ' NOT IN ' . $binder->reduce($param);
+				if($op == '=' && is_array($param))
+					return $lhs . ' IN ' . $binder->reduce($param);
 
-			if($op == '=' && is_array($param))
-				return ' IN ' . $binder->reduce($param);
+				if(is_null($param))
+					return $lhs . ' IS'.($op == '=' ? '' : ' NOT').' NULL';
 
-			if(is_null($param))
-				return ' IS'.($op == '=' ? '' : ' NOT').' NULL';
-
-			return (isset($m[1]) ? $m[1] : '') . $binder->quote($binder->escape($param));
-		};
-
-		return $this->_quoteSafeReplace('/((\s*(!=|=|<>))?\s*)\?/', $function, $sql);
+				return $lhs . $m[2] . $binder->quote($binder->escape($param));
+			}
+		});
 	}
 
 	/**
@@ -101,36 +95,35 @@ class Binder
 	}
 
 	/**
-	 * Extracts quoted strings from a string, replaces with placeholders.
-	 * @return object
+	 * Bind parameters into a particular pattern, skipping quoted strings which might have question marks
+	 * in them.
 	 */
-	private function _extractQuotedStrings($string)
+	public function _bindInto($pattern, $sql, $params, $func)
 	{
-		$result = (object) array('placeholders'=>array(),'quotes'=>array());
+		$result = NULL;
 
-		// replaces quotes with a placeholder
-		$placeholder = function($match) use($result) {
-			$result->placeholders []= $placeholder = sprintf('##P#%d##', count($result->placeholders)+1);
-			$result->quotes []= $match[0];
-			return $placeholder;
-		};
+		// http://stackoverflow.com/questions/5695240/php-regex-to-ignore-escaped-quotes-within-quotes
+		// this could be done with back refs, but this is much faster
+		$regex = "/('[^'\\\\]*(?:\\\\.[^'\\\\]*)*'|\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"|$pattern)/";
 
-		$result->string = preg_replace_callback('/([\'"]).*[^\\\\]\1/', $placeholder, $string);
+		foreach(preg_split($regex, $sql, -1, PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY) as $token)
+		{
+			if($token == '?' || ($token[0] != '"' && $token[0] != "'" && preg_match("/$pattern/", $token)))
+			{
+				if(!count($params))
+					throw new \InvalidArgumentException("Not enough parameters to bind($sql)");
+
+				$result .= $func($this, array_shift($params), $token);
+			}
+			else
+			{
+				$result .= $token;
+			}
+		}
+
+		if(count($params))
+			throw new \InvalidArgumentException("Parameters left over in bind($sql)");
+
 		return $result;
-	}
-
-	/**
-	 * Calls preg_replace_callback on a string with quoted strings replaced with placeholders
-	 * @return string
-	 */
-	private function _quoteSafeReplace($pattern, $callback, $subject)
-	{
-		$r = $this->_extractQuotedStrings($subject);
-		$replaced = preg_replace_callback($pattern, $callback, $r->string);
-
-		return count($r->quotes) 
-			? str_replace($r->placeholders, $r->quotes, $replaced)
-			: $replaced
-			;
 	}
 }

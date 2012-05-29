@@ -68,7 +68,7 @@ class BindingTestCase extends \Pheasant\Tests\MysqlTestCase
 
 		$binder = new Binder();
 		$binder->bind('x=? and y=?', array(24));
-	}	
+	}
 
 	public function testBoolBinding()
 	{
@@ -99,8 +99,8 @@ class BindingTestCase extends \Pheasant\Tests\MysqlTestCase
 		);
 
 		$this->assertEqual(
-			$binder->bind("name='\'7r\\\\' and llamas=?", array(24)),
-			"name='\'7r\\\\' and llamas='24'"
+			$binder->bind("name='\'7r\\\\' and another='test question?' and llamas=?", array(24)),
+			"name='\'7r\\\\' and another='test question?' and llamas='24'"
 		);
 
 		$this->assertEqual(
