@@ -17,9 +17,9 @@ class Binder
 			return $sql;
 
 		$binder = $this;
-		$function = function($m) use($binder, &$params) {
+		$function = function($m) use($binder, &$params, $sql) {
 			if(!count($params))
-				throw new \InvalidArgumentException("Not enough params passed to bind()");
+				throw new \InvalidArgumentException("Not enough params to bind '$sql'");
 			return $binder->quote($binder->escape(array_shift($params)));
 		};
 
@@ -40,9 +40,9 @@ class Binder
 			return $sql;
 
 		$binder = $this;
-		$function = function($m) use($binder, &$params) {
+		$function = function($m) use($binder, &$params, $sql) {
 			if(!count($params))
-				throw new \InvalidArgumentException("Not enough params passed to magicBind()");
+				throw new \InvalidArgumentException("Not enough params to magicBind '$sql'");
 
 			$op = isset($m[3]) ? $m[3] : false;
 			$param = array_shift($params);
