@@ -1,0 +1,16 @@
+{
+    "name": "lox/pheasant",
+    "description": "A lightweight data mapper for MySQL and PHP 5.3+",
+    "keywords": ["datamapper", "orm", "activerecord", "mysql", "99designs"],
+    "license": "MIT",
+    "authors": [
+        { "name": "Lachlan Donald", "email": "lachlan@ljd.cc" },
+        { "name": "Richard Bone", "email": "rjonbone@gmail.com" }
+    ],
+    "require": {
+      "php": ">=5.3.2"
+    },
+    "autoload": {
+      "psr-0": { "Pheasant": "lib" }
+    }
+}

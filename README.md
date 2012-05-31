@@ -5,7 +5,7 @@ Pheasant is an object relational mapper written to take advantage of PHP 5.3. Si
 are supported, with the emphasis being on scalability and performance over complexity.
 
 Pheasant doesn't attempt to abstract the database and makes heavy use of
-MySQL/Innodb features. 
+MySQL/Innodb features.
 
 More details available at http://getpheasant.com
 
@@ -13,15 +13,12 @@ More details available at http://getpheasant.com
 Status of Development
 ---------------------------------
 
-Approaching a 1.0 release:
+Running in production on 99designs.com. See `ROADMAP` for more details on future plans.
 
-- Mapping / Finding
-- Relationships (HasMany, HasOne and BelongsTo implemented)
-- Events
-- Query Builder 
-- Documentation
+Installing
+---------------------------------
 
-See the ROADMAP for more details.
+Easiest way is to install via composer http://packagist.org/packages/lox/pheasant.
 
 Persisting Objects
 ---------------------------------
