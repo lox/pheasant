@@ -26,19 +26,11 @@ class Schema
 		$this->_class = $class;
 
 		// split params into private props
-		$this->_props = $this->_param($params, 'properties');
-		$this->_rels = $this->_param($params, 'relationships');
-		$this->_getters = $this->_param($params, 'getters');
-		$this->_setters = $this->_param($params, 'setters');
-		$this->_events = new Events($this->_param($params, 'events'));
-	}
-
-	/**
-	 * Helper for dealing with missing params in constructor
-	 */
-	private function _param($params, $param, $default=array())
-	{
-		return isset($params[$param]) ? $params[$param] : $default;
+		$this->_props = $params['properties'];
+		$this->_rels = $params['relationships'];
+		$this->_getters = $params['getters'];
+		$this->_setters = $params['setters'];
+		$this->_events = new Events($params['events']);
 	}
 
 	/**

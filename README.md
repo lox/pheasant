@@ -128,24 +128,19 @@ use \Pheasant\Types;
 
 class Post extends DomainObject
 {
-	public static function configure($builder, $pheasant)
-	{
-		$pheasant
-			->register(__CLASS__, new RowMapper('post'))
-			;
+  public function properties()
+  {
+    return array(
+      'postid'      => new Types\Sequence(),
+      'title'       => new Types\String(255),
+      'timecreated' => new Types\Integer(11),
+      ));
+  }
 
-		$builder
-			->properties(array(
-				'postid'      => new Types\Sequence(),
-				'title'       => new Types\String(255),
-				'timecreated' => new Types\Integer(11),
-				));
-
-		$builder
-			->events(array(
-				'beforeCreate' => function($e, $d) { $d->timecreated = time(); }
-			));
-	}
+  public function beforeCreate($post)
+  {
+    $d->timecreated = time();
+  }
 }
 ```
 
