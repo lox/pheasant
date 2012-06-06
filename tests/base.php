@@ -8,18 +8,10 @@ namespace
 	// show all errors
 	error_reporting(E_ALL);
 
-	spl_autoload_register(function($className){
-		if(!class_exists($className))
-		{
-			$path = LIBDIR . str_replace('\\','/',$className).'.php';
+	require_once(LIBDIR.'Pheasant/ClassLoader.php');
 
-			if(file_exists($path))
-				require_once($path);
-
-			if(!class_exists($className) && !interface_exists($className))
-				return false;
-		}
-	});
+	$classloader = new \Pheasant\ClassLoader();
+	$classloader->register();
 }
 
 namespace Pheasant\Tests
