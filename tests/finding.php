@@ -66,9 +66,12 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
 
 		// create some user prefs
 		$this->userprefs = UserPref::import(array(
-			array('userid'=>1,'pref'=>'autologin','value'=>'yes'),
-			array('userid'=>2,'pref'=>'autologin','value'=>'no')
+			array('User'=>$this->users[0],'pref'=>'autologin','value'=>'yes'),
+			array('User'=>$this->users[1],'pref'=>'autologin','value'=>'no')
 		));
+
+		$this->assertTrue($this->userprefs[0]->User->equals($this->users[0]));
+		$this->assertTrue($this->userprefs[1]->User->equals($this->users[1]));
 	}
 
 	public function testFindAll()

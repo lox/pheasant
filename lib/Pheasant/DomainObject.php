@@ -336,7 +336,12 @@ class DomainObject
 	public function load($array)
 	{
 		foreach($array as $key=>$value)
-			$this->set($key, $value);
+		{
+			if(is_object($value) || is_array($value))
+				$this->$key = $value;
+			else
+				$this->set($key, $value);
+		}
 
 		return $this;
 	}
