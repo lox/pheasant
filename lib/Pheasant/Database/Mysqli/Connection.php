@@ -18,8 +18,8 @@ class Connection
 		$_sequencePool
 		;
 
-	public static 
-		$counter=0, 
+	public static
+		$counter=0,
 		$timer=0,
 		$debug=false
 		;
@@ -33,7 +33,7 @@ class Connection
 		$this->_dsn = $dsn;
 		$this->_filter = new FilterChain();
 		$this->_charset = isset($this->_dsn->params['charset']) ?
-		 	$this->_dsn->params['charset'] : 'utf8';	
+		 	$this->_dsn->params['charset'] : 'utf8';
 	}
 
 	/**
@@ -47,9 +47,8 @@ class Connection
 		return $this;
 	}
 
-
 	/**
-	 * Closes a connection 
+	 * Closes a connection
 	 * @chainable
 	 */
 	public function close()
@@ -76,19 +75,21 @@ class Connection
 	{
 		if(!isset($this->_link))
 		{
+			mysqli_report(MYSQLI_REPORT_OFF);
+
 			if(!$this->_link = mysqli_init())
 				throw new Exception("Mysql initialization failed");
 
 			$this->_link->options(MYSQLI_INIT_COMMAND, 'SET NAMES '. $this->charset());
 			$this->_link->options(MYSQLI_OPT_CONNECT_TIMEOUT, 5);
 
-			$this->_link->real_connect(
-				$this->_dsn->host, $this->_dsn->user, $this->_dsn->pass, 
+			@$this->_link->real_connect(
+				$this->_dsn->host, $this->_dsn->user, $this->_dsn->pass,
 				$this->_dsn->database, $this->_dsn->port
 			);
 
 			if ($this->_link->connect_error)
-				throw new Exception($this->_link->connect_error, $this->_link->connect_errno);
+				throw new Exception("Failed to connect to mysql: {$this->_link->connect_error}", $this->_link->connect_errno);
 		}
 
 		return $this->_link;
@@ -173,7 +174,7 @@ class Connection
 		{
 			// use a seperate connection, ensures transaction rollback
 			// doesn't clobber sequences
-			$this->_connectionPool = new SequencePool(new self($this->_dsn)); 
+			$this->_connectionPool = new SequencePool(new self($this->_dsn));
 		}
 
 		return $this->_connectionPool;
@@ -189,8 +190,8 @@ class Connection
 	}
 
 	/**
-	 * Returns the internal filter chain 
-	 * @return FilterChain 
+	 * Returns the internal filter chain
+	 * @return FilterChain
 	 */
 	public function filterChain()
 	{
