@@ -10,6 +10,7 @@ class Pheasant
 	private $_schema;
 	private $_finders=array();
 	private $_mappers=array();
+	private $_mockloader;
 
 	private static $_instance;
 
@@ -134,6 +135,33 @@ class Pheasant
 			throw new Exception("No finder registered for $class");
 
 		return $this->_finders[$class];
+	}
+
+	/**
+	 * Register a callback to use to return a class whenever the 
+	 * class is instantiated. This is done be prepending a class
+	 * loader that dynamically the class, so it won't work if the
+	 * class is already loaded.
+	 * @chainable
+	 */
+	public function mock($class, $callback)
+	{
+		$this->mockloader()->mock($class, $callback);
+		return $this;
+	}
+
+	/**
+	 * Returns the internal MockLoader instance
+	 */
+	public function mockLoader()
+	{
+		if(!isset($this->_mockloader))
+		{
+			$this->_mockloader = new \Pheasant\MockLoader();
+			$this->_mockloader->register();
+		}
+
+		return $this->_mockloader;
 	}
 
 	// ----------------------------------------
