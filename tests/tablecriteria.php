@@ -5,7 +5,7 @@ namespace Pheasant\Tests\TableCriteria;
 use \Pheasant;
 use \Pheasant\Types;
 
-require_once(__DIR__.'/../vendor/simpletest/autorun.php');
+require_once(__DIR__.'/../vendor/lastcraft/simpletest/autorun.php');
 require_once(__DIR__.'/base.php');
 
 class TableCriteriaTestCase extends \Pheasant\Tests\MysqlTestCase

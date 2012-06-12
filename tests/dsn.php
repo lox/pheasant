@@ -4,7 +4,7 @@ namespace Pheasant\Tests\Dsn;
 
 use \Pheasant\Database\Dsn;
 
-require_once(__DIR__.'/../vendor/simpletest/autorun.php');
+require_once(__DIR__.'/../vendor/lastcraft/simpletest/autorun.php');
 require_once(__DIR__.'/base.php');
 
 class DsnTestCase extends \Pheasant\Tests\MysqlTestCase

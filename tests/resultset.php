@@ -5,7 +5,7 @@ namespace Pheasant\Tests\ResultSet;
 use \Pheasant\Database\Binder;
 use \Pheasant\Types;
 
-require_once(__DIR__.'/../vendor/simpletest/autorun.php');
+require_once(__DIR__.'/../vendor/lastcraft/simpletest/autorun.php');
 require_once(__DIR__.'/base.php');
 
 class ResultSetTestCase extends \Pheasant\Tests\MysqlTestCase

@@ -7,7 +7,7 @@ use \Pheasant\DomainObject;
 use \Pheasant\Query\Criteria;
 use \Pheasant;
 
-require_once(__DIR__.'/../vendor/simpletest/autorun.php');
+require_once(__DIR__.'/../vendor/lastcraft/simpletest/autorun.php');
 require_once(__DIR__.'/base.php');
 
 class User extends DomainObject

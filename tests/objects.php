@@ -6,7 +6,7 @@ use \Pheasant\DomainObject;
 use \Pheasant\Types;
 use \Pheasant\Mapper\RowMapper;
 
-require_once(__DIR__.'/../vendor/simpletest/autorun.php');
+require_once(__DIR__.'/../vendor/lastcraft/simpletest/autorun.php');
 require_once(__DIR__.'/base.php');
 
 class Animal extends DomainObject

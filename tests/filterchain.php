@@ -4,7 +4,7 @@ namespace Pheasant\Tests\FilterChain;
 
 use \Pheasant\Database\FilterChain;
 
-require_once(__DIR__.'/../vendor/simpletest/autorun.php');
+require_once(__DIR__.'/../vendor/lastcraft/simpletest/autorun.php');
 require_once(__DIR__.'/base.php');
 
 class FilterChainTestCase extends \Pheasant\Tests\MysqlTestCase

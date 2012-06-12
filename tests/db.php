@@ -3,7 +3,7 @@
 namespace Pheasant\Tests\Db;
 use \Pheasant\Database\Binder;
 
-require_once(__DIR__.'/../vendor/simpletest/autorun.php');
+require_once(__DIR__.'/../vendor/lastcraft/simpletest/autorun.php');
 require_once(__DIR__.'/base.php');
 
 class BindingTestCase extends \Pheasant\Tests\MysqlTestCase

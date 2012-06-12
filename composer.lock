@@ -1,0 +1,20 @@
+{
+    "hash": "ac77c3a30471729c51ef41b2dfa303ae",
+    "packages": [
+
+    ],
+    "packages-dev": [
+        {
+            "package": "lastcraft/simpletest",
+            "version": "dev-master",
+            "source-reference": "1.1.0"
+        }
+    ],
+    "aliases": [
+
+    ],
+    "minimum-stability": "dev",
+    "stability-flags": [
+
+    ]
+}
