@@ -108,7 +108,7 @@ class Connection
 		$sql = count($params) ? $this->binder()->bind($sql, $params) : $sql;
 
 		// delegate execution to the filter chain
-		$result = $this->_filter->execute($sql, function($sql) use($mysqli) {
+		return $this->_filter->execute($sql, function($sql) use($mysqli) {
 
 			\Pheasant\Database\Mysqli\Connection::$counter++;
 
@@ -126,10 +126,8 @@ class Connection
 			if($mysqli->error)
 				throw new Exception($mysqli->error, $mysqli->errno);
 
-			return $r;
+			return new ResultSet($mysqli, $r === true ? false : $r);
 		});
-
-		return new ResultSet($this->_link, $result === true ? false : $result);
 	}
 
 	/**

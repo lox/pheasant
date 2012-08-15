@@ -17,6 +17,7 @@ namespace
 namespace Pheasant\Tests
 {
 	\Mock::generate('\Pheasant\Database\Mysqli\Connection','MockConnection');
+	\Mock::generate('\Pheasant\Database\Mysqli\ResultSet','MockResultSet');
 
 	class MysqlTestCase extends \UnitTestCase
 	{

@@ -8,9 +8,10 @@ namespace Pheasant\Database;
  */
 class FilterChain
 {
-	private 
-		$_onquery = array(), 
-		$_onerror = array()
+	private
+		$_onquery = array(),
+		$_onerror = array(),
+		$_onresult = array()
 		;
 
 	/**
@@ -21,7 +22,7 @@ class FilterChain
 	{
 		$this->_onquery []= $callback;
 		return $this;
-	}	
+	}
 
 	/**
 	 * Attach an error handler, gets called with the exception, return ignored
@@ -34,6 +35,17 @@ class FilterChain
 	}
 
 	/**
+	 * Attach an results filter, gets called with the query, result and the
+	 * time taken, returns result
+	 * @chainable
+	 */
+	public function onResult($callback)
+	{
+		$this->_onresult []= $callback;
+		return $this;
+	}
+
+	/**
 	 * Clears all callbacks
 	 * @chainable
 	 */
@@ -41,6 +53,7 @@ class FilterChain
 	{
 		$this->_onquery = array();
 		$this->_onerror = array();
+		$this->_onresult = array();
 		return $this;
 	}
 
@@ -55,7 +68,13 @@ class FilterChain
 
 		try
 		{
-			return call_user_func($executor, $sql);
+			$ts = count($this->_onresult) ? microtime(true) : NULL;
+			$result = call_user_func($executor, $sql);
+
+			foreach($this->_onresult as $callback)
+				$result = call_user_func($callback, $sql, $result, $ts);
+
+			return $result;
 		}
 		catch(\Exception $e)
 		{
