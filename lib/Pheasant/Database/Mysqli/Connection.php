@@ -172,10 +172,10 @@ class Connection
 		{
 			// use a seperate connection, ensures transaction rollback
 			// doesn't clobber sequences
-			$this->_connectionPool = new SequencePool(new self($this->_dsn));
+			$this->_sequencePool = new SequencePool(new self($this->_dsn));
 		}
 
-		return $this->_connectionPool;
+		return $this->_sequencePool;
 	}
 
 	/**
