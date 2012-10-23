@@ -25,7 +25,11 @@ class HasMany extends RelationshipType
 		$query = $this->query(
 			"{$this->foreign}=?", $object->get($this->local));
 
-		return new Collection($this->class, $query, $this->adder($object));
+		$cache = $object->instanceCache();
+		if (!$cache->has($key))
+			$cache->set($key, new Collection($this->class, $query, $this->adder($object)));
+
+		return $cache->get($key);
 	}
 
 	/* (non-phpdoc)
