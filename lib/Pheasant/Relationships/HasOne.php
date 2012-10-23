@@ -27,11 +27,16 @@ class HasOne extends RelationshipType
 			->execute();
 			;
 
-		// TODO: is this the correct behaviour?
-		if(!count($result))
-			throw new \Pheasant\Exception("Failed to find a $key (via $this->foreign)");
+		$cache = $object->instanceCache();
+		if (!$cache->has($key))
+		{
+			// TODO: is this the correct behaviour?
+			if(!count($result))
+				throw new \Pheasant\Exception("Failed to find a $key (via $this->foreign)");
 
-		return $this->hydrate($result->row(), true);
+			$cache->set($key, $this->hydrate($result->row(), true));
+		}
+		return $cache->get($key);
 	}
 
 	/* (non-phpdoc)
@@ -39,6 +44,7 @@ class HasOne extends RelationshipType
 	 */
 	public function set($object, $key, $value)
 	{
+		$object->instanceCache()->set($key, $value);
 		$newValue = $object->{$this->foreign};
 
 		if($newValue instanceof PropertyReference)
