@@ -14,16 +14,20 @@ class Test extends \Pheasant\DomainObject
 {
 	public static $destructs=0, $constructs=0;
 
-	public static function initialize($builder, $pheasant)
+	public function properties()
 	{
-		$pheasant
-			->register(__CLASS__, new \Pheasant\Mapper\RowMapper('test'));
+		return array(
+			'testid' => new Types\Sequence(),
+			'blargh' => new Types\String(),
+			'testrelid' => new Types\Integer(),
+		);
+	}
 
-		$builder
-			->properties(array(
-				'testid' => new Types\Sequence(),
-				'blargh' => new Types\String(),
-				));
+	public function relationships()
+	{
+		return array(
+			'TestRel' => TestRel::belongsTo('testrelid')
+			);
 	}
 
 	public function construct()
@@ -37,17 +41,29 @@ class Test extends \Pheasant\DomainObject
 	}
 }
 
+class TestRel extends \Pheasant\DomainObject
+{
+	public function properties()
+	{
+		return array(
+			'testrelid' => new Types\Sequence(),
+		);
+	}
+}
+
 // set up the database
 $migrator = new \Pheasant\Migrate\Migrator();
 $migrator->create('test', Test::schema());
+$migrator->create('testrel', TestRel::schema());
 
-\Pheasant::instance()->connection()->sequencePool()->initialize();
+\Pheasant::instance()->connection()->sequencePool()->initialize()->clear();
 
-
-printf("creating %d domain objects\n", BENCHMARK_QTY);
+printf("creating %d test domain objects\n", BENCHMARK_QTY);
 benchmark(BENCHMARK_QTY, function() {
+	$rel = new TestRel();
 	$object = new Test();
-	$object->blargh = 'blargh';
+	$object->TestRel = $rel;
+	$rel->save();
 	$object->save();
 });
 
