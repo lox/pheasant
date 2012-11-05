@@ -49,7 +49,7 @@ class Post extends DomainObject
 	public function relationships()
 	{
 		return array(
-			'Author' => Author::hasOne('author_id');
+			'Author' => Author::hasOne('authorid')
 			);
 	}
 }
@@ -67,7 +67,7 @@ class Author extends DomainObject
 	public function relationships()
 	{
 		return array(
-			'Posts' => Post::hasOne('author_id')
+			'Posts' => Post::hasOne('authorid')
 			);
 	}
 }
