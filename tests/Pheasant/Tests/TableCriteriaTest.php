@@ -1,17 +1,16 @@
 <?php
 
-namespace Pheasant\Tests\TableCriteria;
+namespace Pheasant\Tests;
 
 use \Pheasant;
 use \Pheasant\Types;
 
-require_once(__DIR__.'/../vendor/lastcraft/simpletest/autorun.php');
-require_once(__DIR__.'/base.php');
-
-class TableCriteriaTestCase extends \Pheasant\Tests\MysqlTestCase
+class TableCriteriaTest extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
+		parent::setUp();
+
 		$this->table = $this->table('user', array(
 			'userid'=>new Types\Integer(8, 'primary auto_increment'),
 			'firstname'=>new Types\String(),
@@ -26,24 +25,24 @@ class TableCriteriaTestCase extends \Pheasant\Tests\MysqlTestCase
 	public function testWhereWithBindParameters()
 	{
 		$criteria = $this->table->where('firstname=?', 'Llama');
-		
-		$this->assertEqual((string) $criteria, "firstname='Llama'");
-		$this->assertEqual($criteria->count(), 1);
+
+		$this->assertEquals((string) $criteria, "firstname='Llama'");
+		$this->assertEquals($criteria->count(), 1);
 	}
 
 	public function testWhereWithArray()
 	{
 		$criteria = $this->table->where(array('firstname'=>'Llama'));
-		$this->assertEqual($criteria->toSql(), "(firstname='Llama')");
-		$this->assertEqual($criteria->count(), 1);
+		$this->assertEquals($criteria->toSql(), "(firstname='Llama')");
+		$this->assertEquals($criteria->count(), 1);
 	}
 
 	public function testWhereWithCriteria()
 	{
 		$criteria = $this->table->where(new \Pheasant\Query\Criteria(array('firstname'=>'Llama')));
-		$this->assertEqual($criteria->toSql(), "(firstname='Llama')");
-		$this->assertEqual($criteria->count(), 1);
-	}	
+		$this->assertEquals($criteria->toSql(), "(firstname='Llama')");
+		$this->assertEquals($criteria->count(), 1);
+	}
 
 	public function testUpdateByCriteria()
 	{

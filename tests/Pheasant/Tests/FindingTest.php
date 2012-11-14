@@ -1,57 +1,20 @@
 <?php
 
-namespace Pheasant\Tests\Finding;
+namespace Pheasant\Tests;
 
 use \Pheasant\Types;
 use \Pheasant\DomainObject;
 use \Pheasant\Query\Criteria;
 use \Pheasant;
-
-require_once(__DIR__.'/../vendor/lastcraft/simpletest/autorun.php');
-require_once(__DIR__.'/base.php');
-
-class User extends DomainObject
-{
-	public function properties()
-	{
-		return array(
-			'userid' => new Types\Sequence(),
-			'firstname' => new Types\String(),
-			'lastname' => new Types\String(),
-			);
-	}
-
-	public function relationships()
-	{
-		return array(
-			'UserPrefs' => UserPref::hasMany('userid'),
-			);
-	}
-}
-
-class UserPref extends DomainObject
-{
-	public function properties()
-	{
-		return array(
-			'userid' => new Types\Integer(),
-			'pref' => new Types\String(),
-			'value' => new Types\String(),
-			);
-	}
-
-	public function relationships()
-	{
-		return array(
-			'User' => User::belongsTo('userid')
-			);
-	}
-}
+use \Pheasant\Tests\Examples\User;
+use \Pheasant\Tests\Examples\UserPref;
 
 class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
+		parent::setUp();
+
 		$migrator = new \Pheasant\Migrate\Migrator();
 		$migrator
 			->create('user', User::schema())
@@ -79,10 +42,10 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
 		$users = User::find();
 		$array = iterator_to_array($users);
 
-		$this->assertEqual(2, $users->count());
-		$this->assertEqual(2, count($array));
-		$this->assertIsA($array[0], 'Pheasant\Tests\Finding\User');
-		$this->assertIsA($array[1], 'Pheasant\Tests\Finding\User');
+		$this->assertEquals(2, $users->count());
+		$this->assertEquals(2, count($array));
+		$this->assertInstanceOf('\Pheasant\Tests\Examples\User', $array[0]);
+		$this->assertInstanceOf('\Pheasant\Tests\Examples\User', $array[1]);
 		$this->assertTrue($array[0]->equals($this->users[0]));
 		$this->assertTrue($array[1]->equals($this->users[1]));
 	}
@@ -90,79 +53,79 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
 	public function testAllIsAnAliasOfFind()
 	{
 		$users = User::all();
-		$this->assertEqual(2, $users->count());
+		$this->assertEquals(2, $users->count());
 	}
 
 	public function testFindLast()
 	{
 		$user = User::last();
-		$this->assertEqual($user->firstname, 'Cletus');
-		$this->assertEqual($user->lastname, 'Kasady');
+		$this->assertEquals($user->firstname, 'Cletus');
+		$this->assertEquals($user->lastname, 'Kasady');
 	}
 
 	public function testFindLastAfterManny()
 	{
 		$user = $users = User::findByLastNameOrFirstName('Frank', 'Cletus')->last();
-		$this->assertEqual($user->firstname, 'Cletus');
-		$this->assertEqual($user->lastname, 'Kasady');
+		$this->assertEquals($user->firstname, 'Cletus');
+		$this->assertEquals($user->lastname, 'Kasady');
 	}
 
 	public function testFindMany()
 	{
 		$users = User::find("lastname = ? and firstname = ?", 'Kasady', 'Cletus');
-		$this->assertEqual(count($users), 1);
-		$this->assertEqual($users[0]->firstname, 'Cletus');
-		$this->assertEqual($users[0]->lastname, 'Kasady');
+		$this->assertEquals(count($users), 1);
+		$this->assertEquals($users[0]->firstname, 'Cletus');
+		$this->assertEquals($users[0]->lastname, 'Kasady');
 	}
 
 	public function testFindOne()
 	{
 		$cletus = User::one('lastname = ?', 'Kasady');
-		$this->assertEqual($cletus->firstname, 'Cletus');
-		$this->assertEqual($cletus->lastname, 'Kasady');
+		$this->assertEquals($cletus->firstname, 'Cletus');
+		$this->assertEquals($cletus->lastname, 'Kasady');
 	}
 
 	public function testFindManyByCriteria()
 	{
 		$users = User::find(new Criteria("lastname = ?", array('Kasady')));
-		$this->assertEqual(count($users), 1);
-		$this->assertEqual($users[0]->firstname, 'Cletus');
-		$this->assertEqual($users[0]->lastname, 'Kasady');
+		$this->assertEquals(count($users), 1);
+		$this->assertEquals($users[0]->firstname, 'Cletus');
+		$this->assertEquals($users[0]->lastname, 'Kasady');
 	}
 
 	public function testFindManyByMagicalColumn()
 	{
 		$users = User::findByLastName('Kasady');
-		$this->assertEqual(count($users), 1);
-		$this->assertEqual($users[0]->firstname, 'Cletus');
-		$this->assertEqual($users[0]->lastname, 'Kasady');
+		$this->assertEquals(count($users), 1);
+		$this->assertEquals($users[0]->firstname, 'Cletus');
+		$this->assertEquals($users[0]->lastname, 'Kasady');
 	}
 
 	public function testFindManyByMultipleMagicalColumns()
 	{
 		$users = User::findByLastNameOrFirstName('Kasady', 'Frank');
-		$this->assertEqual(count($users), 2);
+		$this->assertEquals(count($users), 2);
 	}
 
 	public function testFindById()
 	{
 		$cletus = User::byId(2);
-		$this->assertEqual($cletus->firstname, 'Cletus');
-		$this->assertEqual($cletus->lastname, 'Kasady');
+		$this->assertEquals($cletus->firstname, 'Cletus');
+		$this->assertEquals($cletus->lastname, 'Kasady');
 	}
 
 	public function testOneByMagicalColumn()
 	{
 		$cletus = User::oneByFirstName('Cletus');
-		$this->assertEqual($cletus->firstname, 'Cletus');
-		$this->assertEqual($cletus->lastname, 'Kasady');
+		$this->assertEquals($cletus->firstname, 'Cletus');
+		$this->assertEquals($cletus->lastname, 'Kasady');
 	}
 
 	public function testFindByIn()
 	{
 		$cletus = User::one('lastname = ?', array('Llamas','Kasady'));
-		$this->assertEqual($cletus->firstname, 'Cletus');
-		$this->assertEqual($cletus->lastname, 'Kasady');
+		$this->assertEquals($cletus->firstname, 'Cletus');
+		$this->assertEquals($cletus->lastname, 'Kasady');
 	}
 
 	// ----------------------------------
@@ -179,9 +142,9 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
 			->filter("lastname in (?)", 'Castle')
 			;
 
-		$this->assertEqual(count($users), 1);
-		$this->assertEqual($users[0]->firstname, 'Frank');
-		$this->assertEqual($users[0]->lastname, 'Castle');
+		$this->assertEquals(count($users), 1);
+		$this->assertEquals($users[0]->firstname, 'Frank');
+		$this->assertEquals($users[0]->lastname, 'Castle');
 	}
 
 	public function testFilterViaInvoke()
@@ -189,18 +152,18 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
 		$users = User::find();
 		$filtered = $users("firstname = ?", 'Frank');
 
-		$this->assertEqual(count($filtered), 1);
-		$this->assertEqual($filtered[0]->firstname, 'Frank');
-		$this->assertEqual($filtered[0]->lastname, 'Castle');
+		$this->assertEquals(count($filtered), 1);
+		$this->assertEquals($filtered[0]->firstname, 'Frank');
+		$this->assertEquals($filtered[0]->lastname, 'Castle');
 	}
 
 	public function testLimit()
 	{
 		$users = User::find()->limit(1);
 
-		$this->assertEqual(count($users), 1);
-		$this->assertEqual($users[0]->firstname, 'Frank');
-		$this->assertEqual($users[0]->lastname, 'Castle');
+		$this->assertEquals(count($users), 1);
+		$this->assertEquals($users[0]->firstname, 'Frank');
+		$this->assertEquals($users[0]->lastname, 'Castle');
 	}
 
 	// Bugs
@@ -210,6 +173,6 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
 		$users = User::find('userid = 1');
 
 		$this->assertTrue($users[0]->isSaved());
-		$this->assertEqual($users[0]->changes(), array());
+		$this->assertEquals($users[0]->changes(), array());
 	}
 }

@@ -1,20 +1,20 @@
 <?php
 
-namespace Pheasant\Tests\Query;
+namespace Pheasant\Tests;
+
 use \Pheasant;
 use \Pheasant\Types\Integer;
 use \Pheasant\Types\String;
 use \Pheasant\Query\Query;
 use \Pheasant\Query\Criteria;
 
-require_once(__DIR__.'/../vendor/lastcraft/simpletest/autorun.php');
-require_once(__DIR__.'/base.php');
-
-class QueryTestCase extends \Pheasant\Tests\MysqlTestCase
+class QueryTest extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
-		$table =$this->table('user', array(
+		parent::setUp();
+
+		$table = $this->table('user', array(
 			'userid'=>new Integer(8, 'primary auto_increment'),
 			'firstname'=>new String(),
 			'lastname'=>new String(),
@@ -35,9 +35,9 @@ class QueryTestCase extends \Pheasant\Tests\MysqlTestCase
 			->where('lastname=?','Castle')
 			;
 
-		$this->assertEqual(1, $query->count());
-		$this->assertEqual(1, $query->execute()->count());
-		$this->assertEqual(array('firstname'=>'Frank'), $query->execute()->offsetGet(0));
+		$this->assertEquals(1, $query->count());
+		$this->assertEquals(1, $query->execute()->count());
+		$this->assertEquals(array('firstname'=>'Frank'), $query->execute()->offsetGet(0));
 	}
 
 	public function testJoins()
@@ -50,7 +50,7 @@ class QueryTestCase extends \Pheasant\Tests\MysqlTestCase
 			->where('userid=?',55)
 			;
 
-		$this->assertEqual('SELECT * FROM user '.
+		$this->assertEquals('SELECT * FROM user '.
 			'INNER JOIN mytable using(tableid) '.
 			"WHERE userid='55'",
 			$query->toSql()
@@ -78,7 +78,7 @@ class QueryTestCase extends \Pheasant\Tests\MysqlTestCase
 		$innerQuery
 			->where('derived.firstname = ?', 'frank');
 
-		$this->assertEqual('SELECT firstname FROM user '.
+		$this->assertEquals('SELECT firstname FROM user '.
 			'INNER JOIN (SELECT groupname, groupid FROM group) derived USING(groupid) '.
 			'WHERE lastname=\'Castle\'',
 			$query->toSql()

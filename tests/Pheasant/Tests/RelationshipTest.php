@@ -5,71 +5,16 @@ namespace Pheasant\Tests\Relationships;
 use \Pheasant\DomainObject;
 use \Pheasant\Mapper\RowMapper;
 use \Pheasant\Types;
+use \Pheasant\Tests\Examples\Hero;
+use \Pheasant\Tests\Examples\Power;
+use \Pheasant\Tests\Examples\SecretIdentity;
 
-require_once(__DIR__.'/../vendor/lastcraft/simpletest/autorun.php');
-require_once(__DIR__.'/base.php');
-
-class Hero extends DomainObject
-{
-	public function properties()
-	{
-		return array(
-			'heroid' => new Types\Sequence(),
-			'alias' => new Types\String(),
-			'identityid' => new Types\Integer(),
-			);
-	}
-
-	public function relationships()
-	{
-		return array(
-			'Powers' => Power::hasMany('heroid'),
-			'SecretIdentity' => SecretIdentity::belongsTo('identityid'),
-			);
-	}
-}
-
-class Power extends DomainObject
-{
-	public function properties()
-	{
-		return array(
-			'powerid' => new Types\Sequence(),
-			'description' => new Types\String(),
-			'heroid' => new Types\Integer()
-			);
-	}
-
-	public function relationships()
-	{
-		return array(
-			'Hero' => Hero::belongsTo('heroid')
-			);
-	}
-}
-
-class SecretIdentity extends DomainObject
-{
-	public function properties()
-	{
-		return array(
-			'identityid' => new Types\Sequence(),
-			'realname' => new Types\String(),
-			);
-	}
-
-	public function relationships()
-	{
-		return array(
-			'Hero' => Hero::hasOne('identityid')
-			);
-	}
-}
-
-class RelationshipsTestCase extends \Pheasant\Tests\MysqlTestCase
+class RelationshipTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
+		parent::setUp();
+
 		$migrator = new \Pheasant\Migrate\Migrator();
 		$migrator
 			->create('hero', Hero::schema())
@@ -82,13 +27,13 @@ class RelationshipsTestCase extends \Pheasant\Tests\MysqlTestCase
 	{
 		$hero = new Hero(array('alias'=>'Spider Man'));
 		$hero->save();
-		$this->assertEqual(count($hero->Powers), 0);
+		$this->assertEquals(count($hero->Powers), 0);
 
 		// save via property access
 		$power = new Power(array('description'=>'Spider Senses'));
 		$power->heroid = $hero->heroid;
 		$power->save();
-		$this->assertEqual(count($hero->Powers), 1);
+		$this->assertEquals(count($hero->Powers), 1);
 		$this->assertTrue($hero->Powers[0]->equals($power));
 	}
 
@@ -96,14 +41,14 @@ class RelationshipsTestCase extends \Pheasant\Tests\MysqlTestCase
 	{
 		$hero = new Hero(array('alias'=>'Spider Man'));
 		$hero->save();
-		$this->assertEqual(count($hero->Powers), 0);
+		$this->assertEquals(count($hero->Powers), 0);
 
 		// save via adding
 		$power = new Power(array('description'=>'Super-human Strength'));
 		$hero->Powers[] = $power;
 		$power->save();
-		$this->assertEqual(count($hero->Powers), 1);
-		$this->assertEqual($power->heroid, 1);
+		$this->assertEquals(count($hero->Powers), 1);
+		$this->assertEquals($power->heroid, 1);
 		$this->assertTrue($hero->Powers[0]->equals($power));
 	}
 
@@ -116,7 +61,7 @@ class RelationshipsTestCase extends \Pheasant\Tests\MysqlTestCase
 		$identity->Hero = $hero;
 		$identity->save();
 
-		$this->assertEqual($hero->identityid, $identity->identityid);
+		$this->assertEquals($hero->identityid, $identity->identityid);
 		$this->assertTrue($hero->SecretIdentity->equals($identity));
 		$this->assertTrue($identity->Hero->equals($hero));
 	}
@@ -132,7 +77,7 @@ class RelationshipsTestCase extends \Pheasant\Tests\MysqlTestCase
 		$identity->save();
 		$hero->save();
 
-		$this->assertEqual($identity->identityid, 1);
-		$this->assertEqual($hero->identityid, 1);
+		$this->assertEquals($identity->identityid, 1);
+		$this->assertEquals($hero->identityid, 1);
 	}
 }

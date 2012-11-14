@@ -1,17 +1,16 @@
 <?php
 
-namespace Pheasant\Tests\Table;
+namespace Pheasant\Tests;
 
 use \Pheasant;
 use \Pheasant\Types;
 
-require_once(__DIR__.'/../vendor/lastcraft/simpletest/autorun.php');
-require_once(__DIR__.'/base.php');
-
-class TableTestCase extends \Pheasant\Tests\MysqlTestCase
+class TableTest extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
+		parent::setUp();
+
 		$this->table = $this->table('user', array(
 			'userid'=>new Types\Integer(8, 'primary auto_increment'),
 			'firstname'=>new Types\String(),
@@ -25,7 +24,7 @@ class TableTestCase extends \Pheasant\Tests\MysqlTestCase
 	{
 		$this->table->insert(array('firstname'=>'Llama', 'lastname'=>'Herder'));
 		$this->assertRowCount('select * from user', 1);
-		$this->assertEqual(
+		$this->assertEquals(
 			$this->connection()->execute("select * from user where userid=1")->row(),
 			array('userid'=>1, 'firstname'=>'Llama', 'lastname'=>'Herder')
 		);
@@ -38,21 +37,21 @@ class TableTestCase extends \Pheasant\Tests\MysqlTestCase
 
 		$this->table->update(array('firstname'=>'Bob'), new Pheasant\Query\Criteria('userid=?', 1));
 
-		$this->assertEqual(
+		$this->assertEquals(
 			$this->connection()->execute("select * from user where userid=1")->row(),
 			array('userid'=>1, 'firstname'=>'Bob', 'lastname'=>'Herder')
 		);
-	}	
+	}
 
 	public function testUpsertingATable()
 	{
 		$this->table->upsert(array('firstname'=>'Llama', 'lastname'=>'Herder'));
 		$this->assertRowCount('select * from user', 1);
 
-		$this->assertEqual(
+		$this->assertEquals(
 			$this->connection()->execute("select * from user where userid=1")->row(),
 			array('userid'=>1, 'firstname'=>'Llama', 'lastname'=>'Herder')
 		);
-	}		
+	}
 }
 
