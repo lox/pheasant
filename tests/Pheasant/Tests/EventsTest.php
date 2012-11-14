@@ -1,29 +1,20 @@
 <?php
 
-namespace Pheasant\Tests\Events;
+namespace Pheasant\Tests;
 
 use \Pheasant;
 use \Pheasant\DomainObject;
 use \Pheasant\Types;
-
-require_once(__DIR__.'/../vendor/lastcraft/simpletest/autorun.php');
-require_once(__DIR__.'/base.php');
-
-\Mock::generate('\Pheasant\Mapper\Mapper','MockMapper');
-
-class MyDomainObject extends DomainObject
-{
-	public function afterSave()
-	{
-		$this->test = 'blargh';
-	}
-}
+use \Pheasant\Tests\Examples\MyDomainObject;
 
 class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{
-		$this->mapper = new \MockMapper();
+		parent::setUp();
+
+		$this->mapper = \Mockery::mock('\Pheasant\Mapper\Mapper');
+
 	}
 
 	/**
@@ -39,6 +30,8 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 
 	public function testEventsBoundToSchema()
 	{
+		$this->mapper->shouldReceive('save')->times(1);
+
 		$events = array();
 		$callback = function($e) use(&$events) { $events[]=$e; };
 
@@ -55,12 +48,13 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 		$do->test = "blargh";
 		$do->save();
 
-		$this->assertEqual($do->test, "blargh");
-		$this->assertEqual($events, array('afterCreate'));
+		$this->assertEquals($do->test, "blargh");
+		$this->assertEquals($events, array('afterCreate'));
 	}
 
 	public function testEventsBoundToObject()
 	{
+		$this->mapper->shouldReceive('save')->times(2);
 		$events = array();
 
 		$this->initialize('Pheasant\DomainObject', function($builder) {
@@ -83,12 +77,14 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 		$do1->save();
 		$do2->save();
 
-		$this->assertEqual($events, array('do1.afterSave', 'do2.afterSave'));
+		$this->assertEquals($events, array('do1.afterSave', 'do2.afterSave'));
 	}
 
 	public function testBuiltInEventMethods()
 	{
-		$this->initialize('Pheasant\Tests\Events\MyDomainObject', function($builder) {
+		$this->mapper->shouldReceive('save')->times(1);
+
+		$this->initialize('Pheasant\Tests\Examples\MyDomainObject', function($builder) {
 			$builder->properties(array(
 				'test' => new Types\String()
 				));
@@ -98,6 +94,6 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 		$do->test = 'Llamas';
 		$do->save();
 
-		$this->assertEqual($do->test, 'blargh');
+		$this->assertEquals($do->test, 'blargh');
 	}
 }
