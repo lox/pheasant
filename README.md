@@ -9,11 +9,12 @@ MySQL/Innodb features.
 
 More details available at http://getpheasant.com
 
-
 Status of Development
 ---------------------------------
 
 Running in production on 99designs.com. See `ROADMAP` for more details on future plans.
+
+[![Build Status](https://travis-ci.org/lox/pheasant.png)](https://travis-ci.org/lox/pheasant)
 
 Installing
 ---------------------------------
