@@ -6,7 +6,7 @@ use \Pheasant;
 /**
  * A query builder for generating SQL '92 SELECT statements
  */
-class Query implements \IteratorAggregate
+class Query implements \IteratorAggregate, \Countable
 {
 	// query builder
 	private $_select='*';
@@ -207,11 +207,15 @@ class Query implements \IteratorAggregate
 
 	public function count()
 	{
-		$query = clone $this;
-		return $query
-			->select("count(*) count")->limit(1)
-			->execute()
-			->scalar()
-			;
+		// if there is a limit or a groupBy, fall back to row count
+		if(!empty($this->_limit))
+		{
+			return $this->execute()->count();
+		}
+		else
+		{
+			$query = clone $this;
+			return $query->select("count(*) count")->execute()->scalar();
+		}
 	}
 }

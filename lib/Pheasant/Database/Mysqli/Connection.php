@@ -119,7 +119,7 @@ class Connection
 
 			if(\Pheasant\Database\Mysqli\Connection::$debug)
 			{
-				printf('<pre>Pheasant executed <code>%s</code> on thread #%d in %.2fms, returned %d rows</pre>',
+				printf("<pre>Pheasant executed <code>%s</code> on thread #%d in %.2fms, returned %d rows</pre>\n\n",
 					$sql, $mysqli->thread_id, (microtime(true)-$timer)*1000, is_object($r) ? $r->num_rows : 0);
 			}
 

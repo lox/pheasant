@@ -194,7 +194,15 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
 		$this->assertEqual($filtered[0]->lastname, 'Castle');
 	}
 
-	// ------------------------------------
+	public function testLimit()
+	{
+		$users = User::find()->limit(1);
+
+		$this->assertEqual(count($users), 1);
+		$this->assertEqual($users[0]->firstname, 'Frank');
+		$this->assertEqual($users[0]->lastname, 'Castle');
+	}
+
 	// Bugs
 
 	public function testSavedStatusAfterFind()

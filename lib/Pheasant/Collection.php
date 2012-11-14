@@ -65,6 +65,19 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	}
 
 	/**
+	 * Restricts the number of rows to return
+	 * @chainable
+	 */
+	public function limit($rows, $offset=0)
+	{
+		if($this->_readonly)
+			throw new Exception("Collection is read-only during iteration");
+
+		$this->_query->limit($rows, $offset);
+		return $this;
+	}
+
+	/**
 	 * Counts the number or results in the query
 	 */
 	public function count()
