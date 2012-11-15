@@ -19,6 +19,6 @@ class Binder extends \Pheasant\Database\Binder
 		if(is_object($string))
 			throw new Exception("Unable to bind objects, only scalars supported");
 
-		return is_null($string) ? $string : $this->_link->escape_string($string);
+		return is_string($string) ? $this->_link->escape_string($string) : $string;
 	}
 }

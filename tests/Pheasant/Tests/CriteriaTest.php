@@ -13,7 +13,7 @@ class CriteriaTest extends \Pheasant\Tests\MysqlTestCase
 		$this->assertEquals("'test'", $criteria->toSql());
 
 		$criteria = new Criteria('column > ?', array(55));
-		$this->assertEquals("column > '55'", $criteria->toSql());
+		$this->assertEquals("column > 55", $criteria->toSql());
 
 		$criteria = new Criteria(55);
 		$this->assertEquals("55", $criteria->toSql());

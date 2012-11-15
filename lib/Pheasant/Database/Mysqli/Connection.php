@@ -15,7 +15,8 @@ class Connection
 		$_link,
 		$_charset,
 		$_filter,
-		$_sequencePool
+		$_sequencePool,
+		$_strict
 		;
 
 	public static
@@ -33,7 +34,9 @@ class Connection
 		$this->_dsn = $dsn;
 		$this->_filter = new FilterChain();
 		$this->_charset = isset($this->_dsn->params['charset']) ?
-		 	$this->_dsn->params['charset'] : 'utf8';
+			$this->_dsn->params['charset'] : 'utf8';
+		$this->_strict = isset($this->_dsn->params['strict']) ?
+			$this->_dsn->params['strict'] : false;
 	}
 
 	/**
@@ -80,7 +83,9 @@ class Connection
 			if(!$this->_link = mysqli_init())
 				throw new Exception("Mysql initialization failed");
 
-			$this->_link->options(MYSQLI_INIT_COMMAND, 'SET NAMES '. $this->charset());
+			if($this->_strict)
+				$this->_link->options(MYSQLI_INIT_COMMAND, "SET SESSION sql_mode = 'TRADITIONAL'");
+
 			$this->_link->options(MYSQLI_OPT_CONNECT_TIMEOUT, 5);
 
 			@$this->_link->real_connect(
@@ -90,6 +95,10 @@ class Connection
 
 			if ($this->_link->connect_error)
 				throw new Exception("Failed to connect to mysql: {$this->_link->connect_error}", $this->_link->connect_errno);
+
+			if (!$this->_link->set_charset("utf8"))
+				throw new Exception(sprintf("Error setting character to %s: %s", $this->_charset, $this->_link->error));
+
 		}
 
 		return $this->_link;

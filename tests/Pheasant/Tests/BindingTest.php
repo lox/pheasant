@@ -20,7 +20,7 @@ class BindingTest extends \Pheasant\Tests\MysqlTestCase
 		$binder = new Binder();
 		$this->assertEquals(
 			$binder->bind('column=?', array(24)),
-			"column='24'"
+			"column=24"
 			);
 	}
 
@@ -38,7 +38,7 @@ class BindingTest extends \Pheasant\Tests\MysqlTestCase
 		$binder = new Binder();
 		$this->assertEquals(
 			$binder->magicBind('a=? and b=?', array(24, 'test')),
-			"a='24' and b='test'"
+			"a=24 and b='test'"
 			);
 	}
 
@@ -47,7 +47,7 @@ class BindingTest extends \Pheasant\Tests\MysqlTestCase
 		$binder = new Binder();
 		$this->assertEquals(
 			$binder->magicBind('a=? and b=?', array(24, array(1, 2, "llama's"))),
-			"a='24' and b IN ('1','2','llama\'s')"
+			"a=24 and b IN (1,2,'llama\'s')"
 			);
 	}
 
@@ -74,7 +74,7 @@ class BindingTest extends \Pheasant\Tests\MysqlTestCase
 		$binder = new Binder();
 		$this->assertEquals(
 			$binder->bind('column1=? and column2=?', array(false, true)),
-			"column1='' and column2=1"
+			"column1=0 and column2=1"
 		);
 	}
 
@@ -84,7 +84,7 @@ class BindingTest extends \Pheasant\Tests\MysqlTestCase
 
 		$this->assertEquals(
 			$binder->bind("name='???' and llamas=?", array(24)),
-			"name='???' and llamas='24'"
+			"name='???' and llamas=24"
 		);
 	}
 
@@ -94,17 +94,17 @@ class BindingTest extends \Pheasant\Tests\MysqlTestCase
 
 		$this->assertEquals(
 			$binder->bind("name='\'7r' and llamas=?", array(24)),
-			"name='\'7r' and llamas='24'"
+			"name='\'7r' and llamas=24"
 		);
 
 		$this->assertEquals(
 			$binder->bind("name='\'7r\\\\' and another='test question?' and llamas=?", array(24)),
-			"name='\'7r\\\\' and another='test question?' and llamas='24'"
+			"name='\'7r\\\\' and another='test question?' and llamas=24"
 		);
 
 		$this->assertEquals(
 			$binder->bind("name='\'7r\\\\' and x='\'7r' and llamas=?", array(24)),
-			"name='\'7r\\\\' and x='\'7r' and llamas='24'"
+			"name='\'7r\\\\' and x='\'7r' and llamas=24"
 		);
 	}
 
@@ -114,7 +114,7 @@ class BindingTest extends \Pheasant\Tests\MysqlTestCase
 
 		$this->assertEquals(
 			$binder->bind("name='\"' and llamas=?", array(24)),
-			"name='\"' and llamas='24'"
+			"name='\"' and llamas=24"
 		);
 	}
 }

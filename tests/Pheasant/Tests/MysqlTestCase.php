@@ -8,7 +8,7 @@ class MysqlTestCase extends \PHPUnit_Framework_TestCase
 	{
 		// initialize a new pheasant
 		$this->pheasant = \Pheasant::setup(
-			'mysql://root@localhost/pheasanttest?charset=utf8'
+			'mysql://root@localhost/pheasanttest?charset=utf8&strict=false'
 			);
 
 		// wipe sequence pool
