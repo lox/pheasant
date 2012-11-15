@@ -27,7 +27,10 @@ class DomainObject
 		$this->_data = $pheasant->schema($this)->defaults();
 
 		// call user-defined constructor
-		call_user_func_array(array($this, 'construct'), func_get_args());
+		$constructor = array($this,
+			method_exists($this, 'construct') ? 'construct' : '_defaultConstruct');
+
+		call_user_func_array($constructor, func_get_args());
 
 		// set up events
 		$this->events()
@@ -60,6 +63,7 @@ class DomainObject
 
 	/**
 	 * Used by the default initialize() method, returns the table name to use
+	 * @return string
 	 */
 	public function tableName()
 	{
@@ -68,10 +72,10 @@ class DomainObject
 	}
 
 	/**
-	 * Template function for constructing a domain object instance, called on
-	 * each object construction
+	 * Called if construct() doesn't exist
+	 * @return void
 	 */
-	protected function construct()
+	protected function _defaultConstruct()
 	{
 		foreach(func_get_args() as $arg)
 			if(is_array($arg)) $this->load($arg);
