@@ -53,5 +53,14 @@ class TableTest extends \Pheasant\Tests\MysqlTestCase
 			array('userid'=>1, 'firstname'=>'Llama', 'lastname'=>'Herder')
 		);
 	}
+
+	public function testFullyQualifiedTableExists()
+	{
+		$table = $this->connection()->table('pheasanttest.user');
+		$this->assertTrue($table->exists());
+
+		$table = $this->connection()->table('pheasanttest.never_created_table');
+		$this->assertFalse($table->exists());
+	}
 }
 

@@ -9,10 +9,11 @@ use \Pheasant\Query\Criteria;
  */
 class Table
 {
-	private $_name, $_connection, $_columns;
+	private $_name, $_parsed, $_connection, $_columns;
 
 	/**
 	 * Constructor
+	 * @param $name string the name of the table either db.name or name
 	 */
 	public function __construct($name, $connection)
 	{
@@ -73,8 +74,8 @@ class Table
 	{
 		return (bool) $this->_connection->execute(
 			'SELECT count(*) FROM INFORMATION_SCHEMA.TABLES '.
-			'WHERE Table_Name=? AND TABLE_SCHEMA=DATABASE()',
-			$this->_name
+			'WHERE Table_Name=? AND TABLE_SCHEMA=?',
+			$this->_parseName()->table, $this->_parseName()->db
 			)->scalar();
 	}
 
@@ -210,5 +211,32 @@ class Table
 			$columns[] = sprintf('`%s`=?',$key);
 
 		return implode(', ', $columns);
+	}
+
+	/**
+	 * Parse tablename or database.tablename into object with table and db props
+	 * @return object
+	 */
+	private function _parseName()
+	{
+		if(!isset($this->_parsed))
+		{
+			$tokens = explode('.', $this->_name, 2);
+			$this->_parsed = (object) array(
+				'table' => array_pop($tokens),
+				'db' => empty($tokens[0]) ? $this->_currentDb() : $tokens[0]
+			);
+		}
+
+		return $this->_parsed;
+	}
+
+	/**
+	 * Returns the current database
+	 * @return string
+	 */
+	private function _currentDb()
+	{
+		return $this->_connection->execute("SELECT database()")->scalar();
 	}
 }
