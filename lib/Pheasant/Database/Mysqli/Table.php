@@ -80,7 +80,8 @@ class Table
 	}
 
 	/**
-	 * Returns all the database columns
+	 * Returns all the database columns in SHOW COLUMN format
+	 * @return array
 	 */
 	public function columns()
 	{
@@ -167,7 +168,8 @@ class Table
 	}
 
 	/**
-	 * Inserts a row, or replaces it entirely if it exists
+	 * Inserts a row, or replaces it entirely if a row with the primary key exists
+	 * @see http://dev.mysql.com/doc/refman/5.0/en/replace.html
 	 */
 	public function replace($data)
 	{
