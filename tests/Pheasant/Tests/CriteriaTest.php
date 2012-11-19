@@ -17,6 +17,9 @@ class CriteriaTest extends \Pheasant\Tests\MysqlTestCase
 
 		$criteria = new Criteria(55);
 		$this->assertEquals("55", $criteria->toSql());
+
+		$criteria = new Criteria(array('key1' => 'val1', 'key2' => 'val2'));
+		$this->assertEquals("(key1='val1' AND key2='val2')", $criteria->toSql());
 	}
 
 	public function testNestedCriteria()

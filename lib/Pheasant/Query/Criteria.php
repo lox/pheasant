@@ -25,8 +25,10 @@ class Criteria
 		}
 		else if(is_array($where))
 		{
+			$boundWhere = array();
 			foreach($where as $key=>$val)
-				$this->and($this->bind($key.'=?', array($val)));
+				$boundWhere[] = $this->bind($key.'=?', array($val));
+			$this->_sql = $this->_join('AND', $boundWhere);
 		}
 		else
 		{
