@@ -5,7 +5,7 @@ namespace Pheasant\Tests;
 use \Pheasant\Database\Binder;
 use \Pheasant\Types;
 
-class ResultSetTest extends \Pheasant\Tests\MysqlTestCase
+class ResultSetTestCase extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
 	{

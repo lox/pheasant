@@ -66,21 +66,16 @@ class Binder
 	}
 
 	/**
-	 * Quotes an atom as needed based on it's php type
-	 * string => 'llamas'
-	 * bool => 1|0
-	 * null => NULL
-	 * numeric = 1111
-	 * @return mixed
+	 * Surrounds a string with quote marks, null is returned as NULL, bools 
+	 * converted to 1|empty string for compatibility
+	 * @return string
 	 */
 	public function quote($string)
 	{
 		if(is_null($string))
 			return 'NULL';
 		else if(is_bool($string))
-			return $string === true ? 1 : 0;
-		else if(is_int($string) || is_float($string))
-			return $string;
+			return $string === true ? 1 : "''";
 		else
 			return sprintf("'%s'", $string);
 	}
@@ -93,7 +88,7 @@ class Binder
 	{
 		$tokens = array();
 
-		foreach($array as $a)
+		foreach($array as $a) 
 			$tokens[] = $this->quote($this->escape($a));
 
 		return '('.implode(',', $tokens).')';
