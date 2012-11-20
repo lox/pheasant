@@ -64,6 +64,22 @@ class TableTest extends \Pheasant\Tests\MysqlTestCase
 		$this->assertFalse($table->exists());
 	}
 
+	public function testFullyQualifiedTableInsertUpdate()
+	{
+		$table = $this->connection()->table('pheasanttest.user');
+		$this->assertTrue($table->exists());
+
+		$table->insert(array('firstname'=>'Llama', 'lastname'=>'Herder'));
+		$this->assertRowCount('select * from user', 1);
+
+		$table->update(array('firstname'=>'Bob'), new Pheasant\Query\Criteria('userid=?', 1));
+
+		$this->assertEquals(
+			$this->connection()->execute("select * from user where userid=1")->row(),
+			array('userid'=>1, 'firstname'=>'Bob', 'lastname'=>'Herder')
+		);
+	}
+
 	public function testColumnsMapToMysqlTypes()
 	{
 		$columns = $this->table->columns();

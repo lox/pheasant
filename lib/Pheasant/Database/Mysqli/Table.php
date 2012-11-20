@@ -29,8 +29,8 @@ class Table
 	{
 		$types = new TypeMap($columns);
 		$sql = sprintf(
-			'CREATE TABLE `%s` (%s) %s',
-			$this->_name,
+			'CREATE TABLE %s (%s) %s',
+			$this->_quoteName(),
 			implode(', ', $types->columnDefs()),
 			$options
 			);
@@ -53,7 +53,7 @@ class Table
 	 */
 	public function drop()
 	{
-		$this->_connection->execute(sprintf('DROP TABLE `%s`',$this->_name));
+		$this->_connection->execute(sprintf('DROP TABLE %s', $this->_quoteName()));
 		return $this;
 	}
 
@@ -63,7 +63,7 @@ class Table
 	 */
 	public function truncate()
 	{
-		$this->_connection->execute(sprintf('TRUNCATE TABLE `%s`',$this->_name));
+		$this->_connection->execute(sprintf('TRUNCATE TABLE %s', $this->_quoteName()));
 		return $this;
 	}
 
@@ -75,7 +75,7 @@ class Table
 		return (bool) $this->_connection->execute(
 			'SELECT count(*) FROM INFORMATION_SCHEMA.TABLES '.
 			'WHERE Table_Name=? AND TABLE_SCHEMA=?',
-			$this->_parseName()->table, $this->_parseName()->db
+			$this->_parseName()->table, $this->_tableDb()
 			)->scalar();
 	}
 
@@ -89,7 +89,7 @@ class Table
 		{
 			$this->_columns = array();
 
-			foreach($this->_connection->execute("SHOW COLUMNS FROM `{$this->_name}`") as $c)
+			foreach($this->_connection->execute("SHOW COLUMNS FROM ".$this->_quoteName()) as $c)
 			{
 				$column = $c['Field'];
 				unset($c['Field']);
@@ -109,8 +109,8 @@ class Table
 			throw new Exception("Can't insert an empty row");
 
 		return $this->_connection->execute(sprintf(
-			'INSERT INTO `%s` SET %s',
-			$this->_name,
+			'INSERT INTO %s SET %s',
+			$this->_quoteName(),
 			$this->_buildSet($data)
 			), array_values($data)
 		);
@@ -125,8 +125,8 @@ class Table
 			throw new Exception("Can't insert an empty row");
 
 		return $this->_connection->execute(sprintf(
-			'UPDATE `%s` SET %s WHERE %s',
-			$this->_name,
+			'UPDATE %s SET %s WHERE %s',
+			$this->_quoteName(),
 			$this->_buildSet($data),
 			$where
 			), array_values($data)
@@ -143,8 +143,8 @@ class Table
 			throw new Exception("Can't insert an empty row");
 
 		return $this->_connection->execute(sprintf(
-			'INSERT INTO `%s` SET %2$s ON DUPLICATE KEY UPDATE %2$s',
-			$this->_name,
+			'INSERT INTO %s SET %2$s ON DUPLICATE KEY UPDATE %2$s',
+			$this->_quoteName(),
 			$this->_buildSet($data)
 			), array_merge(array_values($data),array_values($data))
 		);
@@ -162,7 +162,7 @@ class Table
 
 		return $this->_connection->execute(sprintf(
 			'DELETE FROM %s %s',
-			$this->_name,
+			$this->_quoteName(),
 			$where
 			));
 	}
@@ -177,8 +177,8 @@ class Table
 			throw new Exception("Can't replace an empty row");
 
 		return $this->_connection->execute(sprintf(
-			'REPLACE INTO `%s` SET %s',
-			$this->_name,
+			'REPLACE INTO %s SET %s',
+			$this->_quoteName(),
 			$this->_buildSet($data)
 			), array_values($data)
 		);
@@ -226,11 +226,46 @@ class Table
 			$tokens = explode('.', $this->_name, 2);
 			$this->_parsed = (object) array(
 				'table' => array_pop($tokens),
-				'db' => empty($tokens[0]) ? $this->_currentDb() : $tokens[0]
+				'db' => array_pop($tokens)
 			);
 		}
 
 		return $this->_parsed;
+	}
+
+	/**
+	 * Backtick quotes the table name like `table`
+	 * or `database`.`table` when a db name is present
+	 * @return string
+	 */
+	private function _quoteName()
+	{
+		if(!isset($this->_quoted))
+		{
+			$parsed = $this->_parseName();
+
+			// only specify db name if we need to
+			$this->_quoted = (!is_null($parsed->db))
+				? sprintf('`%s`.`%s`', $parsed->db, $parsed->table)
+				: sprintf('`%s`', $parsed->table)
+				;
+		}
+
+		return $this->_quoted;
+	}
+
+	/**
+	 * Returns the database of the current table
+	 * @return string
+	 */
+	private function _tableDb()
+	{
+		$parsed = $this->_parseName();
+
+		return (!is_null($parsed->db))
+			? $parsed->db
+			: $this->_currentDb()
+			;
 	}
 
 	/**
