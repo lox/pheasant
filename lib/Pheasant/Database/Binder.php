@@ -122,7 +122,11 @@ class Binder
 		}
 
 		if(count($params))
-			throw new \InvalidArgumentException("Parameters left over in bind($sql)");
+		{
+			$exception = new \InvalidArgumentException("Parameters left over in bind($sql)");
+			$exception->leftOverParams = $params;
+			throw $exception;
+		}
 
 		return $result;
 	}
