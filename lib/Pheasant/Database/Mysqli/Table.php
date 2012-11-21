@@ -72,11 +72,21 @@ class Table
 	 */
 	public function exists()
 	{
-		return (bool) $this->_connection->execute(
-			'SELECT count(*) FROM INFORMATION_SCHEMA.TABLES '.
-			'WHERE Table_Name=? AND TABLE_SCHEMA=?',
-			$this->_parseName()->table, $this->_tableDb()
-			)->scalar();
+		$parsed = $this->_parseName();
+		$sql = 'SELECT count(*) FROM INFORMATION_SCHEMA.TABLES WHERE Table_Name=? ';
+		$params = array($parsed->table);
+
+		if (is_null($parsed->db))
+		{
+			$sql .= 'AND TABLE_SCHEMA=database() ';
+		}
+		else
+		{
+			$sql .= 'AND TABLE_SCHEMA=? ';
+			$params []= $parsed->db;
+		}
+
+		return (bool) $this->_connection->execute($sql, $params)->scalar();
 	}
 
 	/**
@@ -217,6 +227,7 @@ class Table
 
 	/**
 	 * Parse tablename or database.tablename into object with table and db props
+	 * If dbname is not present, db == null
 	 * @return object
 	 */
 	private function _parseName()
@@ -252,28 +263,5 @@ class Table
 		}
 
 		return $this->_quoted;
-	}
-
-	/**
-	 * Returns the database of the current table
-	 * @return string
-	 */
-	private function _tableDb()
-	{
-		$parsed = $this->_parseName();
-
-		return (!is_null($parsed->db))
-			? $parsed->db
-			: $this->_currentDb()
-			;
-	}
-
-	/**
-	 * Returns the current database
-	 * @return string
-	 */
-	private function _currentDb()
-	{
-		return $this->_connection->execute("SELECT database()")->scalar();
 	}
 }
