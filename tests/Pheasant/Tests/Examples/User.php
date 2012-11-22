@@ -10,20 +10,20 @@ use \Pheasant\Types\String;
 
 class User extends DomainObject
 {
-	public function properties()
-	{
-		return array(
-			'userid' => new Types\Sequence(),
-			'firstname' => new Types\String(),
-			'lastname' => new Types\String(),
-			);
-	}
+  public function properties()
+  {
+    return array(
+      'userid' => new Types\Sequence(),
+      'firstname' => new Types\String(),
+      'lastname' => new Types\String(),
+      );
+  }
 
-	public function relationships()
-	{
-		return array(
-			'UserPrefs' => UserPref::hasMany('userid'),
-			);
-	}
+  public function relationships()
+  {
+    return array(
+      'UserPrefs' => UserPref::hasMany('userid'),
+      );
+  }
 }
 

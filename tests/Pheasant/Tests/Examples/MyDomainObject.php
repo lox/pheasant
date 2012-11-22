@@ -8,10 +8,10 @@ use \Pheasant\Mapper\RowMapper;
 
 class MyDomainObject extends DomainObject
 {
-	public function afterSave()
-	{
-		$this->test = 'blargh';
-	}
+  public function afterSave()
+  {
+    $this->test = 'blargh';
+  }
 }
 
 

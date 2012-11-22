@@ -10,22 +10,22 @@ use \Pheasant\Types\String;
 
 class Hero extends DomainObject
 {
-	public function properties()
-	{
-		return array(
-			'heroid' => new Types\Sequence(),
-			'alias' => new Types\String(),
-			'identityid' => new Types\Integer(),
-			);
-	}
+  public function properties()
+  {
+    return array(
+      'heroid' => new Types\Sequence(),
+      'alias' => new Types\String(),
+      'identityid' => new Types\Integer(),
+      );
+  }
 
-	public function relationships()
-	{
-		return array(
-			'Powers' => Power::hasMany('heroid'),
-			'SecretIdentity' => SecretIdentity::belongsTo('identityid'),
-			);
-	}
+  public function relationships()
+  {
+    return array(
+      'Powers' => Power::hasMany('heroid'),
+      'SecretIdentity' => SecretIdentity::belongsTo('identityid'),
+      );
+  }
 }
 
 
