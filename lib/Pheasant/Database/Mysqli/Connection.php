@@ -16,7 +16,8 @@ class Connection
 		$_charset,
 		$_filter,
 		$_sequencePool,
-		$_strict
+		$_strict,
+		$_selectedDatabase
 		;
 
 	public static
@@ -37,6 +38,7 @@ class Connection
 			$this->_dsn->params['charset'] : 'utf8';
 		$this->_strict = isset($this->_dsn->params['strict']) ?
 			$this->_dsn->params['strict'] : false;
+		$this->_selectedDatabase = $this->_dsn->database;
 	}
 
 	/**
@@ -167,7 +169,11 @@ class Connection
 	 */
 	public function table($name)
 	{
-		return new Table($name, $this);
+		$tablename = new TableName($name);
+		if (is_null($tablename->database))
+			$tablename->database = $this->selectedDatabase();
+
+		return new Table($tablename, $this);
 	}
 
 	/**
@@ -201,5 +207,10 @@ class Connection
 	public function filterChain()
 	{
 		return $this->_filter;
+	}
+
+	public function selectedDatabase()
+	{
+		return $this->_selectedDatabase;
 	}
 }

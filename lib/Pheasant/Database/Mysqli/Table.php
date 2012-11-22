@@ -3,13 +3,14 @@
 namespace Pheasant\Database\Mysqli;
 
 use \Pheasant\Query\Criteria;
+use \Pheasant\Database\Mysqli\TableName;
 
 /**
  * A mysql table
  */
 class Table
 {
-	private $_name, $_parsed, $_connection, $_columns;
+	private $_name, $_connection, $_columns;
 
 	/**
 	 * Constructor
@@ -30,7 +31,7 @@ class Table
 		$types = new TypeMap($columns);
 		$sql = sprintf(
 			'CREATE TABLE %s (%s) %s',
-			$this->_quoteName(),
+			$this->_name->quoted(),
 			implode(', ', $types->columnDefs()),
 			$options
 			);
@@ -53,7 +54,7 @@ class Table
 	 */
 	public function drop()
 	{
-		$this->_connection->execute(sprintf('DROP TABLE %s', $this->_quoteName()));
+		$this->_connection->execute(sprintf('DROP TABLE %s', $this->_name->quoted()));
 		return $this;
 	}
 
@@ -63,7 +64,7 @@ class Table
 	 */
 	public function truncate()
 	{
-		$this->_connection->execute(sprintf('TRUNCATE TABLE %s', $this->_quoteName()));
+		$this->_connection->execute(sprintf('TRUNCATE TABLE %s', $this->_name->quoted()));
 		return $this;
 	}
 
@@ -72,11 +73,20 @@ class Table
 	 */
 	public function exists()
 	{
-		return (bool) $this->_connection->execute(
-			'SELECT count(*) FROM INFORMATION_SCHEMA.TABLES '.
-			'WHERE Table_Name=? AND TABLE_SCHEMA=?',
-			$this->_parseName()->table, $this->_tableDb()
-			)->scalar();
+		$sql = 'SELECT count(*) FROM INFORMATION_SCHEMA.TABLES WHERE Table_Name=? ';
+		$params = array($this->_name->table);
+
+		if (is_null($this->_name->database))
+		{
+			$sql .= 'AND TABLE_SCHEMA=database() ';
+		}
+		else
+		{
+			$sql .= 'AND TABLE_SCHEMA=? ';
+			$params []= $this->_name->database;
+		}
+
+		return (bool) $this->_connection->execute($sql, $params)->scalar();
 	}
 
 	/**
@@ -89,7 +99,7 @@ class Table
 		{
 			$this->_columns = array();
 
-			foreach($this->_connection->execute("SHOW COLUMNS FROM ".$this->_quoteName()) as $c)
+			foreach($this->_connection->execute("SHOW COLUMNS FROM ".$this->_name->quoted()) as $c)
 			{
 				$column = $c['Field'];
 				unset($c['Field']);
@@ -110,7 +120,7 @@ class Table
 
 		return $this->_connection->execute(sprintf(
 			'INSERT INTO %s SET %s',
-			$this->_quoteName(),
+			$this->_name->quoted(),
 			$this->_buildSet($data)
 			), array_values($data)
 		);
@@ -126,7 +136,7 @@ class Table
 
 		return $this->_connection->execute(sprintf(
 			'UPDATE %s SET %s WHERE %s',
-			$this->_quoteName(),
+			$this->_name->quoted(),
 			$this->_buildSet($data),
 			$where
 			), array_values($data)
@@ -144,7 +154,7 @@ class Table
 
 		return $this->_connection->execute(sprintf(
 			'INSERT INTO %s SET %2$s ON DUPLICATE KEY UPDATE %2$s',
-			$this->_quoteName(),
+			$this->_name->quoted(),
 			$this->_buildSet($data)
 			), array_merge(array_values($data),array_values($data))
 		);
@@ -162,7 +172,7 @@ class Table
 
 		return $this->_connection->execute(sprintf(
 			'DELETE FROM %s %s',
-			$this->_quoteName(),
+			$this->_name->quoted(),
 			$where
 			));
 	}
@@ -178,7 +188,7 @@ class Table
 
 		return $this->_connection->execute(sprintf(
 			'REPLACE INTO %s SET %s',
-			$this->_quoteName(),
+			$this->_name->quoted(),
 			$this->_buildSet($data)
 			), array_values($data)
 		);
@@ -213,67 +223,5 @@ class Table
 			$columns[] = sprintf('`%s`=?',$key);
 
 		return implode(', ', $columns);
-	}
-
-	/**
-	 * Parse tablename or database.tablename into object with table and db props
-	 * @return object
-	 */
-	private function _parseName()
-	{
-		if(!isset($this->_parsed))
-		{
-			$tokens = explode('.', $this->_name, 2);
-			$this->_parsed = (object) array(
-				'table' => array_pop($tokens),
-				'db' => array_pop($tokens)
-			);
-		}
-
-		return $this->_parsed;
-	}
-
-	/**
-	 * Backtick quotes the table name like `table`
-	 * or `database`.`table` when a db name is present
-	 * @return string
-	 */
-	private function _quoteName()
-	{
-		if(!isset($this->_quoted))
-		{
-			$parsed = $this->_parseName();
-
-			// only specify db name if we need to
-			$this->_quoted = (!is_null($parsed->db))
-				? sprintf('`%s`.`%s`', $parsed->db, $parsed->table)
-				: sprintf('`%s`', $parsed->table)
-				;
-		}
-
-		return $this->_quoted;
-	}
-
-	/**
-	 * Returns the database of the current table
-	 * @return string
-	 */
-	private function _tableDb()
-	{
-		$parsed = $this->_parseName();
-
-		return (!is_null($parsed->db))
-			? $parsed->db
-			: $this->_currentDb()
-			;
-	}
-
-	/**
-	 * Returns the current database
-	 * @return string
-	 */
-	private function _currentDb()
-	{
-		return $this->_connection->execute("SELECT database()")->scalar();
 	}
 }
