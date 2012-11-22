@@ -27,5 +27,10 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 		$this->conn->connect();
 		$this->assertNotEquals($id, $this->conn->execute("SELECT CONNECTION_ID()")->scalar());
 	}
+
+	public function testSelectedDatabase()
+	{
+		$this->assertEquals("pheasanttest", $this->conn->selectedDatabase());
+	}
 }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Pheasant\Tests\Dsn;
+namespace Pheasant\Tests;
 
 use \Pheasant\Database\Dsn;
 
@@ -8,8 +8,6 @@ class DsnTest extends \Pheasant\Tests\MysqlTestCase
 {
 	public function testParsingADsn()
 	{
-		parent::setUp();
-
 		$dsn = new Dsn("mysqli://user:pass@hostname:3306/mydb");
 
 		$this->assertEquals($dsn->scheme, 'mysqli');
