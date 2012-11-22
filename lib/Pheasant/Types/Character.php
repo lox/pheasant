@@ -7,13 +7,13 @@ namespace Pheasant\Types;
  */
 class Character extends Type
 {
-	const TYPE='character';
+  const TYPE='character';
 
-	/**
-	 * Constructor
-	 */
-	public function __construct($length, $params=null)
-	{
-		parent::__construct(self::TYPE, $length, $params);
-	}
+  /**
+   * Constructor
+   */
+  public function __construct($length, $params=null)
+  {
+    parent::__construct(self::TYPE, $length, $params);
+  }
 }

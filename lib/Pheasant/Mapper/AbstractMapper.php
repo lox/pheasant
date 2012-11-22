@@ -9,30 +9,30 @@ abstract class AbstractMapper implements Mapper
 {
     public function save($object)
     {
-		if(!$object->isSaved())
+    if(!$object->isSaved())
         {
-			$this->insert($object);
-		}
-		else if($changes = $object->changes())
-		{
-			$this->update($object, $changes);
-		}
+      $this->insert($object);
+    }
+    else if($changes = $object->changes())
+    {
+      $this->update($object, $changes);
+    }
 
-		return $this;
-	}
+    return $this;
+  }
 
-	protected function insert($object)
-	{
-		throw new \BadMethodCallException(__FUNCTION__." not implemented");
-	}
+  protected function insert($object)
+  {
+    throw new \BadMethodCallException(__FUNCTION__." not implemented");
+  }
 
-	protected function update($object, $changes)
-	{
-		throw new \BadMethodCallException(__FUNCTION__." not implemented");
-	}
+  protected function update($object, $changes)
+  {
+    throw new \BadMethodCallException(__FUNCTION__." not implemented");
+  }
 
-	public function delete($object)
-	{
-		throw new \BadMethodCallException(__FUNCTION__." not implemented");
-	}
+  public function delete($object)
+  {
+    throw new \BadMethodCallException(__FUNCTION__." not implemented");
+  }
 }

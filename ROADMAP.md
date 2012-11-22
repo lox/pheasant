@@ -16,7 +16,7 @@ Pheasant Roadmap
 - Custom Types
 - Custom Finders
 - Object Mapping: Remove, Soft Remove
-- Events: Remove 
+- Events: Remove
 - Object caching for HasOne relationships
 - Save graph for cascading save
 
@@ -28,4 +28,4 @@ Pheasant Roadmap
 - Cascading Delete
 - Pluggable backends for object caching
 
-	
+

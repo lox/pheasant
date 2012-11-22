@@ -7,9 +7,9 @@ namespace Pheasant\Finder;
  */
 interface Finder
 {
-	/**
-	 * Finds a collection of domain objects
-	 * @return Collection
-	 */
-	public function find($class, \Pheasant\Query\Criteria $criteria=null);
+  /**
+   * Finds a collection of domain objects
+   * @return Collection
+   */
+  public function find($class, \Pheasant\Query\Criteria $criteria=null);
 }
