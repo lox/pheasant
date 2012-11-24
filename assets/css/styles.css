@@ -108,3 +108,32 @@ pre code {
   display: inline;
   padding: 0 2px;
 }
+
+/* Docs
+-------------------------------------------------- */
+
+.docs h2 {
+  margin: 60px 0 10px;
+  font-size: 30px;
+  font-weight: 200;
+  line-height: 1;
+  letter-spacing: -1px;
+  font-family: 'MergeRegular';
+}
+
+.docs h3 {
+  margin: 30px 0 10px;
+  font-size: 30px;
+  font-weight: 200;
+  line-height: 1;
+  letter-spacing: -1px;
+  font-family: 'MergeRegular';
+}
+
+.docs p {
+  margin: 10px 0;
+}
+
+.docs pre {
+  margin: 20px 0;
+}

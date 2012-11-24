@@ -1,25 +1,7 @@
 ---
-title: Pheasant Manual
-layout: manual
+title: Using Pheasant
+layout: docs
 ---
-
-Pheasant Manual
-===============
-
-Pheasant is an object relational mapper designed from the ground up to 
-be simple, fast and to take advantage of features available in MySQL 5+ 
-and PHP 5.3. Pheasant doesn't aim to abstract the writing of queries, merely
-to speed up common use-cases and provide structure for binding domain objects
-to relational data.
-
-
-Requirements
-------------
-
- - PHP 5.3.1+
- - MySQL 5.1+ / InnoDB
- - mysqli or mysqlnd extension
-
 
 Installing
 ----------
@@ -58,12 +40,12 @@ Pheasant data objects are called domain objects. A definition from c2.com:
 > information, usually represents a logical entity in the problem domain space
 
 In our terms, a domain object is any object that has a unique identity and
-can be mapped to the database. Pheasant is designed to make this easy. 
+can be mapped to the database. Pheasant is designed to make this easy.
 
 ### Defining Properties
 
 The properties of an object are typed scalar attributes. They almost always
-map directly to database columns. 
+map directly to database columns.
 
 {% highlight php %}
 <?php
@@ -88,10 +70,10 @@ You can see a few things from the code above:
 
 - The Post class extends `Pheasant\DomainObject`
 - The `properties` method defines what the properties a domain object has
-- Data lengths and constraints can be provided with the Types. 
-- Identity is implicit by default, defining a sequence defines the primary key 
+- Data lengths and constraints can be provided with the Types.
+- Identity is implicit by default, defining a sequence defines the primary key
 
-Once you have a domain object defined, you need to setup Pheasant's internal 
+Once you have a domain object defined, you need to setup Pheasant's internal
 connections and then you are good to go:
 
 {% highlight php %}
@@ -110,14 +92,14 @@ an array of initial values. This is optional, you can also get and set values
 using property access.
 
 Pheasant provides a number of magical static methods callable via tha class,
-`save()` persists your object to the database. It handles either inserting 
+`save()` persists your object to the database. It handles either inserting
 or updating in the database and generating a new id for the object. Easy, right?
 
 
 Relationships
 -------------
 
-The hard bit with object mapping is representing relationships between objects. This 
+The hard bit with object mapping is representing relationships between objects. This
 example shows how Pheasant does it:
 
 {% highlight php %}
@@ -189,11 +171,11 @@ handles figuring out how to translate this to database queries.
 Pheasant supports a number of relationships,
 
 - One to One
-- One to Many 
+- One to Many
 - Belongs To
 
 The missing one is Many to Many, which generally involves a joining table
-and isn't presently supported. Check out the roadmap for more details. 
+and isn't presently supported. Check out the roadmap for more details.
 
 
 Finding Domain Objects
@@ -203,7 +185,7 @@ The aim for finders in pheasant is to let you do the common stuff very easily, a
 
 ### The Basics
 
-The basic means for searching for objects centers around the find method: 
+The basic means for searching for objects centers around the find method:
 
 {% highlight php %}
 <?php
@@ -219,7 +201,7 @@ SELECT * FROM post WHERE authorid = 42 AND title = 'Llamas Farming';
 
 The result of `find()` is a `Collection`. If all you want is a single object, use `one()` instead of `find()`.
 
-Both `find()` and `one()` can take either the SQL-like syntax above, or an array 
+Both `find()` and `one()` can take either the SQL-like syntax above, or an array
 of key=>values that must be matched in the row.
 
 {% highlight php %}
@@ -304,7 +286,7 @@ Imagine you had a domain object like the following:
 > - userid
 > - value
 
-Now imagine you wanted to find out what a users particular preference was, 
+Now imagine you wanted to find out what a users particular preference was,
 but you weren't sure if we'd even created one yet, you could do the following:
 
 {% highlight php %}
@@ -319,11 +301,11 @@ This will run this query:
 SELECT * FROM userpreference WHERE userid = 42 AND type = 'view' LIMIT 1;
 {% endhighlight %}
 
-Note that the query uses LIMIT 1 automatically, since a findOrCreate call always has to 
+Note that the query uses LIMIT 1 automatically, since a findOrCreate call always has to
 return only one object. In the event that it doesn't find a match, rather than throwing
 an exception it just creates a new domain object with those properties already set.
 
-Want to find the most recent object that matches your query? 
+Want to find the most recent object that matches your query?
 
 {% highlight php %}
 <?php

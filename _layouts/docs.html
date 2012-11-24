@@ -40,7 +40,28 @@
       </div>
     </div>
 
-{{ content }}
+<!-- Subhead
+================================================== -->
+<header class="jumbotron subhead" id="overview">
+  <div class="container">
+    <h1>Using Pheasant</h1>
+    <p class="lead">An overview of how to use Pheasant.</p>
+  </div>
+</header>
+
+    <div class="container">
+      <div class="row">
+        <div class="span3">
+          <ul class="nav nav-list">
+            <li><a href="#Installing"><i class="icon-chevron-right"></i> Installing</a></li>
+            <li><a href="#Domain Objects"><i class="icon-chevron-right"></i> Domain Objects</a></li>
+          </ul>
+        </div>
+        <div class="span9 docs">
+          {{ content }}
+        </div>
+      </div>
+    </div>
 
     <!-- Footer
     ================================================== -->
@@ -65,6 +86,3 @@
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
   </body>
 </html>
-
-
-
