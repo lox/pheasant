@@ -3,62 +3,79 @@ title: Pheasant
 layout: default
 ---
 
-What?
-----
+<div class="container">
+  <div class="hero-unit jumbotron">
+    <h1 class="pheasant-title">Pheasant</h1>
+    <p>Obvious data mapping for PHP 5.3+ and Mysqli. Small footprint, big impact.</p>
+    <p><img class="pheasant-logo" src="/assets/images/pheasant-large.png" width="300px" alt="Pheasant"></p>
+    <ul class="hero-links inline-list">
+      <li><a href="http://github.com/lox/pheasant">GitHub</a></li>
+      <li><a href="./get-started.html#examples">Examples</a></li>
+      <li><a href="./extend.html">Extend</a></li>
+      <li>Version 1.0.0-beta5</li>
+    </ul>
+  </div>
+</div>
 
-Pheasant is a simple object mapper for PHP 5.3+ and MySQL 5+. It offers basic relationships and query hydration.
-
-Why?
-----
-
-Pheasant is designed to be light and fast. It doesn't provide database abstraction and only supports a basic set
-of relationships. Magic doesn't scale, neither do giant codebases. Pheasant aims to make pragmatic compromises
-and not try and do everything. More than 3,000 lines is too much!
-
-Installation
-------------
-
-The project is available on [github](https://github.com/lox/pheasant), or available via pear:
-
-{% highlight bash %}
-$ pear channel-discover pearhub.org
-$ pear install pearhub/Pheasant
-{% endhighlight %}
-
-Usage
------
+<div class="container-narrow">
+  <hr>
+  <div class="marketing">
+  <h1>How?</h1>
+  </div>
 
 {% highlight php %}
 <?php
-
-use \Pheasant;
-use \Pheasant\Types;
 
 class Post extends Pheasant\DomainObject
 {
   public function properties()
   {
     return array(
-      'postid'   => new Types\Sequence(),
-      'title'    => new Types\String(255, 'required'),
-      'authorid' => new Types\Integer(11)
-    );
+        'postid'   => new Types\Sequence(),
+        'title'    => new Types\String(255, 'required'),
+        'authorid' => new Types\Integer(11)
+        );
   }
 }
 
-// configure database connection
-Pheasant::initialize('mysql://user:pass@localhost:/mydb');
-
+// simply create objects
 $post = new Post(array('title'=>'My Post'));
 $post->save();
 
 echo $post->title; // returns 'My Post'
+
+// look up via magic finders
+$post = Post::findOneByTitle('My Post');
+
 {% endhighlight %}
 
-More documentation is available, along with examples in the [README](https://github.com/lox/pheasant/blob/master/README.md).
+</div>
+
+<div class="container-narrow">
+  <div class="marketing">
+  <h1>Why?</h1>
+  </div>
+  <div class="features row-fluid">
+    <div class="feature-col span6">
+      <h4>Lightweight</h4>
+      <p>Small codebase, light abstractions that keep you close to the database you're developing for. Pheasant
+      attempts to make what it's going to do as obvious as possible.</p>
+
+      <h4>Memory Effecient</h4>
+      <p>Designed for use with big database tables. Pheasant is routinely tested to measure performance and
+      memory usage against other PHP ORM's.</p>
+    </div>
+
+    <div class="feature-col span6">
+      <h4>Bare Metal</h4>
+      <p>Pheasant is MySQL 5.1+ / Innodb only, with only a thin layer of convenience over
+       <a href="http://php.net/manual/en/book.mysqli.php">mysqli</a>. This makes features like SSL connections,
+       asynchronous queries and granular control over buffering possible with less code.</p>
+
+      <h4>Road Tested</h4>
+      <p>Helping power high volume websites like <a href="http://99designs.com">99designs</a>.</p>
+    </div>
+    </div>
+</div>
 
 
-Project Status
---------------
-
-Pheasant is still under development and isn't in any production use, yet!

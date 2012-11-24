@@ -7,8 +7,11 @@ Pheasant Manual
 ===============
 
 Pheasant is an object relational mapper designed from the ground up to 
-be simple, fast and do things 'the php way'. Pheasant isn\'t a database 
-abstraction layer, and only works with MySQL.
+be simple, fast and to take advantage of features available in MySQL 5+ 
+and PHP 5.3. Pheasant doesn't aim to abstract the writing of queries, merely
+to speed up common use-cases and provide structure for binding domain objects
+to relational data.
+
 
 Requirements
 ------------
@@ -17,12 +20,24 @@ Requirements
  - MySQL 5.1+ / InnoDB
  - mysqli or mysqlnd extension
 
+
 Installing
 ----------
 
-Pheasant complies to PSR-0 standards, which means you can use it with most classloaders
-simply by including the `pheasant\lib` directory in your `include_path`. Alternately, 
-Pheasant comes with a classloader:
+**Option 1: Include the pre-built PHAR archive**
+
+Download the latest PHP archive of Pheasant and include that in your code. The internal class-loader will be automatically configured.
+
+{% highlight php %}
+<?php
+
+require_once('lib/pheasant.phar');
+
+{% endhighlight %}
+
+**Option 2: Using the built in class-loader**
+
+Pheasant complies to PSR-0 standards, which means you can use it with most classloaders simply by including the `pheasant\lib` directory in your `include_path`. Alternately, Pheasant comes with a classloader:
 
 {% highlight php %}
 <?php
@@ -32,6 +47,7 @@ require_once('lib/pheasant/lib/Pheasant/ClassLoader.php');
 $classloader = new \Pheasant\ClassLoader();
 $classloader->register();
 {% endhighlight %}
+
 
 Domain Objects
 -----------------------
@@ -81,7 +97,7 @@ connections and then you are good to go:
 {% highlight php %}
 <?php
 
-Pheasant::initialize('mysql://user:pass@localhost:3306/mydb');
+Pheasant::setup('mysql://user:pass@localhost:3306/mydb');
 
 $post = new Post(array('title'=>'My Post'));
 $post->save();
@@ -150,7 +166,7 @@ class Author extends DomainObject
 }
 
 // configure database connection
-Pheasant::initialize('mysql://localhost:/mydatabase');
+Pheasant::setup('mysql://localhost:/mydatabase');
 
 // create some objects
 $author = new Author(array('fullname'=>'Lachlan'));
@@ -183,41 +199,28 @@ and isn't presently supported. Check out the roadmap for more details.
 Finding Domain Objects
 ----------------------
 
-The aim for finders in pheasant is to let you do the common stuff very easily, and get 
-out of your way for the hard stuff. Imagine you are querying the `Post` and `Author`
-objects we defined in the previous example.
+The aim for finders in pheasant is to let you do the common stuff very easily, and get out of your way for the hard stuff. Imagine you are querying the `Post` and `Author` objects we defined in the previous example.
 
-### Basic Find
+### The Basics
 
-Basic queries can be run for this domain object as follows:
+The basic means for searching for objects centers around the find method: 
 
 {% highlight php %}
 <?php
 
-Post::find('authorid = ? AND title = ?', 42, 'Food goes in here');
+Post::find('authorid = ? AND title = ?', 42, 'Llamas Farming');
 {% endhighlight %}
 
-This would return a collection populated using this query:
+You can see this is very similar to the WHERE portion of a query. Translated to SQL this query would look like:
 
 {% highlight sql %}
-SELECT * FROM post WHERE authorid = 42 AND title = 'Food goes in here';
+SELECT * FROM post WHERE authorid = 42 AND title = 'Llamas Farming';
 {% endhighlight %}
 
-Want to get just one record back?
+The result of `find()` is a `Collection`. If all you want is a single object, use `one()` instead of `find()`.
 
-{% highlight php %}
-<?php
-
-Post::one('authorid = ?', 42);
-{% endhighlight %}
-
-That will return a single domain object using this query
-
-{% highlight sql %}
-SELECT * FROM post WHERE authorid = 42 LIMIT 1;
-{% endhighlight %}
-
-For added flexibility, both ::find and ::one can accept a key => value array instead of sql like so:
+Both `find()` and `one()` can take either the SQL-like syntax above, or an array 
+of key=>values that must be matched in the row.
 
 {% highlight php %}
 <?php
@@ -229,29 +232,18 @@ Post::find(array(
 ));
 {% endhighlight %}
 
-Translates to
-
-{% highlight sql %}
-SELECT * FROM post WHERE authorid = 42 AND title = 'Food goes in here' AND status IN ('review', 'deleted');
-{% endhighlight %}
-
-This way it's possible to do things like programatically build up queries easily, or just avoid sql if that's your thing.
+The nested array for status provides a series of values to match, these are implemented as an `IN (x, y, z)` condition in SQL.
 
 Finally, if you just want to find an object based on its primary key, you can do this:
 
 {% highlight php %}
 <?php
 
-Post::find(42);
+Post::findById(42);
 {% endhighlight %}
 
-Which translates to:
 
-{% highlight sql %}
-SELECT * FROM post WHERE postid = 42;
-{% endhighlight %}
-
-### Finding with findBy
+### Magic findBy methods
 
 So SQL is great, but often we like to be a bit more descriptive, or we like to shorten things down a bit for common methods. Now you could create a custom finder which encapsulates that logic in its own method like so:
 
@@ -260,11 +252,14 @@ So SQL is great, but often we like to be a bit more descriptive, or we like to s
 
 class PostFinder
 {
-    public function findByAuthorIdAndTitle($authorId, $title)
+    public function findByAuthorIdAndTitle($finder, $authorId, $title)
     {
-        return $this->find('authorid = ? AND title = ?', $authorId, $title);
+        return $finder('authorid = ? AND title = ?', $authorId, $title);
     }
 }
+
+Pheasant::mixinFinder('Post', new PostFinder());
+
 {% endhighlight %}
 
 However we don't even need to do that, instead of defining a custom finder with that method, we can just go ahead and write:

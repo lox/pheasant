@@ -1,31 +1,70 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN"
-	"http://www.w3.org/TR/html4/strict.dtd">
-<html>
-	<head>
-		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
-		<title>{{ page.title }}</title>
-		<meta name="author" content="Lachlan Donald" />
-		<link rel="stylesheet" type="text/css" href="/static/screen.css" media="screen, projection" />
-		<link rel="stylesheet" type="text/css" href="/static/pygments/bw.css" media="screen, projection" />
-	</head>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Pheasant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="An object-mapper designed for PHP 5.3+ and Mysqli">
+    <meta name="author" content="Lachlan Donald <lachlan@ljd.cc>">
+    <link href="assets/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="assets/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="assets/fonts/merge_regular_macroman/stylesheet.css" rel="stylesheet">
+    <link href="assets/css/styles.css" rel="stylesheet">
+    <link href="assets/pygments/github.css" rel="stylesheet">
 
-	<body>
-		<div id='wrapper'>
-			<div id='header'>
-				<a href='/' title='Pheasant Object Mapper'>Pheasant</a>
-			</div>
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
 
-			<div id='content'>
-					{{ content }}
-			</div>
+  <body>
 
-		  <div class="ribbon">
-			 <a href="http://github.com/lox/pheasant">Fork me on GitHub</a>
-		  </div>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="/index.html">Pheasant</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class=""><a href="/get-started.html">Get started</a></li>
+              <li class=""><a href="/docs.html">Documentation</a></li>
+              <li class=""><a href="/extend.html">Extend</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
 
-			<div id='footer'>
-				Copyright &copy; 2010 <a href="http://lachlandonald.com">Lachlan Donald</a>. Available under an MIT license.
-			</div>
-		</div>
-	</body>
+{{ content }}
+
+    <!-- Footer
+    ================================================== -->
+    <footer class="footer">
+    <div class="container">
+        <p class="pull-right"><a href="#">Back to top</a></p>
+        <p>Developed by <a href="http://lachlan.me" target="_blank">@lox</a> and <a href="http://99designs.com" target="_blank">99designs</a>.</p>
+        <p>Code licensed under <a href="http://opensource.org/licenses/MIT" target="_blank">MIT</a>, documentation under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+        <ul class="footer-links inline-list">
+          <li><a href="http://blog.getpheasant.com">Blog</a></li>
+          <li class="muted">&middot;</li>
+          <li><a href="https://github.com/lox/pheasant/issues?state=open">Issues</a></li>
+          <li class="muted">&middot;</li>
+          <li><a href="https://github.com/lox/pheasant/wiki">Roadmap and changelog</a></li>
+        </ul>
+      </div>
+    </footer>
+
+    <!-- Scripts
+    ================================================== -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+  </body>
 </html>
+
+
+
