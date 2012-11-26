@@ -17,7 +17,10 @@ class BelongsTo extends HasOne
 		$query = $this->query(
 			"{$this->foreign}=?", $object->get($this->local));
 
-		return $this->hydrate($query->execute()->row(), true);
+		$cache = $object->instanceCache();
+		if (!$cache->has($key))
+			$cache->set($key, $this->hydrate($query->execute()->row(), true));
+		return $cache->get($key);
 	}
 
 	/* (non-phpdoc)
@@ -25,6 +28,7 @@ class BelongsTo extends HasOne
 	 */
 	public function set($object, $key, $value)
 	{
+		$object->instanceCache()->set($key, $value);
 		$object->set($this->local, $value->{$this->foreign});
 	}
 }

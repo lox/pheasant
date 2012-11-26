@@ -13,6 +13,7 @@ class DomainObject
 	private $_changed = array();
 	private $_saved=false;
 	private $_events;
+	private $_instanceCache;
 
 	/**
 	 * The final constructer which initializes the object. Subclasses
@@ -348,6 +349,16 @@ class DomainObject
 		}
 
 		return $this;
+	}
+
+	/**
+	 * @return InstanceCache
+	 */
+	public function instanceCache()
+	{
+		if (!isset($this->_instanceCache))
+			$this->_instanceCache = new InstanceCache();
+		return $this->_instanceCache;
 	}
 
 	/**
