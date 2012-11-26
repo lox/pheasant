@@ -12,7 +12,7 @@ layout: default
       <li><a href="http://github.com/lox/pheasant">GitHub</a></li>
       <li><a href="./get-started.html#examples">Examples</a></li>
       <li><a href="./extend.html">Extend</a></li>
-      <li>Version 1.0.0-beta5</li>
+      <li>Version 1.0.0-rc1</li>
     </ul>
   </div>
 </div>
