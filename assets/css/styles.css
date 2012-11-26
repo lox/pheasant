@@ -56,15 +56,22 @@ pre code {
 }
 
 .jumbotron h1 {
-  font-size: 80px;
-  font-weight: bold;
-  letter-spacing: -1px;
+  font-size: 50px;
   line-height: 1;
-  font-family: 'MergeRegular';
+  font-weight: normal;
+}
+
+@media (min-width: 1024px) {
+  .jumbotron h1 {
+    font-size: 80px;
+  }
+  .jumbotron p {
+    font-size: 30px;
+  }
 }
 
 .jumbotron p {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 300;
   line-height: 1.25;
   margin-bottom: 30px;
@@ -80,13 +87,18 @@ pre code {
 }
 
 .marketing h1 {
+  font-weight: normal;
   margin: 60px 0 10px;
-  font-size: 60px;
-  font-weight: 200;
+  font-size: 40px;
   line-height: 1;
-  letter-spacing: -1px;
-  font-family: 'MergeRegular';
 }
+
+@media (min-width: 1024px) {
+  .marketing h1 {
+    font-size: 60px;
+  }
+}
+
 
 .feature-col h4 {
   padding-top: 20px;
