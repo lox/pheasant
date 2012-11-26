@@ -3,46 +3,30 @@ title: Using Pheasant
 layout: docs
 ---
 
-Installing
-----------
 
-**Option 1: Include the pre-built PHAR archive**
+<h2 class="numbered" id="Installing">Installing</h2>
 
-Download the latest PHP archive of Pheasant and include that in your code. The internal class-loader will be automatically configured.
+Pheasant should be installed via [Composer](http://getcomposer.org). See the details on
+Pheasant's [packagist page](https://packagist.org/packages/lox/pheasant).
 
-{% highlight php %}
-<?php
-
-require_once('lib/pheasant.phar');
-
-{% endhighlight %}
-
-**Option 2: Using the built in class-loader**
-
-Pheasant complies to PSR-0 standards, which means you can use it with most classloaders simply by including the `pheasant\lib` directory in your `include_path`. Alternately, Pheasant comes with a classloader:
+Once you've installed Pheasant as a dependancy of your project, you can simply load Pheasant
+classes via Composer's autoload mechanism:
 
 {% highlight php %}
 <?php
 
-require_once('lib/pheasant/lib/Pheasant/ClassLoader.php');
+require_once('vendor/autoload.php'); // composer autoload
 
-$classloader = new \Pheasant\ClassLoader();
-$classloader->register();
 {% endhighlight %}
 
 
-Domain Objects
------------------------
+<h2 class="numbered" id="DomainObjects">Domain Objects</h2>
 
-Pheasant data objects are called domain objects. A definition from c2.com:
+Anything mapped to the database is referred to as a `Domain Object` in Pheasant. The only requirement
+for a domain object is that is has a unique identity (in database parlance, a primary key).
 
-> a domain object is a logical container of purely domain
-> information, usually represents a logical entity in the problem domain space
 
-In our terms, a domain object is any object that has a unique identity and
-can be mapped to the database. Pheasant is designed to make this easy.
-
-### Defining Properties
+<h3 class="numbered" id="DefiningProperties">Properties</h3>
 
 The properties of an object are typed scalar attributes. They almost always
 map directly to database columns.
@@ -346,35 +330,4 @@ Translates to
 {% highlight sql %}
 SELECT * FROM post WHERE status IN ('review', 'deleted')
 {% endhighlight %}
-
-
-
-Events
-------
-
-
-Types
------
-
-
-Database Layer
---------------
-
-
-Raw Queries
------------
-
-
-Extending Finders
------------------
-
-
-Sequences vs Auto Increment
----------------------------
-
-
-FAQ
----
-
-
 

@@ -6,6 +6,8 @@ body {
   position: relative;
 }
 
+
+
 /* Bootstrap Overrides
 -------------------------------------------------- */
 
@@ -23,6 +25,15 @@ body {
   margin-top: 30px;
   border-top: 1px solid #e5e5e5;
   background-color: #f5f5f5;
+}
+
+@media (max-width: 767px) {
+  .footer {
+    margin-right: -20px;
+    margin-left: -20px;
+    padding: 10px 20px;
+    margin-top: 20px;
+  }
 }
 
 pre code {
@@ -56,7 +67,6 @@ pre code {
 }
 
 .jumbotron h1 {
-  font-size: 50px;
   line-height: 1;
   font-weight: normal;
 }
@@ -66,7 +76,7 @@ pre code {
     font-size: 80px;
   }
   .jumbotron p {
-    font-size: 30px;
+    font-size: 40px;
   }
 }
 
@@ -86,19 +96,16 @@ pre code {
   text-align: center;
 }
 
-.marketing h1 {
+.marketing h2 {
   font-weight: normal;
-  margin: 60px 0 10px;
-  font-size: 40px;
   line-height: 1;
 }
 
 @media (min-width: 1024px) {
-  .marketing h1 {
-    font-size: 60px;
+  .marketing h2 {
+    font-size: 50px;
   }
 }
-
 
 .feature-col h4 {
   padding-top: 20px;
@@ -124,22 +131,53 @@ pre code {
 /* Docs
 -------------------------------------------------- */
 
-.docs h2 {
-  margin: 60px 0 10px;
-  font-size: 30px;
-  font-weight: 200;
-  line-height: 1;
-  letter-spacing: -1px;
-  font-family: 'MergeRegular';
+body {
+  counter-reset: doc-h2s;
 }
 
-.docs h3 {
-  margin: 30px 0 10px;
-  font-size: 30px;
-  font-weight: 200;
-  line-height: 1;
-  letter-spacing: -1px;
-  font-family: 'MergeRegular';
+.nested-numbers {
+  counter-reset: nn1-counter;
+}
+
+.nested-numbers li {
+  display: block;
+}
+
+.nested-numbers > li:before {
+  content: counter(nn1-counter)  ".\0000a0\0000a0";
+  counter-increment: nn1-counter;
+}
+
+.nested-numbers > ol {
+  counter-reset: nn2-counter;
+}
+
+.nested-numbers > ol > li:before {
+  content: counter(nn1-counter) "." counter(nn2-counter)  ".\0000a0\0000a0";
+  counter-increment: nn2-counter;
+}
+
+h2.numbered:before {
+  content: counter(doc-h2s)  ".\0000a0\0000a0";
+  counter-increment: doc-h2s;
+  counter-reset: doc-h3s;
+}
+
+h3.numbered:before {
+  content: counter(doc-h2s) "." counter(doc-h3s)  ".\0000a0\0000a0";
+  counter-increment: doc-h3s;
+}
+
+.footer-links li:first-child {
+  padding-left: 0;
+}
+
+.docs h2, .docs h3 {
+  margin-top: 30px;
+}
+
+.docs h2:first-child {
+  margin-top: 0;
 }
 
 .docs p {

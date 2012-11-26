@@ -5,7 +5,7 @@ layout: default
 
 <div class="container">
   <div class="hero-unit jumbotron">
-    <h1 class="pheasant-title">Pheasant</h1>
+    <h1 class="pheasant-title tk-bello-pro">Pheasant</h1>
     <p>Obvious data mapping for PHP 5.3+ and Mysqli. Small footprint, big impact.</p>
     <p><img class="pheasant-logo" src="/assets/images/pheasant-large.png" width="300px" alt="Pheasant"></p>
     <ul class="hero-links inline-list">
@@ -20,7 +20,7 @@ layout: default
 <div class="container-narrow">
   <hr>
   <div class="marketing">
-  <h1>How?</h1>
+  <h2 class="tk-bello-pro">How?</h2>
   </div>
 
 {% highlight php %}
@@ -53,7 +53,7 @@ $post = Post::findOneByTitle('My Post');
 
 <div class="container-narrow">
   <div class="marketing">
-  <h1>Why?</h1>
+  <h2 class="tk-bello-pro">Why?</h2>
   </div>
   <div class="features row-fluid">
     <div class="feature-col span6">

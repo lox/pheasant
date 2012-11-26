@@ -41,8 +41,6 @@
       </div>
     </div>
 
-<!-- Subhead
-================================================== -->
 <header class="jumbotron subhead" id="overview">
   <div class="container">
     <h1>Using Pheasant</h1>
@@ -50,19 +48,33 @@
   </div>
 </header>
 
-    <div class="container">
-      <div class="row">
-        <div class="span3">
-          <ul class="nav nav-list">
-            <li><a href="#Installing"><i class="icon-chevron-right"></i> Installing</a></li>
-            <li><a href="#Domain Objects"><i class="icon-chevron-right"></i> Domain Objects</a></li>
-          </ul>
-        </div>
-        <div class="span9 docs">
-          {{ content }}
-        </div>
-      </div>
+<div class="container">
+  <div class="row">
+    <div class="span3">
+      <ol class="doc-nav nested-numbers">
+        <li><a href="#Installing">Installing</a></li>
+        <li><a href="#DomainObjects">Domain Objects</a></li>
+        <ol>
+          <li><a href="#Properties">Properties</a></li>
+          <li><a href="#Relationships">Relationships</a></li>
+          <li><a href="#Identity">Identity</a></li>
+          <li><a href="#LazyLoading">Lazy-loading</a></li>
+        </ol>
+        <li><a href="#Finders">Finders</a></li>
+        <ol>
+          <li><a href="#BasicFinding">Basic Finding</a></li>
+          <li><a href="#MagicFinders">Magic Finders</a></li>
+        </ol>
+        <li><a href="#Events">Events</a></li>
+        <li><a href="#DatabaseLayer">Database Layer</a></li>
+        <li><a href="#Testing">Testing</a></li>
+      </ol>
     </div>
+    <div class="span9 docs">
+    {{ content }}
+    </div>
+  </div>
+</div>
 
     <!-- Footer
     ================================================== -->
