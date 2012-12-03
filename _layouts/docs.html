@@ -18,7 +18,7 @@
     <![endif]-->
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target=".docs-nav">
 
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
@@ -51,7 +51,7 @@
 <div class="container">
   <div class="row">
     <div class="span3">
-      <ol class="doc-nav nested-numbers">
+      <ol class="docs-nav nested-numbers" data-spy="affix" data-offset-top="202">
         <li><a href="#Installing">Installing</a></li>
         <li><a href="#DomainObjects">Domain Objects</a></li>
         <ol>
@@ -62,7 +62,6 @@
         </ol>
         <li><a href="#Finders">Finders</a></li>
         <ol>
-          <li><a href="#BasicFinding">Basic Finding</a></li>
           <li><a href="#MagicFinders">Magic Finders</a></li>
         </ol>
         <li><a href="#Events">Events</a></li>

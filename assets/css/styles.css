@@ -69,6 +69,7 @@ pre code {
 .jumbotron h1 {
   line-height: 1;
   font-weight: normal;
+  margin-top: 30px;
 }
 
 @media (min-width: 1024px) {
@@ -97,6 +98,7 @@ pre code {
 }
 
 .marketing h2 {
+  margin-top: 30px;
   font-weight: normal;
   line-height: 1;
 }
@@ -173,7 +175,7 @@ h3.numbered:before {
 }
 
 .docs h2, .docs h3 {
-  margin-top: 30px;
+  margin: 40px 0 15px;
 }
 
 .docs h2:first-child {
@@ -187,3 +189,40 @@ h3.numbered:before {
 .docs pre {
   margin: 20px 0;
 }
+
+.docs .highlight {
+  margin-top: -10px;
+}
+
+/* Doc Nav
+-------------------------------------------------- */
+
+.docs-nav {
+  margin: 0;
+}
+
+.docs-nav.affix {
+  top: 70px;
+}
+
+.docs-nav li  {
+  display: block;
+  margin: 0 0 -1px;
+  padding: 5px;
+}
+
+.docs-nav > li:first-child > a {
+  -webkit-border-radius: 6px 6px 0 0;
+  -moz-border-radius: 6px 6px 0 0;
+  border-radius: 6px 6px 0 0;
+}
+
+@media (max-width: 750px) {
+  .docs-nav {
+    width: auto;
+    margin: 0 20px 20px 20px;
+    position: relative;
+  }
+}
+
+

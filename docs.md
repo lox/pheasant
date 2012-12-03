@@ -10,12 +10,16 @@ Pheasant should be installed via [Composer](http://getcomposer.org). See the det
 Pheasant's [packagist page](https://packagist.org/packages/lox/pheasant).
 
 Once you've installed Pheasant as a dependancy of your project, you can simply load Pheasant
-classes via Composer's autoload mechanism:
+classes via Composer's autoload mechanism and configure your Mysql connection.
 
 {% highlight php %}
 <?php
 
-require_once('vendor/autoload.php'); // composer autoload
+// use composer's autoload mechanism
+require_once('vendor/autoload.php');
+
+// setup database connections
+Pheasant::setup('mysql://user:pass@localhost:3306/mydb');
 
 {% endhighlight %}
 
@@ -25,24 +29,21 @@ require_once('vendor/autoload.php'); // composer autoload
 Anything mapped to the database is referred to as a `Domain Object` in Pheasant. The only requirement
 for a domain object is that is has a unique identity (in database parlance, a primary key).
 
-
-<h3 class="numbered" id="DefiningProperties">Properties</h3>
-
-The properties of an object are typed scalar attributes. They almost always
-map directly to database columns.
+Creating a Domain Object is done by extending `Pheasant\DomainObject` and providing a `properties` method
+that describes what properties should be persisted to the database. The database name is derived from the classname,
+or you can override it with a `tableName` method.
 
 {% highlight php %}
 <?php
 
-use \Pheasant;
 use \Pheasant\Types;
 
-class Post extends Pheasant\DomainObject
+class Post extends \Pheasant\DomainObject
 {
   public function properties()
   {
     return array(
-      'postid'   => new Types\Sequence(),
+      'postid'   => new Types\Integer(11, 'primary'),
       'title'    => new Types\String(255, 'required'),
       'authorid' => new Types\Integer(11)
     );
@@ -50,20 +51,13 @@ class Post extends Pheasant\DomainObject
 }
 {% endhighlight %}
 
-You can see a few things from the code above:
+The example above will persist to the `post` table, and will use a primary key of postid, which will be
+an auto_increment field by default.
 
-- The Post class extends `Pheasant\DomainObject`
-- The `properties` method defines what the properties a domain object has
-- Data lengths and constraints can be provided with the Types.
-- Identity is implicit by default, defining a sequence defines the primary key
-
-Once you have a domain object defined, you need to setup Pheasant's internal
-connections and then you are good to go:
+Once defined, a Pheasant object can be immediately used:
 
 {% highlight php %}
 <?php
-
-Pheasant::setup('mysql://user:pass@localhost:3306/mydb');
 
 $post = new Post(array('title'=>'My Post'));
 $post->save();
@@ -71,7 +65,7 @@ $post->save();
 echo $post->title; // returns 'My Post'
 {% endhighlight %}
 
-As you can see here, Pheasant magically provides a constructor that takes
+As you can see here, Pheasant provides a default constructor that takes
 an array of initial values. This is optional, you can also get and set values
 using property access.
 
@@ -80,11 +74,42 @@ Pheasant provides a number of magical static methods callable via tha class,
 or updating in the database and generating a new id for the object. Easy, right?
 
 
-Relationships
--------------
+<h3 class="numbered" id="Properties">Properties</h3>
 
-The hard bit with object mapping is representing relationships between objects. This
-example shows how Pheasant does it:
+Properties are defined as typed scalar attributes. They will almost always correspond 1-to-1 with
+database columns.
+
+Available types are:
+
+ - Integer
+ - String
+ - Boolean
+ - Character
+ - Sequence
+
+The only type here that doesn't map directly to it's MySQL equivelent is `Sequence`. Using this type
+will use `sequence` table for the primary key.
+
+Property definitions can take in options, either as a flat string or an `Pheasant\Options` object.
+
+{% highlight php %}
+<?php
+
+new Types\String(255, 'required default=test');
+new Types\String(255, new Pheasant\Options(array('required', 'default'=>'test'));
+
+
+{% endhighlight %}
+
+Either of the above styles are valid, use whichever you find to be the most readable.
+
+Valid options are `required`, `notnull`, `default`, `auto_increment` and `primary`.
+
+
+<h3 class="numbered" id="Relationships">Relationships</h3>
+
+The hard bit with object mapping is representing relationships between objects. Pheasant
+does this by defining a `relationships()` method.
 
 {% highlight php %}
 <?php
@@ -100,7 +125,6 @@ class Post extends DomainObject
             'postid'   => new Types\Sequence(),
             'title'    => new Types\String(255, 'required'),
             'subtitle' => new Types\String(255),
-            'status'   => new Types\Enum(array('closed','open')),
             'authorid' => new Types\Integer(11),
             );
     }
@@ -108,7 +132,7 @@ class Post extends DomainObject
     public function relationships()
     {
         return array(
-            'Author' => Author::hasOne('author_id');
+            'Author' => Author::hasOne('authorid');
             );
     }
 }
@@ -126,13 +150,10 @@ class Author extends DomainObject
     public function relationships()
     {
         return array(
-            'Posts' => Post::hasOne('author_id')
+            'Posts' => Post::hasOne('authorid')
             );
     }
 }
-
-// configure database connection
-Pheasant::setup('mysql://localhost:/mydatabase');
 
 // create some objects
 $author = new Author(array('fullname'=>'Lachlan'));
@@ -152,24 +173,17 @@ a related object. This means you can chain related objects really simply, allowi
 for what would normally be a complex query to be represented tersely. Pheasant
 handles figuring out how to translate this to database queries.
 
-Pheasant supports a number of relationships,
+Pheasant supports one-to-one, and one-to-many relationship types.
 
-- One to One
-- One to Many
-- Belongs To
+<h3 class="numbered" id="Identity">Identity</h3>
 
-The missing one is Many to Many, which generally involves a joining table
-and isn't presently supported. Check out the roadmap for more details.
+<h3 class="numbered" id="LazyLoading">Lazy Loading</h3>
 
+<h2 class="numbered" id="Finders">Finders</h2>
 
-Finding Domain Objects
-----------------------
-
-The aim for finders in pheasant is to let you do the common stuff very easily, and get out of your way for the hard stuff. Imagine you are querying the `Post` and `Author` objects we defined in the previous example.
-
-### The Basics
-
-The basic means for searching for objects centers around the find method:
+The aim for finders in pheasant is to let you do the common stuff very easily, and get out
+of your way for the hard stuff. Imagine you are querying the `Post` and `Author` objects we
+defined in the previous example.
 
 {% highlight php %}
 <?php
@@ -177,16 +191,18 @@ The basic means for searching for objects centers around the find method:
 Post::find('authorid = ? AND title = ?', 42, 'Llamas Farming');
 {% endhighlight %}
 
-You can see this is very similar to the WHERE portion of a query. Translated to SQL this query would look like:
+You can see this is very similar to the WHERE portion of a query. Translated to SQL this query
+would look like:
 
 {% highlight sql %}
 SELECT * FROM post WHERE authorid = 42 AND title = 'Llamas Farming';
 {% endhighlight %}
 
-The result of `find()` is a `Collection`. If all you want is a single object, use `one()` instead of `find()`.
+The result of `find()` is a `Pheasant\Collection`. If all you want is a single object, use
+`one()` instead of `find()`.
 
-Both `find()` and `one()` can take either the SQL-like syntax above, or an array
-of key=>values that must be matched in the row.
+Both `find()` and `one()` expect a `Criteria` object, although a string or an array are converted
+to one for convenience. This means either the SQL-like syntax above or the array syntax below can be used.
 
 {% highlight php %}
 <?php
@@ -198,136 +214,25 @@ Post::find(array(
 ));
 {% endhighlight %}
 
-The nested array for status provides a series of values to match, these are implemented as an `IN (x, y, z)` condition in SQL.
+The nested array for status provides a series of values to match, these are implemented as
+an `IN (x, y, z)` condition in SQL.
 
-Finally, if you just want to find an object based on its primary key, you can do this:
-
-{% highlight php %}
-<?php
-
-Post::findById(42);
-{% endhighlight %}
+Finally, if you just want to find an object based on its primary key, you can use `byId()`.
 
 
-### Magic findBy methods
+<h3 class="numbered" id="MagicFinders">Magic Finders</h3>
 
-So SQL is great, but often we like to be a bit more descriptive, or we like to shorten things down a bit for common methods. Now you could create a custom finder which encapsulates that logic in its own method like so:
+The vast majority of most finder methods follow the same pattern, so Pheasant provides a number
+of dynamically generated finder methods to make your life easier.
 
 {% highlight php %}
 <?php
 
-class PostFinder
-{
-    public function findByAuthorIdAndTitle($finder, $authorId, $title)
-    {
-        return $finder('authorid = ? AND title = ?', $authorId, $title);
-    }
-}
-
-Pheasant::mixinFinder('Post', new PostFinder());
-
+Post::findByAuthorIdAndTitle(42, 'My Book Title');
 {% endhighlight %}
 
-However we don't even need to do that, instead of defining a custom finder with that method, we can just go ahead and write:
+The above does exactly what you'd expect, it finds Posts with an Author and a Title. You can add any number
+of attributes and any combination of and and or (rules of precendence apply).
 
-{% highlight php %}
-<?php
 
-Post::findByAuthorIdAndTitle(42, 'Food goes in here');
-{% endhighlight %}
-
-This automatically translates that call into this query:
-
-{% highlight sql %}
-SELECT * FROM post WHERE authorid = 42 AND title = 'Food goes in here';
-{% endhighlight %}
-
-We can do OR queries as well like so:
-
-{% highlight php %}
-<?php
-
-Post::findByAuthorIdOrStatus(42, 'available');
-{% endhighlight %}
-
-To make it a bit smarter, findBy also understands relationships e.g.
-
-{% highlight php %}
-<?php
-
-Post::findByAuthorOrStatus($author, 'available');
-{% endhighlight %}
-
-This works exactly the same as the previous findBy call.
-
-### Getting even fancier with findBy
-
-Imagine you had a domain object like the following:
-
-> UserPreference
-> - id
-> - type
-> - userid
-> - value
-
-Now imagine you wanted to find out what a users particular preference was,
-but you weren't sure if we'd even created one yet, you could do the following:
-
-{% highlight php %}
-<?php
-
-UserPreference::findOrCreateByUserIdAndType(42, 'view');
-{% endhighlight %}
-
-This will run this query:
-
-{% highlight sql %}
-SELECT * FROM userpreference WHERE userid = 42 AND type = 'view' LIMIT 1;
-{% endhighlight %}
-
-Note that the query uses LIMIT 1 automatically, since a findOrCreate call always has to
-return only one object. In the event that it doesn't find a match, rather than throwing
-an exception it just creates a new domain object with those properties already set.
-
-Want to find the most recent object that matches your query?
-
-{% highlight php %}
-<?php
-
-Post::findLatestByAuthor($author);
-{% endhighlight %}
-
-Translates to
-
-{% highlight sql %}
-SELECT * FROM post WHERE authorid = 42 ORDER BY id DESC LIMIT 1;
-{% endhighlight %}
-
-Want to just get the first result of your query?
-
-{% highlight php %}
-<?php
-
-Post::findOneByTitle('Food goes in here');
-{% endhighlight %}
-
-Translates to
-
-{% highlight sql %}
-SELECT * FROM post WHERE title = 'Food goes in here' LIMIT 1;
-{% endhighlight %}
-
-Want to find objects with one of several status'?
-
-{% highlight php %}
-<?php
-
-Post::findByStatus(array('review', 'deleted'));
-{% endhighlight %}
-
-Translates to
-
-{% highlight sql %}
-SELECT * FROM post WHERE status IN ('review', 'deleted')
-{% endhighlight %}
 
