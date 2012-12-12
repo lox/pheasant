@@ -64,7 +64,7 @@ class Schema
 	}
 
 	/**
-	 * Returns an array with property defaults
+	 * Returns an array with properties with default values
 	 * @return array
 	 */
 	public function defaults()

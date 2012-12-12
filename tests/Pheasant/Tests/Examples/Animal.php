@@ -17,6 +17,7 @@ class Animal extends DomainObject
 			->properties(array(
 				'id' => new Types\Integer(11, 'primary auto_increment'),
 				'type' => new Types\String(255, 'required default=llama'),
+				'name' => new Types\String(255),
 			));
 	}
 }
