@@ -49,8 +49,11 @@ class MysqlTestCase extends \PHPUnit_Framework_TestCase
 		$this->assertTrue($this->pheasant->connection()->table($table)->exists());
 	}
 
-	public function assertRowCount($sql, $count)
+	public function assertRowCount($count, $sql)
 	{
+		if(is_object($sql))
+			$sql = $sql->toSql();
+
 		$result = $this->connection()->execute($sql);
 		$this->assertEquals($result->count(), $count);
 	}

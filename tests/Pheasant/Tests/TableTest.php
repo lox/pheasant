@@ -18,13 +18,13 @@ class TableTest extends \Pheasant\Tests\MysqlTestCase
 			'lastname'=>new Types\String(),
 		));
 
-		$this->assertRowCount('select * from user', 0);
+		$this->assertRowCount(0, 'select * from user');
 	}
 
 	public function testInsertingIntoATable()
 	{
 		$this->table->insert(array('firstname'=>'Llama', 'lastname'=>'Herder'));
-		$this->assertRowCount('select * from user', 1);
+		$this->assertRowCount(1, 'select * from user');
 		$this->assertEquals(
 			$this->connection()->execute("select * from user where userid=1")->row(),
 			array('userid'=>1, 'firstname'=>'Llama', 'lastname'=>'Herder')
@@ -34,7 +34,7 @@ class TableTest extends \Pheasant\Tests\MysqlTestCase
 	public function testUpdatingATable()
 	{
 		$this->table->insert(array('firstname'=>'Llama', 'lastname'=>'Herder'));
-		$this->assertRowCount('select * from user', 1);
+		$this->assertRowCount(1, 'select * from user');
 
 		$this->table->update(array('firstname'=>'Bob'), new Pheasant\Query\Criteria('userid=?', 1));
 
@@ -47,7 +47,7 @@ class TableTest extends \Pheasant\Tests\MysqlTestCase
 	public function testUpsertingATable()
 	{
 		$this->table->upsert(array('firstname'=>'Llama', 'lastname'=>'Herder'));
-		$this->assertRowCount('select * from user', 1);
+		$this->assertRowCount(1, 'select * from user');
 
 		$this->assertEquals(
 			$this->connection()->execute("select * from user where userid=1")->row(),
@@ -70,7 +70,7 @@ class TableTest extends \Pheasant\Tests\MysqlTestCase
 		$this->assertTrue($table->exists());
 
 		$table->insert(array('firstname'=>'Llama', 'lastname'=>'Herder'));
-		$this->assertRowCount('select * from user', 1);
+		$this->assertRowCount(1, 'select * from user');
 
 		$table->update(array('firstname'=>'Bob'), new Pheasant\Query\Criteria('userid=?', 1));
 
@@ -93,10 +93,10 @@ class TableTest extends \Pheasant\Tests\MysqlTestCase
 	{
 		$this->table->insert(array('firstname'=>'Llama', 'lastname'=>'Herder'));
 		$this->table->insert(array('firstname'=>'Frank', 'lastname'=>'Farmer'));
-		$this->assertRowCount('select * from user', 2);
+		$this->assertRowCount(2, 'select * from user');
 
 		$this->table->delete(new Criteria('firstname like ?', 'Llama'));
-		$this->assertRowCount('select * from user', 1);
+		$this->assertRowCount(1, 'select * from user');
 
 		$this->assertEquals(
 			iterator_to_array($this->connection()->execute("select firstname from user")->column()),
@@ -110,7 +110,7 @@ class TableTest extends \Pheasant\Tests\MysqlTestCase
 		$this->table->insert(array('firstname'=>'Frank', 'lastname'=>'Farmer'));
 		$this->table->replace(array('userid'=>1, 'firstname'=>'Alpaca', 'lastname'=>'Collector'));
 
-		$this->assertRowCount('select * from user', 2);
+		$this->assertRowCount(2, 'select * from user');
 		$this->assertEquals(
 			iterator_to_array($this->connection()->execute("select firstname from user")->column()),
 			array('Alpaca', 'Frank')
@@ -122,7 +122,7 @@ class TableTest extends \Pheasant\Tests\MysqlTestCase
 		$this->table->insert(array('firstname'=>'Llama', 'lastname'=>'Herder'));
 		$this->table->replace(array('firstname'=>'Alpaca', 'lastname'=>'Collector'));
 
-		$this->assertRowCount('select * from user', 2);
+		$this->assertRowCount(2, 'select * from user');
 		$this->assertEquals(
 			iterator_to_array($this->connection()->execute("select firstname from user")->column()),
 			array('Llama', 'Alpaca')

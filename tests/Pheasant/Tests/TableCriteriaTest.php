@@ -19,7 +19,7 @@ class TableCriteriaTest extends \Pheasant\Tests\MysqlTestCase
 
 		$this->table->insert(array('firstname'=>'Llama', 'lastname'=>'Herder'));
 		$this->table->insert(array('firstname'=>'Action', 'lastname'=>'Hero'));
-		$this->assertRowCount('select * from user', 2);
+		$this->assertRowCount(2, 'select * from user');
 	}
 
 	public function testWhereWithBindParameters()
@@ -33,27 +33,27 @@ class TableCriteriaTest extends \Pheasant\Tests\MysqlTestCase
 	public function testWhereWithArray()
 	{
 		$criteria = $this->table->where(array('firstname'=>'Llama'));
-		$this->assertEquals($criteria->toSql(), "(firstname='Llama')");
+		$this->assertEquals($criteria->toSql(), "(`firstname`='Llama')");
 		$this->assertEquals($criteria->count(), 1);
 	}
 
 	public function testWhereWithCriteria()
 	{
 		$criteria = $this->table->where(new \Pheasant\Query\Criteria(array('firstname'=>'Llama')));
-		$this->assertEquals($criteria->toSql(), "(firstname='Llama')");
+		$this->assertEquals($criteria->toSql(), "(`firstname`='Llama')");
 		$this->assertEquals($criteria->count(), 1);
 	}
 
 	public function testUpdateByCriteria()
 	{
 		$criteria = $this->table->where('firstname=?', 'Llama')->update(array('firstname'=>'Alpaca'));
-		$this->assertRowCount("select * from user where firstname='Alpaca'", 1);
+		$this->assertRowCount(1, "select * from user where `firstname`='Alpaca'");
 	}
 
 	public function testDeleteByCriteria()
 	{
 		$criteria = $this->table->where('firstname=?', 'Llama')->delete();
-		$this->assertRowCount("select * from user where firstname='Llamas'", 0);
+		$this->assertRowCount(0, "select * from user where firstname='Llamas'");
 	}
 }
 

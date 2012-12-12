@@ -198,10 +198,15 @@ class Table
 	/**
 	 * Builds a Query object for the table
 	 */
-	public function query()
+	public function query($criteria=null)
 	{
 		$query = new \Pheasant\Query\Query($this->_connection);
-		return $query->from($this->_name);
+		$query->from($this->_name);
+
+		if(!is_null($criteria))
+			$query->where($criteria);
+
+		return $query;
 	}
 
 	/**
