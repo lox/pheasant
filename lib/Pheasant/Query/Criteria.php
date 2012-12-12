@@ -27,7 +27,7 @@ class Criteria
 		{
 			$boundWhere = array();
 			foreach($where as $key=>$val)
-				$boundWhere[] = $this->bind($key.'=?', array($val));
+				$boundWhere[] = $this->bind('`'.$key.'`'.'=?', array($val));
 			$this->_sql = $this->_join('AND', $boundWhere);
 		}
 		else
