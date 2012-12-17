@@ -27,11 +27,20 @@ class Property
 	}
 
 	/**
+	 * Returns a bool for whether the property has a default value
+	 * @return bool
+	 */
+	public function hasDefaultValue()
+	{
+		return isset($this->type->options->default);
+	}
+
+	/**
 	 * Returns the default value for a property, or NULL
 	 */
 	public function defaultValue()
 	{
-		return isset($this->type->options->default)
+		return $this->hasDefaultValue()
 			? $this->type->options->default
 			: NULL
 			;
