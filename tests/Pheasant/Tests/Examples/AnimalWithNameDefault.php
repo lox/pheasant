@@ -6,7 +6,7 @@ use \Pheasant\DomainObject;
 use \Pheasant\Types;
 use \Pheasant\Mapper\RowMapper;
 
-class Animal extends DomainObject
+class AnimalWithNameDefault extends DomainObject
 {
 	public static function initialize($builder, $pheasant)
 	{
@@ -17,7 +17,7 @@ class Animal extends DomainObject
 			->properties(array(
 				'id' => new Types\Integer(11, 'primary auto_increment'),
 				'type' => new Types\String(255, 'required default=llama'),
-				'name' => new Types\String(255),
+				'name' => new Types\String(255, 'default=blargh'),
 			));
 	}
 }

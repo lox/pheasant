@@ -7,6 +7,7 @@ use \Pheasant\Types;
 use \Pheasant\Mapper\RowMapper;
 use \Pheasant\Tests\Examples\Animal;
 use \Pheasant\Tests\Examples\AnotherAnimal;
+use \Pheasant\Tests\Examples\AnimalWithNameDefault;
 
 class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
 {
@@ -25,7 +26,7 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
 		$animal = new Animal();
 		$this->assertEquals($animal->type, 'llama');
 		$this->assertEquals($animal->toArray(),
-			array('id'=>NULL, 'type'=>'llama'));
+			array('id'=>NULL, 'type'=>'llama', 'name'=>null));
 
 		$llama = new Animal(array('type'=>'llama'));
 		$frog = new Animal(Array('type'=>'frog'));
@@ -82,6 +83,23 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
 		$this->assertEquals($awesome[1]->type, 'Llama');
 		$this->assertEquals($scary[0]->type, 'Raptor');
 		$this->assertEquals($awesome[0]->type, 'Cat');
+	}
+
+	public function testIssue11_DefaultValuesArePersistedInDatabase()
+	{
+		$animal = new AnimalWithNameDefault(array('type'=>'horse'));
+
+		$this->assertEquals($animal->name, 'blargh');
+		$animal->save();
+
+		$this->assertRowCount(1, $this->connection()->table('animal')->query(array(
+			'id' => $animal->id,
+			'type' => 'horse',
+			'name' => 'blargh',
+		)));
+
+		$horse = AnimalWithNameDefault::byId(1);
+		$this->assertEquals($animal->name, 'blargh');
 	}
 }
 
