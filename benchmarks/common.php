@@ -15,10 +15,10 @@ register_tick_function('log_peak_memory');
  */
 function log_peak_memory()
 {
-	global $memory_peak;
+    global $memory_peak;
 
-	if(($usage = memory_get_usage()) > $memory_peak)
-		$memory_peak = $usage;
+    if(($usage = memory_get_usage()) > $memory_peak)
+        $memory_peak = $usage;
 }
 
 /**
@@ -26,33 +26,32 @@ function log_peak_memory()
  */
 function benchmark($times, $callback)
 {
-	global $memory_peak;
+    global $memory_peak;
 
-	$counts = array();
-	$memory = array();
-	$params = array_slice(func_get_args(), 2);
+    $counts = array();
+    $memory = array();
+    $params = array_slice(func_get_args(), 2);
 
-	// warm-up the benchmark
-	for($i=0; $i<5; $i++)
-		call_user_func_array($callback, $params);
+    // warm-up the benchmark
+    for($i=0; $i<5; $i++)
+        call_user_func_array($callback, $params);
 
-	// run it for real
-	for($i=0; $i<$times; $i++)
-	{
-		$timestart = microtime(true);
-		$memstart = memory_get_usage();
-		$memory_peak = 0;
+    // run it for real
+    for ($i=0; $i<$times; $i++) {
+        $timestart = microtime(true);
+        $memstart = memory_get_usage();
+        $memory_peak = 0;
 
-		$result = call_user_func_array($callback, $params);
-		$counts[] = microtime(true) - $timestart;
-		$memory[] = $memory_peak - $memstart;
-	}
+        $result = call_user_func_array($callback, $params);
+        $counts[] = microtime(true) - $timestart;
+        $memory[] = $memory_peak - $memstart;
+    }
 
-	$totaltime = array_sum($counts);
-	$avgtime = $totaltime / $times;
-	printf("average time of %.2fms per iteration\n", $avgtime * 1000);
+    $totaltime = array_sum($counts);
+    $avgtime = $totaltime / $times;
+    printf("average time of %.2fms per iteration\n", $avgtime * 1000);
 
-	$totalmem = array_sum($memory);
-	$avgmem = $totalmem / $times;
-	printf("average memory usage of %s bytes per iteration\n", number_format($avgmem));
+    $totalmem = array_sum($memory);
+    $avgmem = $totalmem / $times;
+    printf("average memory usage of %s bytes per iteration\n", number_format($avgmem));
 }

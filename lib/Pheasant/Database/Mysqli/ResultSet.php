@@ -7,162 +7,168 @@ namespace Pheasant\Database\Mysqli;
  */
 class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 {
-	private $_link, $_result, $_affected, $_hydrator, $_fields;
+    private $_link, $_result, $_affected, $_hydrator, $_fields;
 
-	/**
-	 * Constructor
-	 * @param $link MySQLi
-	 * @param $result MySQLi_Result
-	 */
-	public function __construct($link, $result=false)
-	{
-		$this->_link = $link;
-		$this->_result = $result;
-		$this->_affected = $link->affected_rows;
-	}
+    /**
+     * Constructor
+     * @param $link MySQLi
+     * @param $result MySQLi_Result
+     */
+    public function __construct($link, $result=false)
+    {
+        $this->_link = $link;
+        $this->_result = $result;
+        $this->_affected = $link->affected_rows;
+    }
 
-	public function setHydrator($callback)
-	{
-		$this->_hydrator = $callback;
-		return $this;
-	}
-	
-	/* (non-phpdoc)
-	 * @see IteratorAggregate::getIterator()
-	 */
-	public function getIterator()
-	{
-		if(	$this->_result === false)
-			return new \EmptyIterator(array());;
+    public function setHydrator($callback)
+    {
+        $this->_hydrator = $callback;
 
-		if(!isset($this->_iterator))
-		{
-			$this->_iterator = new ResultIterator($this->_result);
-			$this->_iterator->setHydrator($this->_hydrator);
-		}
+        return $this;
+    }
 
-		return $this->_iterator;
-	}
+    /* (non-phpdoc)
+     * @see IteratorAggregate::getIterator()
+     */
+    public function getIterator()
+    {
+        if(	$this->_result === false)
 
-	/**
-	 * @return array
-	 */
-	public function toArray()
-	{
-		return iterator_to_array($this->getIterator());
-	}
+            return new \EmptyIterator(array());;
 
-	/**
-	 * Returns the next available row as an associative array.
-	 * @return array or NULL on EOF
-	 */
-	public function row()
-	{
-		$iterator = $this->getIterator();
+        if (!isset($this->_iterator)) {
+            $this->_iterator = new ResultIterator($this->_result);
+            $this->_iterator->setHydrator($this->_hydrator);
+        }
 
-		if(!$iterator->current())
-			$iterator->next();
+        return $this->_iterator;
+    }
 
-		$value = $iterator->current();
-		$iterator->next();
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return iterator_to_array($this->getIterator());
+    }
 
-		return $value;
-	}
+    /**
+     * Returns the next available row as an associative array.
+     * @return array or NULL on EOF
+     */
+    public function row()
+    {
+        $iterator = $this->getIterator();
 
-	/**
-	 * Returns the nth column from the current row.
-	 * @return scalar or NULL on EOF
-	 */
-	public function scalar($idx=0)
-	{
-		$row = $this->row();
+        if(!$iterator->current())
+            $iterator->next();
 
-		if(is_null($row)) 
-			return NULL;
+        $value = $iterator->current();
+        $iterator->next();
 
-		$values = is_numeric($idx) ? array_values($row) : $row;
-		return $values[$idx];
-	}
+        return $value;
+    }
 
-	/**
-	 * Fetches an iterator that only returns a particular column, defaults to the 
-	 * first
-	 * @return Iterator
-	 */
-	public function column($column=null)
-	{
-		return new ColumnIterator($this->getIterator(), $column);	
-	}
+    /**
+     * Returns the nth column from the current row.
+     * @return scalar or NULL on EOF
+     */
+    public function scalar($idx=0)
+    {
+        $row = $this->row();
 
-	/**
-	 * Seeks to a particular row offset
-	 * @chainable
-	 */
-	public function seek($offset)
-	{
-		$this->getIterator()->seek($offset);
-		return $this;
-	}
+        if(is_null($row))
 
-	/**
-	 * The number of rows that the statement affected
-	 * @return int
-	 */
-	public function affectedRows()
-	{
-		return $this->_affected;
-	}
+            return NULL;
 
-	/**
-		* The fields returned in the result set as an array of fields
-		* @return Fields object 
-	  */
-	public function fields()
-	{
-		if(!isset($this->_fields))
-			$this->_fields = new Fields($this->_result);
+        $values = is_numeric($idx) ? array_values($row) : $row;
 
-		return $this->_fields;
-	}
+        return $values[$idx];
+    }
 
-	/**
-	 * The number of rows in the result set, or the number of affected rows
-	 */
-	public function count()
-	{
-		return $this->_affected;
-	}
+    /**
+     * Fetches an iterator that only returns a particular column, defaults to the
+     * first
+     * @return Iterator
+     */
+    public function column($column=null)
+    {
+        return new ColumnIterator($this->getIterator(), $column);
+    }
 
-	/**
-	 * The last auto_increment value generated in the statement
-	 */
-	public function lastInsertId()
-	{
-		return $this->_link->insert_id;
-	}
+    /**
+     * Seeks to a particular row offset
+     * @chainable
+     */
+    public function seek($offset)
+    {
+        $this->getIterator()->seek($offset);
 
-	// ----------------------------------
-	// array access
+        return $this;
+    }
 
-	public function offsetGet($offset)
-	{
-		$this->getIterator()->seek($offset);
-		return $this->getIterator()->current();
-	}
+    /**
+     * The number of rows that the statement affected
+     * @return int
+     */
+    public function affectedRows()
+    {
+        return $this->_affected;
+    }
 
-	public function offsetSet($offset, $value)
-	{
-		throw new \BadMethodCallException('ResultSets are read-only');
-	}
+    /**
+        * The fields returned in the result set as an array of fields
+        * @return Fields object
+      */
+    public function fields()
+    {
+        if(!isset($this->_fields))
+            $this->_fields = new Fields($this->_result);
 
-	public function offsetExists($offset)
-	{
-		$this->getIterator()->seek($offset);
-		return $this->getIterator()->valid();
-	}
+        return $this->_fields;
+    }
 
-	public function offsetUnset($offset)
-	{
-		throw new \BadMethodCallException('ResultSets are read-only');
-	}
+    /**
+     * The number of rows in the result set, or the number of affected rows
+     */
+    public function count()
+    {
+        return $this->_affected;
+    }
+
+    /**
+     * The last auto_increment value generated in the statement
+     */
+    public function lastInsertId()
+    {
+        return $this->_link->insert_id;
+    }
+
+    // ----------------------------------
+    // array access
+
+    public function offsetGet($offset)
+    {
+        $this->getIterator()->seek($offset);
+
+        return $this->getIterator()->current();
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        throw new \BadMethodCallException('ResultSets are read-only');
+    }
+
+    public function offsetExists($offset)
+    {
+        $this->getIterator()->seek($offset);
+
+        return $this->getIterator()->valid();
+    }
+
+    public function offsetUnset($offset)
+    {
+        throw new \BadMethodCallException('ResultSets are read-only');
+    }
 }

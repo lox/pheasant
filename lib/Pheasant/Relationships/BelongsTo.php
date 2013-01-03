@@ -9,22 +9,22 @@ namespace Pheasant\Relationships;
  */
 class BelongsTo extends HasOne
 {
-	/* (non-phpdoc)
-	 * @see RelationshipType::get()
-	 */
-	public function get($object, $key)
-	{
-		$query = $this->query(
-			"{$this->foreign}=?", $object->get($this->local));
+    /* (non-phpdoc)
+     * @see RelationshipType::get()
+     */
+    public function get($object, $key)
+    {
+        $query = $this->query(
+            "{$this->foreign}=?", $object->get($this->local));
 
-		return $this->hydrate($query->execute()->row(), true);
-	}
+        return $this->hydrate($query->execute()->row(), true);
+    }
 
-	/* (non-phpdoc)
-	 * @see RelationshipType::set()
-	 */
-	public function set($object, $key, $value)
-	{
-		$object->set($this->local, $value->{$this->foreign});
-	}
+    /* (non-phpdoc)
+     * @see RelationshipType::set()
+     */
+    public function set($object, $key, $value)
+    {
+        $object->set($this->local, $value->{$this->foreign});
+    }
 }
