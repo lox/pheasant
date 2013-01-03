@@ -10,15 +10,15 @@ use \Pheasant\Types\String;
 
 class Person extends DomainObject
 {
-	public static function initialize($builder, $pheasant)
-	{
-		$pheasant
-			->register(__CLASS__, new RowMapper('person'));
+    public static function initialize($builder, $pheasant)
+    {
+        $pheasant
+            ->register(__CLASS__, new RowMapper('person'));
 
-		$builder
-			->properties(array(
-				'personid' => new Sequence('personid'),
-				'name' => new String(),
-			));
-	}
+        $builder
+            ->properties(array(
+                'personid' => new Sequence('personid'),
+                'name' => new String(),
+            ));
+    }
 }

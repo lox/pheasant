@@ -10,73 +10,69 @@ use \Pheasant\Database\Binder;
  */
 class Criteria
 {
-	private $_sql='';
+    private $_sql='';
 
-	/**
-	 * Constructor
-	 * @param $where either a query string, or a key=>val array
-	 * @param $params mixed, parameters to bind into the query string
-	 */
-	public function __construct($where=null, $params=array())
-	{
-		if(is_object($where))
-		{
-			$this->_sql = $where->toSql();
-		}
-		else if(is_array($where))
-		{
-			$boundWhere = array();
-			foreach($where as $key=>$val)
-				$boundWhere[] = $this->bind('`'.$key.'`'.'=?', array($val));
-			$this->_sql = $this->_join('AND', $boundWhere);
-		}
-		else
-		{
-			$this->_sql = is_null($where) ? '' : $this->bind($where, (array)$params);
-		}
-	}
+    /**
+     * Constructor
+     * @param $where either a query string, or a key=>val array
+     * @param $params mixed, parameters to bind into the query string
+     */
+    public function __construct($where=null, $params=array())
+    {
+        if (is_object($where)) {
+            $this->_sql = $where->toSql();
+        } elseif (is_array($where)) {
+            $boundWhere = array();
+            foreach($where as $key=>$val)
+                $boundWhere[] = $this->bind('`'.$key.'`'.'=?', array($val));
+            $this->_sql = $this->_join('AND', $boundWhere);
+        } else {
+            $this->_sql = is_null($where) ? '' : $this->bind($where, (array) $params);
+        }
+    }
 
-	/**
-	 * Binds an array of parameters into a string
-	 * @return string
-	 */
-	public function bind($sql, $params=array())
-	{
-		$binder = new Binder();
-		return $binder->magicBind($sql, (array)$params);
-	}
+    /**
+     * Binds an array of parameters into a string
+     * @return string
+     */
+    public function bind($sql, $params=array())
+    {
+        $binder = new Binder();
 
-	/**
-	 * Returns the sql representation of the where clause
-	 */
-	public function toSql()
-	{
-		return $this->_sql;
-	}
+        return $binder->magicBind($sql, (array) $params);
+    }
 
-	private function _join($token, $args)
-	{
-		return sprintf('(%s)',implode(" $token ", $args));
-	}
+    /**
+     * Returns the sql representation of the where clause
+     */
+    public function toSql()
+    {
+        return $this->_sql;
+    }
 
-	public function __toString()
-	{
-		return $this->toSql();
-	}
+    private function _join($token, $args)
+    {
+        return sprintf('(%s)',implode(" $token ", $args));
+    }
 
-	/**
-	 * Triggers either the and() or or() methods
-	 */
-	public function __call($method, $params)
-	{
-		switch($method)
-		{
-			case 'and':
-			case 'or':
-				$this->_sql = $this->_join(strtoupper($method), $params);
-				return $this;
-			default:
-				throw new \BadMethodCallException("Unknown method $method");
-		}
-	}
+    public function __toString()
+    {
+        return $this->toSql();
+    }
+
+    /**
+     * Triggers either the and() or or() methods
+     */
+    public function __call($method, $params)
+    {
+        switch ($method) {
+            case 'and':
+            case 'or':
+                $this->_sql = $this->_join(strtoupper($method), $params);
+
+                return $this;
+            default:
+                throw new \BadMethodCallException("Unknown method $method");
+        }
+    }
 }

@@ -8,31 +8,32 @@ namespace Pheasant\Migrate;
  */
 class Migrator
 {
-	private $_connection;
+    private $_connection;
 
-	/**
-	 * Constructor
-	 */
-	public function __construct($connection=null)
-	{
-		$this->_connection = $connection ?: \Pheasant::instance()->connection();
-	}
+    /**
+     * Constructor
+     */
+    public function __construct($connection=null)
+    {
+        $this->_connection = $connection ?: \Pheasant::instance()->connection();
+    }
 
-	/**
-	 * Creates the underlying tables for a schema, dropping any tables of the same names
-	 * @chainable
-	 */
-	public function create($table, $schema)
-	{
-		$columns = array();
+    /**
+     * Creates the underlying tables for a schema, dropping any tables of the same names
+     * @chainable
+     */
+    public function create($table, $schema)
+    {
+        $columns = array();
 
-		foreach($schema->properties() as $prop)
-			$columns[$prop->name] = $prop->type;
+        foreach($schema->properties() as $prop)
+            $columns[$prop->name] = $prop->type;
 
-		$table = $this->_connection->table($table);
-		if($table->exists()) $table->drop();
+        $table = $this->_connection->table($table);
+        if($table->exists()) $table->drop();
 
-		$table->create($columns);
-		return $this;
-	}
+        $table->create($columns);
+
+        return $this;
+    }
 }
