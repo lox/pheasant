@@ -377,8 +377,8 @@ class DomainObject
 	 */
 	public function __isset($key)
 	{
-		$relationships = $this->relationships();
-		return ($this->has($key) || isset($relationships[$key]));
+		$relationships = (method_exists($this, 'relationships')) ? $this->relationships() : array();
+		return (($this->has($key) && !empty($this->$key)) || isset($relationships[$key]));
 	}
 
 	/**
