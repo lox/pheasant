@@ -14,6 +14,11 @@ class BelongsTo extends HasOne
 	 */
 	public function get($object, $key)
 	{
+		$local = $object->get($this->local); // empty() does not work with magic getters; https://bugs.php.net/bug.php?id=43936
+		if(empty($local)) {
+			return false;
+		}
+
 		$query = $this->query(
 			"{$this->foreign}=?", $object->get($this->local));
 
