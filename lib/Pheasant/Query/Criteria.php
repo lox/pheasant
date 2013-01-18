@@ -6,7 +6,8 @@ use \Pheasant;
 use \Pheasant\Database\Binder;
 
 /**
- * A builder object for simple sql where clauses.
+ * A builder object for simple sql where clauses. Magic is used to
+ * provide chainable and() and or() methods for adding clauses
  */
 class Criteria
 {
@@ -21,18 +22,19 @@ class Criteria
 	{
 		if(is_object($where))
 		{
-			$this->_sql = $where->toSql();
+			$this->_sql = $where->toSql(false);
 		}
 		else if(is_array($where))
 		{
-			$boundWhere = array();
+			$conditions = array();
 			foreach($where as $key=>$val)
-				$boundWhere[] = $this->bind('`'.$key.'`'.'=?', array($val));
-			$this->_sql = $this->_join('AND', $boundWhere);
+				$conditions [] = $this->bind('`'.$key.'`'.'=?', array($val));
+
+			$this->_sql = implode(' AND ', $conditions);
 		}
-		else
+		else if(!empty($where))
 		{
-			$this->_sql = is_null($where) ? '' : $this->bind($where, (array)$params);
+			$this->_sql = $this->bind($where, (array)$params);
 		}
 	}
 
@@ -49,14 +51,9 @@ class Criteria
 	/**
 	 * Returns the sql representation of the where clause
 	 */
-	public function toSql()
+	public function toSql($braces=true)
 	{
-		return $this->_sql;
-	}
-
-	private function _join($token, $args)
-	{
-		return sprintf('(%s)',implode(" $token ", $args));
+		return $braces ? "({$this->_sql})" : $this->_sql;
 	}
 
 	public function __toString()
@@ -69,14 +66,33 @@ class Criteria
 	 */
 	public function __call($method, $params)
 	{
-		switch($method)
-		{
-			case 'and':
-			case 'or':
-				$this->_sql = $this->_join(strtoupper($method), $params);
-				return $this;
-			default:
-				throw new \BadMethodCallException("Unknown method $method");
-		}
+		$method = strtoupper($method);
+
+		if($method != 'AND' && $method != 'OR')
+			throw new \BadMethodCallException("Unknown method $method");
+
+		if(!empty($this->_sql))
+			$this->_sql = "($this->_sql) $method ";
+
+		$this->_sql .= implode(" $method ", $params);
+		return $this;
+	}
+
+	/**
+	 * Joins all parameters together with AND
+	 * @return Criteria
+	 */
+	public static function concatAnd()
+	{
+		return new Criteria(implode(' AND ', func_get_args()));
+	}
+
+	/**
+	 * Joins all parameters together with OR
+	 * @return Criteria
+	 */
+	public static function concatOr()
+	{
+		return new Criteria(implode(' OR ', func_get_args()));
 	}
 }

@@ -9,10 +9,10 @@ class TableCriteria extends Criteria
 {
 	private $_table;
 
-  public function __construct($table, $where, $params=array())
+	public function __construct($table, $where, $params=array())
 	{
 		parent::__construct($where, $params);
-    $this->_table = $table;
+		$this->_table = $table;
 	}
 
 	public function update($data)
@@ -38,7 +38,7 @@ class TableCriteria extends Criteria
 	public function count()
 	{
 		return $this->_table->query()->select('COUNT(*)')->where($this)->scalar();
-	}	
+	}
 }
 
 
