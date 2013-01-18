@@ -10,22 +10,6 @@ use \Pheasant\Query\Criteria;
 
 class QueryTest extends \Pheasant\Tests\MysqlTestCase
 {
-	public function setUp()
-	{
-		parent::setUp();
-
-		$table = $this->table('user', array(
-			'userid'=>new Integer(8, 'primary auto_increment'),
-			'firstname'=>new String(),
-			'lastname'=>new String(),
-			));
-
-		// create some users
-		$table->insert(array('userid'=>null,'firstname'=>'Frank','lastname'=>'Castle'));
-		$table->insert(array('userid'=>null,'firstname'=>'Cletus','lastname'=>'Kasady'));
-
-	}
-
 	public function testQuerying()
 	{
 		$query = new Query();
@@ -35,12 +19,29 @@ class QueryTest extends \Pheasant\Tests\MysqlTestCase
 			->where('lastname=?','Castle')
 			;
 
-		$this->assertEquals(1, $query->count());
-		$this->assertEquals(1, $query->execute()->count());
-		$this->assertEquals(array('firstname'=>'Frank'), $query->execute()->offsetGet(0));
+		$this->assertEquals(
+			"SELECT firstname FROM user WHERE (lastname='Castle')",
+			$query->toSql()
+		);
 	}
 
-	public function testJoins()
+	public function testAddingWhereClauses()
+	{
+		$query = new Query();
+		$query
+			->select('firstname')
+			->from('user')
+			->where('lastname=?','Castle')
+			->andWhere('firstname=?','Frank')
+			;
+
+		$this->assertEquals(
+			"SELECT firstname FROM user WHERE ((lastname='Castle') AND (firstname='Frank'))",
+			$query->toSql()
+		);
+	}
+
+	public function testJoiningMultipleQueryObjects()
 	{
 		// outer query
 		$query = new Query();
@@ -50,9 +51,8 @@ class QueryTest extends \Pheasant\Tests\MysqlTestCase
 			->where('userid=?',55)
 			;
 
-		$this->assertEquals('SELECT * FROM user '.
-			'INNER JOIN mytable using(tableid) '.
-			"WHERE userid='55'",
+		$this->assertEquals(
+			"SELECT * FROM user INNER JOIN mytable using(tableid) WHERE (userid='55')",
 			$query->toSql()
 			);
 	}
@@ -80,7 +80,7 @@ class QueryTest extends \Pheasant\Tests\MysqlTestCase
 
 		$this->assertEquals('SELECT firstname FROM user '.
 			'INNER JOIN (SELECT groupname, groupid FROM group) derived USING(groupid) '.
-			'WHERE lastname=\'Castle\'',
+			'WHERE (lastname=\'Castle\')',
 			$query->toSql()
 			);
 	}
