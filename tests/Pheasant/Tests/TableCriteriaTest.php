@@ -26,22 +26,22 @@ class TableCriteriaTest extends \Pheasant\Tests\MysqlTestCase
 	{
 		$criteria = $this->table->where('firstname=?', 'Llama');
 
-		$this->assertEquals((string) $criteria, "firstname='Llama'");
+		$this->assertEquals("(firstname='Llama')", (string) $criteria);
 		$this->assertEquals($criteria->count(), 1);
 	}
 
 	public function testWhereWithArray()
 	{
 		$criteria = $this->table->where(array('firstname'=>'Llama'));
-		$this->assertEquals($criteria->toSql(), "(`firstname`='Llama')");
-		$this->assertEquals($criteria->count(), 1);
+		$this->assertEquals("(`firstname`='Llama')", $criteria->toSql());
+		$this->assertEquals(1, $criteria->count(), 1);
 	}
 
 	public function testWhereWithCriteria()
 	{
 		$criteria = $this->table->where(new \Pheasant\Query\Criteria(array('firstname'=>'Llama')));
-		$this->assertEquals($criteria->toSql(), "(`firstname`='Llama')");
-		$this->assertEquals($criteria->count(), 1);
+		$this->assertEquals("(`firstname`='Llama')", $criteria->toSql());
+		$this->assertEquals(1, $criteria->count());
 	}
 
 	public function testUpdateByCriteria()
