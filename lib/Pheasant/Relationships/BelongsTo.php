@@ -9,6 +9,7 @@ namespace Pheasant\Relationships;
  */
 class BelongsTo extends HasOne
 {
+
 	/* (non-phpdoc)
 	 * @see RelationshipType::get()
 	 */

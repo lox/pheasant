@@ -89,10 +89,18 @@ class RowMapper extends AbstractMapper implements Finder
 			$object->identity()->toCriteria());
 
 		// check for auto-increment
-		foreach($object->identity() as $key=>$property)
+		// foreach($object->identity() as $key=>$property)
+		// {
+		// 	if($property->type->options->auto_increment)
+		// 		$object->{$key} = $result->lastInsertId();
+		// }
+	}
+
+	public function delete($object)
+	{
+		if($object->isSaved())
 		{
-			if($property->type->options->auto_increment)
-				$object->{$key} = $result->lastInsertId();
+			$this->table()->delete($object->identity()->toCriteria());
 		}
 	}
 

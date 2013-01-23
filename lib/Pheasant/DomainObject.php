@@ -292,6 +292,17 @@ class DomainObject
 	}
 
 	/**
+	 * Delete item
+	 *
+	 * @return object
+	 */
+	public function delete($object)
+	{
+		if($object->isSaved())
+			$this->table()->delete($object->identity()->toCriteria());
+	}
+
+	/**
 	 * Return the class name of the domain object
 	 */
 	public static function className()
@@ -373,12 +384,11 @@ class DomainObject
 	}
 
 	/**
-	 * Magic method, checks if given key is set in _data or is a relation
-	 */
+	* Magic method, delegates to the schema
+	*/
 	public function __isset($key)
 	{
-		$relationships = (method_exists($this, 'relationships')) ? $this->relationships() : array();
-		return (($this->has($key) && !empty($this->$key)) || isset($relationships[$key]));
+		return ($this->schema()->hasAttribute($key) && $this->$key);
 	}
 
 	/**

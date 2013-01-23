@@ -14,7 +14,7 @@ class Query implements \IteratorAggregate, \Countable
 	private $_joins=array();
 	private $_limit=null;
 	private $_where;
-	private $_order;
+	private $_order=array();
 
 	// resultset
 	private $_connection;
@@ -128,7 +128,7 @@ class Query implements \IteratorAggregate, \Countable
 	 */
 	public function orderBy($table, $column, $direction='ASC')
 	{
-		$this->_order = "`{$table}`.`{$column}` {$direction}";
+		$this->_order[] = "`{$table}`.`{$column}` {$direction}";
 		return $this;
 	}
 
@@ -142,7 +142,7 @@ class Query implements \IteratorAggregate, \Countable
 			$this->_clause('FROM', $this->_from),
 			implode(' ', $this->_joins),
 			$this->_clause('WHERE', $this->_where),
-			$this->_clause('ORDER BY', $this->_order),
+			$this->_clause('ORDER BY', implode(', ',$this->_order)),
 			$this->_limit
 			)));
 	}

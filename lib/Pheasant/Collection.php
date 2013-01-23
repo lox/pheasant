@@ -7,7 +7,7 @@ use \Pheasant\Query\QueryIterator;
 
 class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 {
-	private $_class;
+  private $_class;
 	private $_query;
 	private $_iterator;
 	private $_add=false;
@@ -68,40 +68,27 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	 * Adds a order by clause to the collection
 	 * @chainable
 	 */
-	public function orderBy($key, $direction='ASC')
+	public function orderBy($params)
 	{
 		if($this->_readonly)
 			throw new Exception("Collection is read-only during iteration");
 
 		// I think we should be able to skip this? Donald?
 		$cls = (new $this->_class);
+		$table = $cls->tableName();
 
-		if(strpos($key, '.') === false) {
-			// fix $key when only column is defined.
-			// we assume the column should be in the main
-			// table.
-
-			$table = $cls->tableName();
-			$column = $key;
-		} else {
-			$parts = explode('.', $key);
-			$table = $parts[0];
-			$column = $parts[1];
+		if(!isset($params[0])) $params = array($params);
+		foreach($params as $param)
+		{
+			if(is_array($param)) {
+				$column = key($param);
+				$direction = $param[$column];
+			} else {
+				$column = $param;
+				$direction = 'ASC';
+			}
+			$this->_query->orderBy($table, $column, $direction);
 		}
-
-		if($table !== $cls->tableName()) {
-			// since we're not sorting on a key in the local
-			// objects scope, we need to force the join.
-
-			// $relationships = $cls->relationships();
-			// $relationship = $relationships[$table];
-			// TODO: we should do something smart here but
-			//       I don't know how to implement this with
-			//       the functions I have in the current
-			//       codebase.
-		}
-
-		$this->_query->orderBy($table, $column, $direction);
 		return $this;
 	}
 
