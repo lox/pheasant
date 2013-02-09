@@ -292,6 +292,17 @@ class DomainObject
 	}
 
 	/**
+	 * Delete item
+	 *
+	 * @return object
+	 */
+	public function delete($object)
+	{
+		if($object->isSaved())
+			$this->table()->delete($object->identity()->toCriteria());
+	}
+
+	/**
 	 * Return the class name of the domain object
 	 */
 	public static function className()
@@ -339,12 +350,15 @@ class DomainObject
 	 */
 	public function load($array)
 	{
-		foreach($array as $key=>$value)
+		if(!empty($array))
 		{
-			if(is_object($value) || is_array($value))
-				$this->$key = $value;
-			else
-				$this->set($key, $value);
+			foreach($array as $key=>$value)
+			{
+				if(is_object($value) || is_array($value))
+					$this->$key = $value;
+				else
+					$this->set($key, $value);
+			}
 		}
 
 		return $this;
@@ -367,6 +381,14 @@ class DomainObject
 	public function __get($key)
 	{
 		return call_user_func($this->schema()->getter($key), $this);
+	}
+
+	/**
+	* Magic method, delegates to the schema
+	*/
+	public function __isset($key)
+	{
+		return ($this->schema()->hasAttribute($key) && $this->$key);
 	}
 
 	/**

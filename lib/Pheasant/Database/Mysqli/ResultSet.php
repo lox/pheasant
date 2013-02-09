@@ -26,7 +26,7 @@ class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 		$this->_hydrator = $callback;
 		return $this;
 	}
-	
+
 	/* (non-phpdoc)
 	 * @see IteratorAggregate::getIterator()
 	 */
@@ -77,7 +77,7 @@ class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 	{
 		$row = $this->row();
 
-		if(is_null($row)) 
+		if(is_null($row))
 			return NULL;
 
 		$values = is_numeric($idx) ? array_values($row) : $row;
@@ -85,13 +85,13 @@ class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 	}
 
 	/**
-	 * Fetches an iterator that only returns a particular column, defaults to the 
+	 * Fetches an iterator that only returns a particular column, defaults to the
 	 * first
 	 * @return Iterator
 	 */
 	public function column($column=null)
 	{
-		return new ColumnIterator($this->getIterator(), $column);	
+		return new ColumnIterator($this->getIterator(), $column);
 	}
 
 	/**
@@ -115,7 +115,7 @@ class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
 
 	/**
 		* The fields returned in the result set as an array of fields
-		* @return Fields object 
+		* @return Fields object
 	  */
 	public function fields()
 	{

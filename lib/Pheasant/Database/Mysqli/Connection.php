@@ -23,7 +23,8 @@ class Connection
 	public static
 		$counter=0,
 		$timer=0,
-		$debug=false
+		$debug=false,
+		$_cached=array()
 		;
 
 	/**
@@ -118,7 +119,6 @@ class Connection
 
 		// delegate execution to the filter chain
 		return $this->_filter->execute($sql, function($sql) use($mysqli) {
-
 			\Pheasant\Database\Mysqli\Connection::$counter++;
 
 			$timer = microtime(true);

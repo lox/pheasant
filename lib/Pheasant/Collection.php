@@ -7,7 +7,7 @@ use \Pheasant\Query\QueryIterator;
 
 class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 {
-	private $_class;
+  private $_class;
 	private $_query;
 	private $_iterator;
 	private $_add=false;
@@ -61,6 +61,34 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 			throw new Exception("Collection is read-only during iteration");
 
 		$this->_query->andWhere($sql, $params);
+		return $this;
+	}
+
+	/**
+	 * Adds a order by clause to the collection
+	 * @chainable
+	 */
+	public function orderBy($params)
+	{
+		if($this->_readonly)
+			throw new Exception("Collection is read-only during iteration");
+
+		// I think we should be able to skip this? Donald?
+		$cls = (new $this->_class);
+		$table = $cls->tableName();
+
+		if(!isset($params[0])) $params = array($params);
+		foreach($params as $param)
+		{
+			if(is_array($param)) {
+				$column = key($param);
+				$direction = $param[$column];
+			} else {
+				$column = $param;
+				$direction = 'ASC';
+			}
+			$this->_query->orderBy($table, $column, $direction);
+		}
 		return $this;
 	}
 
