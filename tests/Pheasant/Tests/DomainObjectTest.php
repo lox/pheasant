@@ -35,6 +35,16 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
 		$this->assertFalse($llama->equals($frog));
 	}
 
+	public function testPropertyIsset()
+	{
+		$animal = new Animal(array('name'=>'bob'));
+
+		$this->assertTrue(isset($animal->type));
+		$this->assertTrue(isset($animal->name));
+
+		$this->assertFalse(isset($animal->unknown));
+	}
+
 	/**
 	 * @expectedException Pheasant\Exception
 	 */

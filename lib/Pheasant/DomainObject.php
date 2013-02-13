@@ -376,4 +376,12 @@ class DomainObject
 	{
 		return call_user_func($this->schema()->setter($key), $this, $value);
 	}
+
+	/**
+	* Magic method, delegates to the schema
+	*/
+	public function __isset($key)
+	{
+		return ($this->schema()->hasAttribute($key) && $this->$key);
+	}
 }
