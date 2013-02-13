@@ -152,4 +152,21 @@ class Schema
 
 		throw new Exception("No setter available for $attr");
 	}
+
+	/**
+	* Check if attribute is available on a domain object
+	*/
+	public function hasAttribute($attr)
+	{
+		if(isset($this->_setters[$attr]))
+			return true;
+
+		else if(isset($this->_props[$attr]))
+			return true;
+
+		else if(isset($this->_rels[$attr]))
+			return true;
+
+		return false;
+	}
 }
