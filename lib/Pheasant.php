@@ -10,6 +10,7 @@ class Pheasant
 	private $_schema;
 	private $_finders=array();
 	private $_mappers=array();
+	private $_devMode;
 
 	private static $_instance;
 
