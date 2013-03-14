@@ -19,6 +19,11 @@ class MysqlTestCase extends \PHPUnit_Framework_TestCase
 			;
 	}
 
+	public function tearDown()
+	{
+		$this->pheasant->connection()->close();
+	}
+
 	// Helper to return a connection
 	public function connection()
 	{
