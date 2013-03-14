@@ -65,6 +65,19 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 	}
 
 	/**
+	 * Orders the collection
+	 * @chainable
+	 */
+	public function order($sql, $params=array())
+	{
+		if($this->_readonly)
+			throw new Exception("Collection is read-only during iteration");
+
+		$this->_query->orderBy($sql, $params);
+		return $this;
+	}
+
+	/**
 	 * Restricts the number of rows to return
 	 * @chainable
 	 */
