@@ -2,9 +2,6 @@
 
 namespace Pheasant\Tests;
 
-use \Pheasant\DomainObject;
-use \Pheasant\Types;
-use \Pheasant\Mapper\RowMapper;
 use \Pheasant\Tests\Examples\Animal;
 
 class CollectionTest extends \Pheasant\Tests\MysqlTestCase
