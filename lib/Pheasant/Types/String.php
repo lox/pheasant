@@ -7,13 +7,13 @@ namespace Pheasant\Types;
  */
 class String extends Type
 {
-	const TYPE='string';
+    const TYPE='string';
 
-	/**
-	 * Constructor
-	 */
-	public function __construct($length=255, $params=null)
-	{
-		parent::__construct(self::TYPE, $length, $params);
-	}
+    /**
+     * Constructor
+     */
+    public function __construct($length=255, $params=null)
+    {
+        parent::__construct(self::TYPE, $length, $params);
+    }
 }

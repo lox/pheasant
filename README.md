@@ -149,6 +149,3 @@ Optionally, domain objects provide the following implicit hooks which can be ove
 
 - afterCreate
 - beforeUpdate, afterUpdate
-
-
-
