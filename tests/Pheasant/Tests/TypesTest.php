@@ -7,6 +7,17 @@ use \Pheasant\Database\Mysqli;
 
 class TypesTest extends \Pheasant\Tests\MysqlTestCase
 {
+	public function testId()
+	{
+		$type = new Types\Id();
+		$this->assertEquals($type->type, Types\Integer::TYPE);
+		$this->assertEquals($type->length, 11);
+
+		$map = new Mysqli\TypeMap(array('test'=>$type));
+		$this->assertEquals($map->columnDef('test'),
+			'`test` int(11)');
+	}
+
 	public function testInteger()
 	{
 		$type = new Types\Integer(10);
