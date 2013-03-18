@@ -56,10 +56,8 @@ class Pheasant
 		// initialize the object if needed
 		if(!isset($this->_schema[$class]))
 		{
-			if(!is_object($subject)) $subject = $class::fromArray(array());
-
 			$builder = new \Pheasant\SchemaBuilder();
-			$initializer = $callback ? $callback : array($subject, 'initialize');
+			$initializer = $callback ? $callback : $class.'::initialize';
 
 			call_user_func($initializer, $builder, $this);
 			$this->_schema[$class] = $builder->build($class);
