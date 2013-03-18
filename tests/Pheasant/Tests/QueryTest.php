@@ -84,5 +84,33 @@ class QueryTest extends \Pheasant\Tests\MysqlTestCase
 			$query->toSql()
 			);
 	}
+
+	public function testAddingGroupBy()
+	{
+		$query = new Query();
+		$query
+			->select('userid')
+			->from('user')
+			->groupBy('userid')
+			;
+
+		$this->assertEquals(
+			'SELECT userid FROM user GROUP BY userid',
+			$query->toSql());
+	}
+
+	public function testAddingOrderBy()
+	{
+		$query = new Query();
+		$query
+			->select('userid')
+			->from('user')
+			->orderBy('userid')
+			;
+
+		$this->assertEquals(
+			'SELECT userid FROM user ORDER BY userid',
+			$query->toSql());
+	}
 }
 
