@@ -10,6 +10,7 @@ class Pheasant
 	private $_schema;
 	private $_finders=array();
 	private $_mappers=array();
+	private $_devMode;
 
 	private static $_instance;
 
@@ -63,6 +64,11 @@ class Pheasant
 
 			call_user_func($initializer, $builder, $this);
 			$this->_schema[$class] = $builder->build($class);
+
+			if ($this->_devMode) {
+				$migrator = new \Pheasant\Migrate\Migrator();
+				$migrator->create($subject->tableName(), $this->_schema[$class]);
+			}
 		}
 
 		return $class;
@@ -134,6 +140,12 @@ class Pheasant
 			throw new Exception("No finder registered for $class");
 
 		return $this->_finders[$class];
+	}
+
+	public function devMode()
+	{
+		$this->_devMode = true;
+		return $this;
 	}
 
 	// ----------------------------------------

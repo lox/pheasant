@@ -14,9 +14,9 @@ class Transaction
 	/**
 	 * Constructor
 	 */
-	public function __construct($connection)
+	public function __construct($connection=null)
 	{
-		$this->_connection = $connection;
+		$this->_connection = $connection ?: \Pheasant::instance()->connection();
 	}
 
 	public function execute()

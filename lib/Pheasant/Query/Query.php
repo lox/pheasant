@@ -2,6 +2,7 @@
 
 namespace Pheasant\Query;
 use \Pheasant;
+use \Pheasant\Database\Binder;
 
 /**
  * A query builder for generating SQL '92 SELECT statements
@@ -14,6 +15,8 @@ class Query implements \IteratorAggregate, \Countable
 	private $_joins=array();
 	private $_limit=null;
 	private $_where;
+	private $_group;
+	private $_order;
 
 	// resultset
 	private $_connection;
@@ -112,6 +115,28 @@ class Query implements \IteratorAggregate, \Countable
 	}
 
 	/**
+	 * Adds an group by clause
+	 * @chainable
+	 */
+	public function groupBy($sql, $params=array())
+	{
+		$binder = new Binder();
+		$this->_group = $binder->magicBind($sql, (array)$params);
+		return $this;
+	}
+
+	/**
+	 * Adds an order by clause
+	 * @chainable
+	 */
+	public function orderBy($sql, $params=array())
+	{
+		$binder = new Binder();
+		$this->_order = $binder->magicBind($sql, (array)$params);
+		return $this;
+	}
+
+	/**
 	 * Adds a limit clause
 	 * @chainable
 	 */
@@ -131,6 +156,8 @@ class Query implements \IteratorAggregate, \Countable
 			$this->_clause('FROM', $this->_from),
 			implode(' ', $this->_joins),
 			$this->_clause('WHERE', $this->_where),
+			$this->_clause('GROUP BY', $this->_group),
+			$this->_clause('ORDER BY', $this->_order),
 			$this->_limit
 			)));
 	}

@@ -65,9 +65,9 @@ class DomainObject
 	 * Used by the default initialize() method, returns the table name to use
 	 * @return string
 	 */
-	public function tableName()
+	public static function tableName()
 	{
-		$tokens = explode('\\', get_class($this));
+		$tokens = explode('\\', get_called_class());
 		return strtolower(array_pop($tokens));
 	}
 
