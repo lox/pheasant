@@ -8,6 +8,7 @@ class ResultIterator implements \SeekableIterator, \Countable
 	private $_position;
 	private $_currentRow;
 	private $_hydrator;
+	private $_fetchMode = MYSQLI_ASSOC;
 
 	/**
 	* Constructor
@@ -33,6 +34,25 @@ class ResultIterator implements \SeekableIterator, \Countable
 	public function setHydrator($callback)
 	{
 		$this->_hydrator = $callback;
+	}
+
+	/**
+	 * Set mysqli resultset fetchmode
+	 * @param int [MYSQLI_ASSOC | MYSQLI_NUM | MYSQLI_BOTH]
+	 */
+	public function setFetchMode($mode)
+	{
+		$this->_fetchMode = $mode;
+		return $this;
+	}
+
+	/**
+	 * Return mysqli resultset fetchmode
+	 * @return int [MYSQLI_ASSOC | MYSQLI_NUM | MYSQLI_BOTH]
+	 */
+	public function getFetchMode()
+	{
+		return $this->_fetchMode;
 	}
 
 	/**
@@ -105,9 +125,9 @@ class ResultIterator implements \SeekableIterator, \Countable
 	 */
 	private function _fetch()
 	{
-		return isset($this->_hydrator) 
-			? call_user_func($this->_hydrator, $this->_result->fetch_array(MYSQLI_ASSOC)) 
-		  : $this->_result->fetch_array(MYSQLI_ASSOC)
+		return isset($this->_hydrator)
+			? call_user_func($this->_hydrator, $this->_result->fetch_array($this->_fetchMode))
+		  : $this->_result->fetch_array($this->_fetchMode)
 			;
 	}
 }
