@@ -31,12 +31,6 @@ class DomainObject
 			method_exists($this, 'construct') ? 'construct' : '_defaultConstruct');
 
 		call_user_func_array($constructor, func_get_args());
-
-		// set up events
-		$this->events()
-			->register('*', array($this, 'eventHandler'))
-			->trigger('afterInitialize', $this)
-			;
 	}
 
 	/**
@@ -59,6 +53,17 @@ class DomainObject
 
 		if(method_exists($class, 'relationships'))
 			$builder->relationships($instance->relationships());
+	}
+
+	/**
+	 * Sets up the default internal event handlers
+	 */
+	protected function _registerDefaultEventHandlers()
+	{
+		$this->events()
+			->register('*', array($this, 'eventHandler'))
+			->trigger('afterInitialize', $this)
+			;
 	}
 
 	/**
@@ -184,8 +189,10 @@ class DomainObject
 	 */
 	public function events($events=array())
 	{
-		if(!isset($this->_events))
+		if(!isset($this->_events)) {
 			$this->_events = clone $this->schema()->events();
+			$this->_registerDefaultEventHandlers();
+		}
 
 		if(count($events))
 			foreach($events as $event=>$callback)

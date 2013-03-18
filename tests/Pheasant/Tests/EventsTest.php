@@ -5,7 +5,7 @@ namespace Pheasant\Tests;
 use \Pheasant;
 use \Pheasant\DomainObject;
 use \Pheasant\Types;
-use \Pheasant\Tests\Examples\MyDomainObject;
+use \Pheasant\Tests\Examples\EventTestObject;
 
 class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 {
@@ -84,16 +84,35 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 	{
 		$this->mapper->shouldReceive('save')->times(1);
 
-		$this->initialize('Pheasant\Tests\Examples\MyDomainObject', function($builder) {
+		$this->initialize('Pheasant\Tests\Examples\EventTestObject', function($builder) {
 			$builder->properties(array(
 				'test' => new Types\String()
 				));
 		});
 
-		$do = new MyDomainObject();
-		$do->test = 'Llamas';
+		$do = new EventTestObject();
+		$do->test = 'llamas'; // need some change
 		$do->save();
 
-		$this->assertEquals($do->test, 'blargh');
+		$this->assertEquals(array('beforeSave','afterSave'), $do->events);
+	}
+
+	/**
+	 * Events on objects returned by finder do not fire
+	 */
+	public function testIssue30()
+	{
+		$this->mapper->shouldReceive('save')->times(1);
+
+		$this->initialize('Pheasant\Tests\Examples\EventTestObject', function($builder) {
+			$builder->properties(array(
+				'test' => new Types\String()
+				));
+		});
+
+		$do = EventTestObject::fromArray(array('test'=>'llamas'), false);
+		$do->save();
+
+		$this->assertEquals($do->events, array('beforeSave','afterSave'));
 	}
 }
