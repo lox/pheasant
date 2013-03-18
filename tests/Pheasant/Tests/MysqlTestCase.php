@@ -4,62 +4,62 @@ namespace Pheasant\Tests;
 
 class MysqlTestCase extends \PHPUnit_Framework_TestCase
 {
-	public function setUp()
-	{
-		// initialize a new pheasant
-		$this->pheasant = \Pheasant::setup(
-			'mysql://root@localhost/pheasanttest?charset=utf8'
-			);
+    public function setUp()
+    {
+        // initialize a new pheasant
+        $this->pheasant = \Pheasant::setup(
+            'mysql://root@localhost/pheasanttest?charset=utf8'
+            );
 
-		// wipe sequence pool
-		$this->pheasant->connection()
-			->sequencePool()
-			->initialize()
-			->clear()
-			;
-	}
+        // wipe sequence pool
+        $this->pheasant->connection()
+            ->sequencePool()
+            ->initialize()
+            ->clear()
+            ;
+    }
 
-	public function tearDown()
-	{
-		$this->pheasant->connection()->close();
-	}
+    public function tearDown()
+    {
+        $this->pheasant->connection()->close();
+    }
 
-	// Helper to return a connection
-	public function connection()
-	{
-		return $this->pheasant->connection();
-	}
+    // Helper to return a connection
+    public function connection()
+    {
+        return $this->pheasant->connection();
+    }
 
-	// Helper to drop and re-create a table
-	public function table($name, $columns)
-	{
-		$table = $this->pheasant->connection()->table($name);
+    // Helper to drop and re-create a table
+    public function table($name, $columns)
+    {
+        $table = $this->pheasant->connection()->table($name);
 
-		if($table->exists()) $table->drop();
+        if($table->exists()) $table->drop();
 
-		$table->create($columns);
+        $table->create($columns);
 
-		$this->assertTableExists($name);
+        $this->assertTableExists($name);
 
-		return $table;
-	}
+        return $table;
+    }
 
-	public function assertConnectionExists()
-	{
-		$this->assertTrue($this->pheasant->connection());
-	}
+    public function assertConnectionExists()
+    {
+        $this->assertTrue($this->pheasant->connection());
+    }
 
-	public function assertTableExists($table)
-	{
-		$this->assertTrue($this->pheasant->connection()->table($table)->exists());
-	}
+    public function assertTableExists($table)
+    {
+        $this->assertTrue($this->pheasant->connection()->table($table)->exists());
+    }
 
-	public function assertRowCount($count, $sql)
-	{
-		if(is_object($sql))
-			$sql = $sql->toSql();
+    public function assertRowCount($count, $sql)
+    {
+        if(is_object($sql))
+            $sql = $sql->toSql();
 
-		$result = $this->connection()->execute($sql);
-		$this->assertEquals($result->count(), $count);
-	}
+        $result = $this->connection()->execute($sql);
+        $this->assertEquals($result->count(), $count);
+    }
 }
