@@ -10,7 +10,7 @@ use \Pheasant\Types;
 
 define('BENCHMARK_QTY', 1000);
 
-class memory extends \Pheasant\DomainObject
+class Test extends \Pheasant\DomainObject
 {
     public static $destructs=0, $constructs=0;
 
