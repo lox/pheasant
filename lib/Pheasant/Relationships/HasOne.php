@@ -22,6 +22,11 @@ class HasOne extends RelationshipType
 	 */
 	public function get($object, $key)
 	{
+		$local = $object->get($this->local); // empty() does not work with magic getters; https://bugs.php.net/bug.php?id=43936
+		if(empty($local)) {
+			return false;
+		}
+
 		$result = $this
 			->query("{$this->foreign}=?", $object->{$this->local})
 			->execute();

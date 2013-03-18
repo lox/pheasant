@@ -346,12 +346,15 @@ class DomainObject
 	 */
 	public function load($array)
 	{
-		foreach($array as $key=>$value)
+		if(!empty($array))
 		{
-			if(is_object($value) || is_array($value))
-				$this->$key = $value;
-			else
-				$this->set($key, $value);
+			foreach($array as $key=>$value)
+			{
+				if(is_object($value) || is_array($value))
+					$this->$key = $value;
+				else
+					$this->set($key, $value);
+			}
 		}
 
 		return $this;
@@ -374,6 +377,15 @@ class DomainObject
 	public function __get($key)
 	{
 		return call_user_func($this->schema()->getter($key), $this);
+	}
+
+	/**
+	 * Magic method, checks if given key is set in _data or is a relation
+	 */
+	public function __isset($key)
+	{
+		$relationships = (method_exists($this, 'relationships')) ? $this->relationships() : array();
+		return (($this->has($key) && !empty($this->$key)) || isset($relationships[$key]));
 	}
 
 	/**
