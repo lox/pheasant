@@ -9,6 +9,31 @@ use \Pheasant\Tests\Examples\Animal;
 use \Pheasant\Tests\Examples\AnotherAnimal;
 use \Pheasant\Tests\Examples\AnimalWithNameDefault;
 
+use Mockery as m;
+
+class Blah extends DomainObject
+{
+	public static $callbacks = array();
+
+	public function properties()
+	{
+		return array(
+			'blahid' => new Types\Sequence(),
+			'text' => new Types\String(),
+		);
+	}
+
+	public function beforeCreate() { $fn = self::$callbacks[__FUNCTION__]; $fn(__FUNCTION__); }
+	public function beforeUpdate() { $fn = self::$callbacks[__FUNCTION__]; $fn(__FUNCTION__); }
+	public function beforeSave() { $fn = self::$callbacks[__FUNCTION__]; $fn(__FUNCTION__); }
+
+	public function afterInitialize() { $fn = self::$callbacks[__FUNCTION__]; $fn(__FUNCTION__); }
+	public function afterCreate() { $fn = self::$callbacks[__FUNCTION__]; $fn(__FUNCTION__); }
+	public function afterUpdate() { $fn = self::$callbacks[__FUNCTION__]; $fn(__FUNCTION__); }
+	public function afterSave() { $fn = self::$callbacks[__FUNCTION__]; $fn(__FUNCTION__); }
+}
+
+
 class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
 {
 	public function setUp()
@@ -110,6 +135,40 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
 
 		$horse = AnimalWithNameDefault::byId(1);
 		$this->assertEquals($animal->name, 'blargh');
+	}
+
+	public function testForBug()
+	{
+		$migrator = new \Pheasant\Migrate\Migrator();
+		$migrator->create('blah', Blah::schema());
+
+		$this->_expectEventsForBlah('afterInitialize');
+		$blah = new Blah();
+
+		$this->_expectEventsForBlah('beforeCreate', 'beforeSave', 'afterCreate', 'afterSave');
+		$blah->save();
+
+		$this->_expectEventsForBlah('beforeUpdate', 'beforeSave', 'afterUpdate', 'afterSave');
+		$blah->text = 'aaa';
+		$blah->save();
+
+		// Finding a domain object and updating it should trigger these events
+		$this->_expectEventsForBlah('beforeUpdate', 'beforeSave', 'afterUpdate', 'afterSave');
+		$blahs = Blah::find();
+		$blah = $blahs[0];
+		$blah->text = 'bbb';
+		$blah->save();
+	}
+
+	private function _expectEventsForBlah(/* varargs */)
+	{
+		$callbacks = array();
+		foreach (func_get_args() as $e) {
+			$m = m::mock('Blah');
+			$m->shouldReceive($e)->atLeast()->times(1);
+			$callbacks[$e] = function($name) use ($m, $e) { $m->$e(); };
+		}
+		Blah::$callbacks = $callbacks;
 	}
 }
 
