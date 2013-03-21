@@ -2,10 +2,14 @@
 
 require_once(__DIR__.'/../vendor/autoload.php');
 
+use \Pheasant\Types;
+
 $memory_peak = 0;
 
 declare(ticks = 35);
 register_tick_function('log_peak_memory');
+
+Pheasant::setup('mysql://root@localhost:/pheasanttest');
 
 /**
  * Log peak memory usage
@@ -51,4 +55,46 @@ function benchmark($times, $callback)
     $totalmem = array_sum($memory);
     $avgmem = $totalmem / $times;
     printf("average memory usage of %s bytes per iteration\n", number_format($avgmem));
+}
+
+
+class TestObject extends \Pheasant\DomainObject
+{
+    public static $destructs=0, $constructs=0;
+
+    public function properties()
+    {
+        return array(
+            'testid' => new Types\Sequence(),
+            'blargh' => new Types\String(),
+            'testrelid' => new Types\Integer(),
+        );
+    }
+
+    public function relationships()
+    {
+        return array(
+            'TestRel' => TestRelationship::belongsTo('testrelid')
+            );
+    }
+
+    public function construct()
+    {
+        self::$constructs++;
+    }
+
+    public function __destruct()
+    {
+        self::$destructs++;
+    }
+}
+
+class TestRelationship extends \Pheasant\DomainObject
+{
+    public function properties()
+    {
+        return array(
+            'testrelid' => new Types\Sequence(),
+        );
+    }
 }
