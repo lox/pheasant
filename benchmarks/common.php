@@ -66,7 +66,19 @@ class TestObject extends \Pheasant\DomainObject
     {
         return array(
             'testid' => new Types\Sequence(),
-            'blargh' => new Types\String(),
+            'string1' => new Types\String(),
+            'string2' => new Types\String(),
+            'string3' => new Types\String(),
+            'string4' => new Types\String(),
+            'string5' => new Types\String(),
+            'datetime1' => new Types\DateTime(),
+            'datetime2' => new Types\DateTime(),
+            'datetime3' => new Types\DateTime(),
+            'int1' => new Types\Integer(),
+            'int2' => new Types\Integer(),
+            'int3' => new Types\Integer(),
+            'int4' => new Types\Integer(),
+            'int5' => new Types\Integer(),
             'testrelid' => new Types\Integer(),
         );
     }
