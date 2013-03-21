@@ -4,6 +4,7 @@ namespace Pheasant\Database\Mysqli;
 
 use Pheasant\Database\Dsn;
 use Pheasant\Database\FilterChain;
+use Pheasant\Database\MysqlPlatform;
 
 /**
  * A connection to a MySql database
@@ -190,12 +191,11 @@ class Connection
     }
 
     /**
-     * Takes a map of colName=>Type and returns map for the native connection
-     * @return TypeMap
+     * Returns a platform object representing the database type connected to
      */
-    public function typeMap($array)
+    public function platform()
     {
-        return new TypeMap($array);
+        return new MysqlPlatform();
     }
 
     /**

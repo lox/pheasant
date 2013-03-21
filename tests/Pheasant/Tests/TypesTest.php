@@ -3,92 +3,79 @@
 namespace Pheasant\Tests;
 
 use \Pheasant\Types;
-use \Pheasant\Database\Mysqli;
 
 class TypesTest extends \Pheasant\Tests\MysqlTestCase
 {
     public function testInteger()
     {
         $type = new Types\Integer(10);
-        $this->assertEquals($type->type, Types\Integer::TYPE);
-        $this->assertEquals($type->length, 10);
+        $this->assertMysqlColumnSql('`test` int(10)', $type);
 
-        // check the type conversion
-        $map = new Mysqli\TypeMap(array('test'=>$type));
-        $this->assertEquals($map->columnDef('test'),
-            '`test` int(10)');
+        $type = new Types\Integer();
+        $this->assertMysqlColumnSql('`test` int', $type);
+    }
+
+    public function testSmallInteger()
+    {
+        $type = new Types\SmallInteger(10);
+        $this->assertMysqlColumnSql('`test` smallint(10)', $type);
+
+        $type = new Types\SmallInteger();
+        $this->assertMysqlColumnSql('`test` smallint', $type);
+    }
+
+    public function testBigInteger()
+    {
+        $type = new Types\BigInteger(10);
+        $this->assertMysqlColumnSql('`test` bigint(10)', $type);
+
+        $type = new Types\BigInteger();
+        $this->assertMysqlColumnSql('`test` bigint', $type);
     }
 
     public function testIntegerPrimaryNotNull()
     {
         $type = new Types\Integer(10, 'notnull primary');
-        $this->assertEquals($type->type, Types\Integer::TYPE);
-        $this->assertEquals($type->length, 10);
-        $this->assertTrue($type->options->notnull);
-        $this->assertTrue($type->options->primary);
 
-        // check the type conversion
-        $map = new Mysqli\TypeMap(array('test'=>$type));
-        $this->assertEquals($map->columnDef('test'),
-            '`test` int(10) not null primary key');
+        $this->assertTrue($type->options()->notnull);
+        $this->assertTrue($type->options()->primary);
+        $this->assertMysqlColumnSql('`test` int(10) not null primary key', $type);
     }
 
     public function testDefaultSequence()
     {
         $type = new Types\Sequence();
-        $this->assertEquals($type->type, Types\Integer::TYPE);
-        $this->assertEquals($type->length, 11);
-        $this->assertEquals($type->options->sequence, null);
-        $this->assertEquals($type->options->primary, true);
 
-        // check the type conversion
-        $map = new Mysqli\TypeMap(array('test'=>$type));
-        $this->assertEquals($map->columnDef('test'),
-            '`test` int(11) primary key not null');
+        $this->assertEquals($type->options()->sequence, null);
+        $this->assertEquals($type->options()->primary, true);
+        $this->assertMysqlColumnSql('`test` int(11) primary key not null', $type);
     }
 
     public function testDecimal()
     {
         $type = new Types\Decimal(12, 4);
-        $this->assertEquals($type->type, Types\Decimal::TYPE);
-        $this->assertEquals($type->length, 12);
-        $this->assertEquals($type->scale, 4);
 
-        // check the type conversion
-        $map = new Mysqli\TypeMap(array('test'=>$type));
-        $this->assertEquals($map->columnDef('test'),
-            '`test` decimal(12,4)');
+        $this->assertMysqlColumnSql('`test` decimal(12,4)', $type);
     }
 
     public function testCharacter()
     {
         $type = new Types\Character(4);
-        $this->assertEquals($type->type, Types\Character::TYPE);
-        $this->assertEquals($type->length, 4);
 
-        // check the type conversion
-        $map = new Mysqli\TypeMap(array('test'=>$type));
-        $this->assertEquals($map->columnDef('test'),
-            '`test` char(4)');
+        $this->assertMysqlColumnSql('`test` char(4)', $type);
     }
 
     public function testBoolean()
     {
         $type = new Types\Boolean();
-        $this->assertEquals($type->type, Types\Boolean::TYPE);
-        $this->assertEquals($type->length, NULL);
+        $this->assertMysqlColumnSql('`test` boolean', $type);
 
-        // check the type conversion
-        $map = new Mysqli\TypeMap(array('test'=>$type));
-        $this->assertEquals($map->columnDef('test'),
-            '`test` boolean');
+        $type = new Types\Boolean('notnull');
+        $this->assertMysqlColumnSql('`test` boolean not null', $type);
+    }
 
-        $notnull = new Types\Boolean('notnull');
-
-        // check not-null works
-        $map = new Mysqli\TypeMap(array('test'=>$notnull));
-        $this->assertEquals($map->columnDef('test'),
-            '`test` boolean not null');
-
+    public function assertMysqlColumnSql($sql, $type)
+    {
+        $this->assertEquals($type->columnSql('test', new \Pheasant\Database\MysqlPlatform()), $sql);
     }
 }

@@ -106,6 +106,6 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
         )));
 
         $horse = AnimalWithNameDefault::byId(1);
-        $this->assertEquals($animal->name, 'blargh');
+        $this->assertEquals($horse->name, 'blargh');
     }
 }

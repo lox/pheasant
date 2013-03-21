@@ -3,20 +3,27 @@
 namespace Pheasant\Types;
 
 /**
- * A fixed precision decimal type
+ * A basic decimal type
  */
-class Decimal extends Type
+class Decimal extends Base
 {
-    const TYPE='decimal';
-
-    public $scale;
+    private $_length, $_scale;
 
     /**
      * Constructor
      */
-    public function __construct($length=10, $scale=2, $params=null)
+    public function __construct($length=10, $scale=2, $options=null)
     {
-        parent::__construct(self::TYPE, $length, $params);
-        $this->scale = $scale;
+        parent::__construct($options);
+        $this->_length = intval($length);
+        $this->_scale = intval($scale);
+    }
+
+    /* (non-phpdoc)
+     * @see \Pheasant\Type::columnSql
+     */
+    public function columnSql($column, $platform)
+    {
+        return $platform->columnSql($column, "decimal({$this->_length},{$this->_scale})", $this->options());
     }
 }

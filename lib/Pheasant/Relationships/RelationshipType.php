@@ -46,9 +46,10 @@ class RelationshipType
      * Delegates to the schema for hydrating
      * @return DomainObject
      */
-    protected function hydrate($row, $saved=true)
+    protected function hydrate($row)
     {
-        return \Pheasant::instance()->schema($this->class)->hydrate($row, $saved);
+        return \Pheasant::instance()
+            ->schema($this->class)->hydrate($row);
     }
 
     /**

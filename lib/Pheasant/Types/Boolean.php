@@ -3,17 +3,15 @@
 namespace Pheasant\Types;
 
 /**
- * A basic boolean type
+ * A basic string type
  */
-class Boolean extends Type
+class Boolean extends Base
 {
-    const TYPE='boolean';
-
-    /**
-     * Constructor
+    /* (non-phpdoc)
+     * @see \Pheasant\Type::columnSql
      */
-    public function __construct($params=null)
+    public function columnSql($column, $platform)
     {
-        parent::__construct(self::TYPE, NULL, $params);
+        return $platform->columnSql($column, "boolean", $this->options());
     }
 }
