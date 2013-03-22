@@ -14,4 +14,13 @@ class Boolean extends Base
     {
         return $platform->columnSql($column, "boolean", $this->options());
     }
+
+
+    /* (non-phpdoc)
+     * @see \Pheasant\Type::unmarshal
+     */
+    public function unmarshal($value)
+    {
+        return (bool) $value;
+    }
 }

@@ -18,6 +18,7 @@ class TypeMarshallingTest extends \Pheasant\Tests\MysqlTestCase
             $builder->properties(array(
                 'id' => new Types\Integer(null, 'primary auto_increment'),
                 'type' => new Types\String(128),
+                'isllama' => new Types\Boolean(array('default'=>true)),
                 'timecreated' => new Types\DateTime(),
                 'unixtime' => new Types\UnixTimestamp(),
             ));
@@ -36,6 +37,17 @@ class TypeMarshallingTest extends \Pheasant\Tests\MysqlTestCase
         $llamaById = DomainObject::byId(1);
         $this->assertSame($llamaById->id, 1);
         $this->assertSame($llamaById->type, 'Llama');
+    }
+
+    public function testBooleanTypesAreUnmarshalled()
+    {
+        $object = new DomainObject(array('type'=>'Llama'));
+        $object->save();
+
+        $llamaById = DomainObject::byId(1);
+        $this->assertTrue($llamaById->isllama);
+        $this->assertSame($llamaById->id, 1);
+        $this->assertSame($llamaById->isllama, true);
     }
 
     public function testDateTimeTypesAreRoundTripped()
@@ -69,5 +81,7 @@ class TypeMarshallingTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertSame($llamaById->type, 'Llama');
         $this->assertSame($llamaById->unixtime->getTimestamp(), $ts->getTimestamp());
     }
+
+
 
 }
