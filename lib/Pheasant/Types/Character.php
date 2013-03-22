@@ -3,17 +3,26 @@
 namespace Pheasant\Types;
 
 /**
-* A fixed width character type
+ * A basic character type
  */
-class Character extends Type
+class Character extends Base
 {
-    const TYPE='character';
+    private $_length;
 
     /**
      * Constructor
      */
-    public function __construct($length, $params=null)
+    public function __construct($length, $options=null)
     {
-        parent::__construct(self::TYPE, $length, $params);
+        parent::__construct($options);
+        $this->_length = intval($length);
+    }
+
+    /* (non-phpdoc)
+     * @see \Pheasant\Type::columnSql
+     */
+    public function columnSql($column, $platform)
+    {
+        return $platform->columnSql($column, "char({$this->_length})", $this->options());
     }
 }

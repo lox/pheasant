@@ -32,7 +32,7 @@ class Property
      */
     public function hasDefaultValue()
     {
-        return isset($this->type->options->default);
+        return isset($this->type->options()->default);
     }
 
     /**
@@ -41,7 +41,7 @@ class Property
     public function defaultValue()
     {
         return $this->hasDefaultValue()
-            ? $this->type->options->default
+            ? $this->type->options()->default
             : NULL
             ;
     }

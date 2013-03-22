@@ -58,9 +58,8 @@ class Schema
     public function primary()
     {
         return array_filter($this->_props, function($property) {
-            return $property->type->options->primary;
+            return $property->type->options()->primary;
         });
-
     }
 
     /**
@@ -96,14 +95,13 @@ class Schema
     }
 
     /**
-     * Hydrates an array into the domain object of the schema
+     * Hydrates a database array into the domain object of the schema
      * @return object
      */
-    public function hydrate($row, $saved=true)
+    public function hydrate($row)
     {
         $class = $this->_class;
-
-        return $class::fromArray($row, $saved);
+        return $class::fromArray($this->unmarshal($row));
     }
 
     /**
@@ -113,6 +111,36 @@ class Schema
     public function events()
     {
         return $this->_events;
+    }
+
+    /**
+     * Converts an array using each columns type object to database format
+     * @return array
+     */
+    public function marshal($row)
+    {
+        foreach($this->_props as $key=>$prop) {
+            if(isset($row[$key])) {
+                $row[$key] = $prop->type->marshal($row[$key]);
+            }
+        }
+
+        return $row;
+    }
+
+    /**
+     * Converts an array using each columns type object to the object format
+     * @return array
+     */
+    public function unmarshal($row)
+    {
+        foreach($this->_props as $key=>$prop) {
+            if(isset($row[$key])) {
+                $row[$key] = $prop->type->unmarshal($row[$key]);
+            }
+        }
+
+        return $row;
     }
 
     // ------------------------------------
@@ -125,7 +153,6 @@ class Schema
     public function getter($attr)
     {
         if(isset($this->_getters[$attr]))
-
             return $this->_getters[$attr];
 
         else if(isset($this->_props[$attr]))
@@ -144,7 +171,6 @@ class Schema
     public function setter($attr)
     {
         if(isset($this->_setters[$attr]))
-
             return $this->_setters[$attr];
 
         else if(isset($this->_props[$attr]))
@@ -162,7 +188,6 @@ class Schema
     public function hasAttribute($attr)
     {
         if(isset($this->_setters[$attr]))
-
             return true;
 
         else if(isset($this->_props[$attr]))

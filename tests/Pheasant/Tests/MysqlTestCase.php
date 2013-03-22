@@ -30,6 +30,12 @@ class MysqlTestCase extends \PHPUnit_Framework_TestCase
         return $this->pheasant->connection();
     }
 
+    // Helper to initialize a domain object
+    public function initialize($class, $callback=null)
+    {
+        return $this->pheasant->initialize($class, $callback);
+    }
+
     // Helper to drop and re-create a table
     public function table($name, $columns)
     {
@@ -42,6 +48,12 @@ class MysqlTestCase extends \PHPUnit_Framework_TestCase
         $this->assertTableExists($name);
 
         return $table;
+    }
+
+    public function migrate($tableName, $schema)
+    {
+        $migrator = new \Pheasant\Migrate\Migrator();
+        $migrator->create($tableName, $schema);
     }
 
     public function assertConnectionExists()

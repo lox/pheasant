@@ -45,7 +45,7 @@ class RowMapper extends AbstractMapper implements Finder
      */
     private function sequence($property)
     {
-        $sequence = $property->type->options->sequence;
+        $sequence = $property->type->options()->sequence;
 
         // generate if needed
         if(!is_string($sequence))
@@ -64,15 +64,16 @@ class RowMapper extends AbstractMapper implements Finder
 
         // generate any sequences that need generating
         foreach ($object->identity() as $key=>$property) {
-            if(isset($property->type->options->sequence))
+            if(isset($property->type->options()->sequence))
                 $object->set($key, $this->sequence($property));
         }
 
-        $result = $this->table()->insert($object->toArray());
+        $result = $this->table()
+            ->insert($schema->marshal($object->toArray()));
 
         // check for auto-increment
         foreach ($schema->properties() as $key=>$property) {
-            if($property->type->options->auto_increment)
+            if($property->type->options()->auto_increment)
                 $object->{$key} = $result->lastInsertId();
         }
     }
@@ -83,12 +84,12 @@ class RowMapper extends AbstractMapper implements Finder
     protected function update($object, $changes)
     {
         $schema = $object->schema();
-        $result = $this->table()->update($changes,
+        $result = $this->table()->update($schema->marshal($changes),
             $object->identity()->toCriteria());
 
         // check for auto-increment
         foreach ($object->identity() as $key=>$property) {
-            if($property->type->options->auto_increment)
+            if($property->type->options()->auto_increment)
                 $object->{$key} = $result->lastInsertId();
         }
     }

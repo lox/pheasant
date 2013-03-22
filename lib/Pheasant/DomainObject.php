@@ -168,7 +168,7 @@ class DomainObject
         $array = array();
 
         foreach($this->_data as $key=>$value)
-            $array[$key] = is_object($value) ? $value->value() : $value;
+            $array[$key] = ($value instanceof PropertyReference) ? $value->value() : $value;
 
         return $array;
     }
@@ -231,9 +231,9 @@ class DomainObject
     // static helpers
 
     /**
-     * Creates an instance from an array, bypassing the constructor
+     * Creates an instance from an array, bypassing the constructor and setters
      */
-    public static function fromArray($array, $saved=false)
+    public static function fromArray($array=array())
     {
         $className = get_called_class();
 
@@ -242,11 +242,8 @@ class DomainObject
             strlen($className),
             $className));
 
-        $object->load($array);
-
-        // saved implies cleared changes
-        if($saved)
-            $object->markSaved(true)->clearChanges();
+        $object->_data = $array;
+        $object->_saved = true;
 
         return $object;
     }
@@ -275,11 +272,10 @@ class DomainObject
     public static function import($records)
     {
         $objects = array();
-        $schema = Pheasant::instance()->schema(get_called_class());
+        $className = get_called_class();
 
         foreach ($records as $record) {
-            $object = $schema->hydrate($record, false);
-            $object->save();
+            $object = $className::fromArray()->load($record)->markSaved(false)->save();
             $objects []= $object;
         }
 
@@ -342,7 +338,7 @@ class DomainObject
     }
 
     /**
-     * Loads an array of values into the object, optionally marking the object saved
+     * Loads an array of values into the object
      * @chainable
      */
     public function load($array)
