@@ -91,4 +91,20 @@ class Options implements \IteratorAggregate
 
         return implode(' ', $options);
     }
+
+    /**
+     * Convert either a null, a string or an array into an Option
+     */
+    public static function coerce($from)
+    {
+        if (is_array($from) || is_null($from)) {
+            return new self((array) $from);
+        } elseif (is_string($from)) {
+            return self::fromString($from);
+        } elseif ($from instanceof Options) {
+            return $from;
+        } else {
+            throw new \InvalidArgumentException("Unable to coerce provided type");
+        }
+    }
 }

@@ -7,7 +7,6 @@ use \Pheasant\Query\QueryIterator;
 
 class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 {
-    private $_class;
     private $_query;
     private $_iterator;
     private $_add=false;
@@ -21,11 +20,11 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     public function __construct($class, $query, $add=false)
     {
         $this->_query = $query;
-        $this->_class = $class;
         $this->_add = $add;
 
-        $this->_iterator = new QueryIterator($query, function($row) use ($class) {
-            return $class::fromArray($row, true);
+        $schema = $class::schema();
+        $this->_iterator = new QueryIterator($query, function($row) use ($schema) {
+            return $schema->hydrate($row);
         });
     }
 

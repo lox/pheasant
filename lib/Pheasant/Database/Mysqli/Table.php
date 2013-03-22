@@ -27,13 +27,17 @@ class Table
      */
     public function create($columns, $options='charset=utf8 engine=innodb')
     {
-        $types = new TypeMap($columns);
-        $sql = sprintf(
-            'CREATE TABLE %s (%s) %s',
+        $columnSql = array();
+        $platform = $this->_connection->platform();
+
+        foreach($columns as $name=>$type)
+            $columnSql []= $type->columnSql($name, $platform);
+
+        $sql = sprintf('CREATE TABLE %s (%s) %s',
             $this->_name->quoted(),
-            implode(', ', $types->columnDefs()),
+            implode(', ', $columnSql),
             $options
-            );
+        );
 
         $this->_connection->execute($sql);
     }
