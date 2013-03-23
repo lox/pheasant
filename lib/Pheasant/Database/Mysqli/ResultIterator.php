@@ -109,4 +109,9 @@ class ResultIterator implements \SeekableIterator, \Countable
           : $this->_result->fetch_array(MYSQLI_ASSOC)
             ;
     }
+
+    public function toArray()
+    {
+        return iterator_to_array($this);
+    }
 }
