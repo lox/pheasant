@@ -41,7 +41,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Pheasant'
-copyright = u'2013, Lachlan Donald, Richard Bone'
+copyright = u'2013, Lachlan Donald'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -91,7 +91,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'agogo'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -214,7 +214,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'pheasant', u'Pheasant Documentation',
-     [u'Lachlan Donald, Richard Bone'], 1)
+     [u'Lachlan Donald'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -228,7 +228,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'Pheasant', u'Pheasant Documentation',
-   u'Lachlan Donald, Richard Bone', 'Pheasant', 'One line description of project.',
+   u'Lachlan Donald', 'Pheasant', 'One line description of project.',
    'Miscellaneous'),
 ]
 
