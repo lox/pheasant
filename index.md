@@ -30,7 +30,7 @@ class Post extends Pheasant\DomainObject
   public function properties()
   {
     return array(
-        'postid'   => new Types\Sequence(),
+        'postid'   => new Types\Integer(11, 'primary auto_increment'),
         'title'    => new Types\String(255, 'required'),
         'authorid' => new Types\Integer(11)
         );
