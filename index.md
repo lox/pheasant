@@ -10,9 +10,8 @@ layout: default
     <p><img class="pheasant-logo" src="/assets/images/pheasant-large.png" width="300px" alt="Pheasant"></p>
     <ul class="hero-links inline-list">
       <li><a href="http://github.com/lox/pheasant">GitHub</a></li>
-      <li><a href="./get-started.html#examples">Examples</a></li>
-      <li><a href="./extend.html">Extend</a></li>
-      <li>Version 1.0.0-rc1</li>
+      <li><a href="https://pheasant.readthedocs.org/en/latest/gettingstarted.html">Examples</a></li>
+      <li>Version 1.0.0</li>
     </ul>
   </div>
 </div>
