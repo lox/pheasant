@@ -10,6 +10,7 @@ class Pheasant
     private $_schema;
     private $_finders=array();
     private $_mappers=array();
+    private $_events;
 
     private static $_instance;
 
@@ -55,11 +56,15 @@ class Pheasant
 
         // initialize the object if needed
         if (!isset($this->_schema[$class])) {
-            $builder = new \Pheasant\SchemaBuilder();
+            $builder = new \Pheasant\SchemaBuilder($this);
             $initializer = $callback ? $callback : $class.'::initialize';
 
+            $this->events()->trigger('beforeInitialize', $builder);
             call_user_func($initializer, $builder, $this);
-            $this->_schema[$class] = $builder->build($class);
+            $schema = $builder->build($class);
+
+            $this->events()->trigger('afterInitialize', $schema);
+            $this->_schema[$class] = $schema;
         }
 
         return $class;
@@ -133,6 +138,19 @@ class Pheasant
             throw new Exception("No finder registered for $class");
 
         return $this->_finders[$class];
+    }
+
+    /**
+     * Gets the system-wide events registry
+     * @return Events
+     */
+    public function events()
+    {
+        if(!isset($this->_events)) {
+            $this->_events = new \Pheasant\Events();
+        }
+
+        return $this->_events;
     }
 
     // ----------------------------------------
