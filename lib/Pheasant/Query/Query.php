@@ -34,7 +34,7 @@ class Query implements \IteratorAggregate, \Countable
      * Sets the SELECT clause, either a single column, an array or varargs.
      * @chainable
      */
-    public function select($table)
+    public function select($column)
     {
         $this->_select = $this->_arguments(func_get_args());
 

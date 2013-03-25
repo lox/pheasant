@@ -55,10 +55,13 @@ class Property
         $property = $this;
 
         return function($object) use ($key, $property) {
-            return is_null($object->get($key))
-                ? $property->reference($object)
-                : $object->get($key)
-                ;
+            $value = $object->get($key);
+
+            if(is_null($value) && $property->type->options()->primary) {
+                return $property->reference($object);
+            } else {
+                return $value;
+            }
         };
     }
 

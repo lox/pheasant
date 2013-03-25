@@ -24,4 +24,14 @@ class ColumnIterator extends \IteratorIterator
 
         return $row[$column];
     }
+
+    public function toArray()
+    {
+        return iterator_to_array($this);
+    }
+
+    public function unique()
+    {
+        return array_unique($this->toArray());
+    }
 }
