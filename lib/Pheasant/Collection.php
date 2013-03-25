@@ -56,10 +56,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function filter($sql, $params=array())
     {
-        if($this->_readonly)
-            throw new Exception("Collection is read-only during iteration");
-
-        $this->_query->andWhere($sql, $params);
+        $this->_queryForWrite()->andWhere($sql, $params);
 
         return $this;
     }
@@ -70,10 +67,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function order($sql, $params=array())
     {
-        if($this->_readonly)
-            throw new Exception("Collection is read-only during iteration");
-
-        $this->_query->orderBy($sql, $params);
+        $this->_queryForWrite()->orderBy($sql, $params);
 
         return $this;
     }
@@ -84,10 +78,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function limit($rows, $offset=0)
     {
-        if($this->_readonly)
-            throw new Exception("Collection is read-only during iteration");
-
-        $this->_query->limit($rows, $offset);
+        $this->_queryForWrite()->limit($rows, $offset);
 
         return $this;
     }
@@ -98,6 +89,28 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     public function count()
     {
         return $this->_iterator->count();
+    }
+
+    /**
+     * Selects only particular fields
+     * @chainable
+     */
+    public function select($fields)
+    {
+        $this->_queryForWrite()->select($fields);
+
+        return $this;
+    }
+
+    /**
+     * Reduces a collection down to a single column
+     * @chainable
+     */
+    public function column($field)
+    {
+        $query = clone $this->_queryForWrite();
+
+        return $query->select($field)->execute()->column($field);
     }
 
     /**
@@ -116,6 +129,14 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     public function __invoke($sql, $params=array())
     {
         return $this->filter($sql, $params);
+    }
+
+    private function _queryForWrite()
+    {
+        if($this->_readonly)
+            throw new Exception("Collection is read-only during iteration");
+
+        return $this->_query;
     }
 
     // ----------------------------------
