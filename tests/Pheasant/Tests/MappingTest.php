@@ -90,11 +90,14 @@ class BasicMappingTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertEquals($post->get('postid'), 1);
     }
 
-    public function testRemoving()
+    public function testDeleting()
     {
         $post = Post::create('first post');
 
         $this->assertEquals($post->postid, 1);
         $this->assertEquals($post->title, 'first post');
+
+        $post->delete();
+        $this->assertRowCount(0, "SELECT * FROM post WHERE postid=1");
     }
 }

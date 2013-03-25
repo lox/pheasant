@@ -160,6 +160,24 @@ class DomainObject
     }
 
     /**
+     * Deletes the domain object via the associated mapper
+     * @chainable
+     */
+    public function delete()
+    {
+        $mapper = Pheasant::instance()->mapperFor($this);
+
+        $this->events()->wrap(array('Delete'), $this, function($obj) use($mapper) {
+            $mapper->delete($obj);
+        });
+
+        $this->_saved = false;
+        $this->_changed = array();
+        return $this;
+    }
+
+
+    /**
      * Returns the object as an array
      * @return array
      */

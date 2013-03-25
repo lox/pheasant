@@ -94,6 +94,15 @@ class RowMapper extends AbstractMapper implements Finder
         }
     }
 
+    /**
+     * @see Mapper::delete()
+     */
+    public function delete($object)
+    {
+        if($object->isSaved())
+            $this->table()->delete($object->identity()->toCriteria());
+    }
+
     /* (non-phpdoc)
      * @see Mapper::query()
      */
