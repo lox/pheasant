@@ -3,18 +3,23 @@
 namespace Pheasant;
 
 /**
- * Domain objects have events triggered on them via Events.
+ * A collection of event handlers that have events fired to them. Events
+ * also bubble upstream.
  */
 class Events
 {
-    private $_handlers=array();
+    private
+        $_handlers=array(),
+        $_upstream
+        ;
 
     /**
      * Construct
      */
-    public function __construct($handlers=array())
+    public function __construct($handlers=array(), $upstream=null)
     {
         $this->_handlers = array();
+        $this->_upstream = $upstream;
 
         foreach ($handlers as $event=>$handler) {
             $this->_handlers[$event] = is_array($handler)
@@ -55,6 +60,9 @@ class Events
             foreach($callbacks as $callback)
                 call_user_func($callback, $e, $object);
         }
+
+        if(isset($this->_upstream))
+            $this->_upstream->trigger($event, $object);
 
         return $this;
     }
