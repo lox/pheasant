@@ -115,4 +115,23 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 
         $this->assertEquals($do->events, array('beforeSave','afterSave'));
     }
+
+    public function testSystemWideInitializeEvent()
+    {
+        $events = array();
+
+        $this->pheasant->events()->register('afterInitialize', function($e, $schema) use(&$events) {
+            $events []= func_get_args();
+        });
+
+        $this->initialize('Pheasant\Tests\Examples\EventTestObject', function($builder) {
+            $builder->properties(array(
+                'test' => new Types\String()
+                ));
+        });
+
+        $this->assertCount(1, $events);
+        $this->assertEquals('Pheasant\Tests\Examples\EventTestObject', $events[0][1]->className());
+        $this->assertEquals('afterInitialize', $events[0][0]);
+     }
 }

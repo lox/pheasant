@@ -30,7 +30,7 @@ class Schema
         $this->_rels = $params['relationships'];
         $this->_getters = $params['getters'];
         $this->_setters = $params['setters'];
-        $this->_events = new Events($params['events']);
+        $this->_events = $params['events'];
     }
 
     /**
@@ -105,7 +105,7 @@ class Schema
     }
 
     /**
-     * Return the internal {@link Events} object
+     * Return the schema-wide {@link Events} object
      * @return Events
      */
     public function events()

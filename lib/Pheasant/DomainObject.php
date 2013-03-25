@@ -212,7 +212,7 @@ class DomainObject
     public function events($events=array())
     {
         if (!isset($this->_events)) {
-            $this->_events = clone $this->schema()->events();
+            $this->_events = new Events(array(), self::schema()->events());
             $this->_registerDefaultEventHandlers();
         }
 

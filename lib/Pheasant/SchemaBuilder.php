@@ -8,12 +8,19 @@ namespace Pheasant;
 class SchemaBuilder
 {
     private
+        $_pheasant,
         $_properties=array(),
         $_relationships=array(),
         $_events=array(),
         $_getters=array(),
         $_setters=array()
         ;
+
+    public function __construct($pheasant)
+    {
+        $this->_pheasant = $pheasant;
+        $this->_events = new Events(array(), $pheasant->events());
+    }
 
     /**
      * Sets the schema properties
@@ -46,7 +53,7 @@ class SchemaBuilder
     public function events($map)
     {
         foreach($map as $name=>$callback)
-            $this->_events[$name] = $callback;
+            $this->_events->register($name, $callback);
 
         return $this;
     }
