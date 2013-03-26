@@ -124,4 +124,13 @@ class RowMapper extends AbstractMapper implements Finder
     {
         return new Collection($class, $this->query($criteria));
     }
+
+    /* (non-phpdoc)
+     * @see Mapper::initialize()
+     */
+    public function initialize($schema)
+    {
+        $migrator = new \Pheasant\Migrate\Migrator();
+        $migrator->create($this->_tableName, $schema);
+    }
 }

@@ -10,6 +10,12 @@ use \Pheasant\Query\Criteria;
 interface Mapper
 {
     /**
+     * Perform any setup required for the mapper backend
+     * @return void
+     */
+    public function initialize($schema);
+
+    /**
      * Saves a domain object, either creating it or updating it
      * @return void
      */
