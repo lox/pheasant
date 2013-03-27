@@ -11,6 +11,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     private $_iterator;
     private $_add=false;
     private $_readonly=false;
+    private $_schema;
 
     /**
      * @param $class string the classname to hydrate
@@ -21,8 +22,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     {
         $this->_query = $query;
         $this->_add = $add;
-
-        $schema = $class::schema();
+        $this->_schema = $schema = $class::schema();
         $this->_iterator = new QueryIterator($query, function($row) use ($schema) {
             return $schema->hydrate($row);
         });
@@ -111,6 +111,22 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         $query = clone $this->_queryForWrite();
 
         return $query->select($field)->execute()->column($field);
+    }
+
+    /**
+     * Creates the passed params as a domain object if there are no
+     * results in the collection.
+     * @param $args array an array to be passed to the constructor via call_user_func_array
+     * @chainable
+     */
+    public function orCreate($args)
+    {
+        $query = clone $this->_queryForWrite();
+
+        if(!$query->count())
+            $this->_schema->newInstance(func_get_args())->save();
+
+        return $this;
     }
 
     /**

@@ -58,4 +58,16 @@ class CollectionTest extends \Pheasant\Tests\MysqlTestCase
         $results = Animal::find()->select('type')->column('type')->unique();
         $this->assertEquals(array('llama','frog'), $results);
     }
+
+    public function testOrCreate()
+    {
+        $results = Animal::find('name=?', 'Orangutan');
+        $this->assertCount(0, $results);
+
+        $results = Animal::find('name=?', 'Orangutan')->orCreate(array(
+            'name' => 'Orangutan', 'type'=>'primate'
+        ));
+        $this->assertCount(1, $results);
+        $this->assertEquals('Orangutan', $results->one()->name);
+    }
 }
