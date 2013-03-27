@@ -201,6 +201,15 @@ class DomainObject
             ? $this : get_called_class());
     }
 
+    /**
+     * Creates and saves a domain object, var args are passed to the constructor
+     * @return DomainObject
+    */
+    public static function create()
+    {
+        return self::schema()->newInstance(func_get_args())->save();
+    }
+
     // ----------------------------------------
     // event helper functions
 
@@ -276,7 +285,6 @@ class DomainObject
         } elseif (preg_match('/^(hasOne|hasMany|belongsTo)$/',$method)) {
             $refl = new \ReflectionClass('\Pheasant\\Relationships\\'.ucfirst($method));
             array_unshift($params, get_called_class());
-
             return $refl->newInstanceArgs($params);
         } else {
             throw new \BadMethodCallException("No static method $method available");
@@ -298,18 +306,6 @@ class DomainObject
         }
 
         return $objects;
-    }
-
-    /**
-    * Static helper for creating a domain object, the same as calling
-    * the constructor. Useful for chaining.
-    * @return object
-    */
-    public static function create()
-    {
-        $refl = new \ReflectionClass(get_called_class());
-
-        return $refl->newInstanceArgs(func_get_args())->save();
     }
 
     /**

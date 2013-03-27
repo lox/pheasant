@@ -143,6 +143,16 @@ class Schema
         return $row;
     }
 
+    /**
+     * Creates an instance of the object, passes args to the constructor
+     * @return object
+     */
+    public function newInstance($args=array())
+    {
+        $refl = new \ReflectionClass($this->_class);
+        return $refl->newInstanceArgs($args);
+    }
+
     // ------------------------------------
     // route primitives to properties and relationships
 
