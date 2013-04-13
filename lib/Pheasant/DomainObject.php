@@ -299,10 +299,11 @@ class DomainObject
     {
         $objects = array();
         $className = get_called_class();
+        $defaults = self::schema()->defaults();
 
         foreach ($records as $record) {
-            $object = $className::fromArray()->load($record)->markSaved(false)->save();
-            $objects []= $object;
+            $objects []= $className::fromArray()
+                ->load(array_merge($defaults, $record))->markSaved(false)->save();
         }
 
         return $objects;

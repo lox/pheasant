@@ -32,6 +32,15 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertFalse($llama->equals($frog));
     }
 
+    public function testImportUsesDefaultProperties()
+    {
+        $animals = Animal::import(array(
+            array('name'=>'Larry Llama')
+        ));
+
+        $this->assertEquals('llama', $animals[0]->type);
+    }
+
     public function testPropertyIsset()
     {
         $animal = new Animal(array('name'=>'bob'));
