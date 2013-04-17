@@ -132,4 +132,12 @@ class Events
 
         return $this;
     }
+
+    /**
+     * @see http://www.php.net/manual/en/language.oop5.magic.php#object.invoke
+     */
+    public function __invoke($event, $object)
+    {
+        return $this->trigger($event, $object);
+    }
 }

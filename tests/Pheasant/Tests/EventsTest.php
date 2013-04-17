@@ -159,4 +159,29 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
         $this->assertCount(1, $fired);
     }
 
+    public function testChainingEventObjects()
+    {
+        $events1 = new Events();
+        $events2 = new Events();
+
+        $fired1 = array();
+        $fired2 = array();
+
+        $events1->register('*', function() use(&$fired1) {
+            $fired1 []= func_get_args();
+        });
+        $events2->register('*', function() use(&$fired2) {
+            $fired2 []= func_get_args();
+        });
+
+        $events1->register('*', $events2);
+        $events1->trigger('beholdLlamas', new \stdClass());
+
+        $this->assertCount(1, $fired1);
+        $this->assertCount(1, $fired2);
+        $this->assertEquals('beholdLlamas', $fired2[0][0]);
+    }
+
+
+
 }
