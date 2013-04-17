@@ -5,6 +5,7 @@ namespace Pheasant\Tests;
 use \Pheasant;
 use \Pheasant\DomainObject;
 use \Pheasant\Types;
+use \Pheasant\Events;
 use \Pheasant\Tests\Examples\EventTestObject;
 
 class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
@@ -123,6 +124,7 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 
         $this->pheasant->events()->register('afterInitialize', function($e, $schema) use(&$events, $ph) {
 
+            // Issue #49
             // make sure this doesn't trigger recursion
             $mapper = $ph->mapperFor($schema->className());
 
@@ -138,5 +140,23 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
         $this->assertCount(1, $events);
         $this->assertEquals('Pheasant\Tests\Examples\EventTestObject', $events[0][1]->className());
         $this->assertEquals('afterInitialize', $events[0][0]);
-     }
+    }
+
+    public function testEventCorking()
+    {
+        $fired = array();
+
+        $events = new Events();
+        $events->register('*', function() use(&$fired) {
+            $fired []= func_get_args();
+        });
+
+        $events->cork();
+        $events->trigger('beholdLlamas', new \stdClass());
+        $this->assertCount(0, $fired);
+
+        $events->uncork();
+        $this->assertCount(1, $fired);
+    }
+
 }

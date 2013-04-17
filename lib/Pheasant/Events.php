@@ -9,7 +9,9 @@ namespace Pheasant;
 class Events
 {
     private
-        $_handlers=array(),
+        $_handlers = array(),
+        $_queue = array(),
+        $_corked = false,
         $_upstream
         ;
 
@@ -30,7 +32,7 @@ class Events
     }
 
     /**
-     * Execute a closure, trigger a before_$event and after_$event
+     * Execute a closure, trigger a before{$event} and after{$event}
      * @chainable
      */
     public function wrap($event, $object, $callback)
@@ -54,15 +56,19 @@ class Events
      */
     public function trigger($event, $object)
     {
-        foreach ((array) $event as $e) {
-            $callbacks = $this->_callbacksFor($e);
+        if($this->_corked) {
+            $this->_queue []= func_get_args();
+        } else {
+            foreach ((array) $event as $e) {
+                $callbacks = $this->_callbacksFor($e);
 
-            foreach($callbacks as $callback)
-                call_user_func($callback, $e, $object);
+                foreach($callbacks as $callback)
+                    call_user_func($callback, $e, $object);
+            }
+
+            if(isset($this->_upstream))
+                $this->_upstream->trigger($event, $object);
         }
-
-        if(isset($this->_upstream))
-            $this->_upstream->trigger($event, $object);
 
         return $this;
     }
@@ -98,6 +104,31 @@ class Events
             $this->_handlers[$event] = array();
         else
             $this->_handlers = array();
+
+        return $this;
+    }
+
+    /**
+     * Prevent events from firing until uncork() is called
+     * @chainable
+     */
+    public function cork()
+    {
+        $this->_corked = true;
+        return $this;
+    }
+
+    /**
+     * Execute events that have been queued since cork() was called
+     * @chainable
+     */
+    public function uncork()
+    {
+        $this->_corked = false;
+
+        while($call = array_shift($this->_queue)) {
+            call_user_func_array(array($this,'trigger'), $call);
+        }
 
         return $this;
     }
