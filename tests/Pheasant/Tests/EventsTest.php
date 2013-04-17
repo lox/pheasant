@@ -119,8 +119,13 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
     public function testSystemWideInitializeEvent()
     {
         $events = array();
+        $ph = $this->pheasant;
 
-        $this->pheasant->events()->register('afterInitialize', function($e, $schema) use(&$events) {
+        $this->pheasant->events()->register('afterInitialize', function($e, $schema) use(&$events, $ph) {
+
+            // make sure this doesn't trigger recursion
+            $mapper = $ph->mapperFor($schema->className());
+
             $events []= func_get_args();
         });
 

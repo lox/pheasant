@@ -62,7 +62,6 @@ class DomainObject
     {
         $this->events()
             ->register('*', array($this, 'eventHandler'))
-            ->trigger('afterInitialize', $this)
             ;
     }
 

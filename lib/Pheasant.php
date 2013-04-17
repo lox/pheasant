@@ -63,8 +63,8 @@ class Pheasant
             call_user_func($initializer, $builder, $this);
             $schema = $builder->build($class);
 
-            $this->events()->trigger('afterInitialize', $schema);
             $this->_schema[$class] = $schema;
+            $this->events()->trigger('afterInitialize', $schema);
         }
 
         return $class;
