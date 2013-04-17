@@ -1,7 +1,6 @@
 <?php
 
 namespace Pheasant\Database\Mysqli;
-use \Pheasant\Database\Transaction;
 
 /**
  * A sequence pool that uses a single innodb table and row locks.
