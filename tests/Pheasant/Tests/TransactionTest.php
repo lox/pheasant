@@ -69,4 +69,43 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertEquals(count($transaction->results), 1);
         $this->assertEquals($transaction->results[0], 'blargh');
     }
+
+    public function testDeferEventsFireOnCommit()
+    {
+        $connection = \Mockery::mock('\Pheasant\Database\Mysqli\Connection');
+        $connection->shouldReceive('execute')->with('BEGIN')->once();
+        $connection->shouldReceive('execute')->with('COMMIT')->once();
+
+        $events = \Mockery::mock();
+        $events->shouldReceive('cork')->once();
+        $events->shouldReceive('uncork')->once();
+
+        $transaction = new Transaction($connection);
+        $transaction->deferEvents($events);
+        $transaction->callback(function(){
+            return 'blargh';
+        });
+
+        $transaction->execute();
+    }
+
+    public function testDeferEventsFireOnRollback()
+    {
+        $connection = \Mockery::mock('\Pheasant\Database\Mysqli\Connection');
+        $connection->shouldReceive('execute')->with('BEGIN')->once();
+        $connection->shouldReceive('execute')->with('ROLLBACK')->once();
+
+        $events = \Mockery::mock();
+        $events->shouldReceive('cork')->once()->andReturn($events);
+        $events->shouldReceive('discard')->once()->andReturn($events);
+        $events->shouldReceive('uncork')->once()->andReturn($events);
+
+        $transaction = new Transaction($connection);
+        $transaction->deferEvents($events);
+        $transaction->callback(function(){
+            throw new \Exception("Llamas :( :)");
+        });
+
+        $transaction->execute();
+    }
 }

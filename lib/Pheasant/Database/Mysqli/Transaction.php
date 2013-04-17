@@ -7,8 +7,11 @@ namespace Pheasant\Database\Mysqli;
  */
 class Transaction
 {
-    private $_connection;
-    private $_callbacks;
+    private
+        $_connection,
+        $_events
+        ;
+
     public $results;
 
     /**
@@ -17,29 +20,24 @@ class Transaction
     public function __construct($connection=null)
     {
         $this->_connection = $connection ?: \Pheasant::instance()->connection();
+        $this->_events = new \Pheasant\Events();
     }
 
     public function execute()
     {
-        if(count($this->_callbacks)==0)
-            throw new Exception("No valid callbacks provided");
-
-        $this->_connection->execute('BEGIN');
         $this->results = array();
 
         try {
-            foreach ($this->_callbacks as $array) {
-                list($callback, $arguments) = $array;
-                $this->results[] = call_user_func_array($callback, $arguments);
-            }
-
+            $this->_connection->execute('BEGIN');
+            $this->_events->trigger('startTransaction', $this->_connection);
             $this->_connection->execute('COMMIT');
-
-            return $this->results;
-        } catch (\Exception $e) {
+            $this->_events->trigger('commitTransaction', $this->_connection);
+        } catch(\Exception $e) {
             $this->_connection->execute('ROLLBACK');
-            throw $e;
+            $this->_events->trigger('rollbackTransaction', $this->_connection);
         }
+
+        return $this->results;
     }
 
     /**
@@ -48,19 +46,42 @@ class Transaction
      */
     public function callback($callback)
     {
-        $arguments = array_slice(func_get_args(),1);
-        $this->_callbacks[] = array($callback, $arguments);
+        $t = $this;
+        $args = array_slice(func_get_args(),1);
+
+        // use an event handler to dispatch to the callback
+        $this->_events->register('startTransaction', function($event, $connection) use($t, $callback, $args) {
+            $t->results []= call_user_func_array($callback, $args);
+        });
 
         return $this;
     }
 
-    public function __get($property)
+    /**
+     * Get the events object
+     * @return Events
+     */
+    public function events()
     {
-        if($property == 'results')
-
-            return $this->_results;
-        else
-            throw \InvalidArgumentException(
-                "No property called $property");
+        return $this->_events;
     }
+
+    /**
+     * Links another Events object such that events in it are corked until either commit/rollback and then uncorked
+     * @chainable
+     */
+    public function deferEvents($events)
+    {
+        $this->_events
+            ->register('startTransaction', function() use($events) {
+                $events->cork();
+            })
+            ->register('commitTransaction', function() use($events) {
+                $events->uncork();
+            })
+            ->register('rollbackTransaction', function() use($events) {
+                $events->discard()->uncork();
+            })
+            ;
+      }
 }

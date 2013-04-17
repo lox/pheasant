@@ -95,10 +95,10 @@ class Events
     }
 
     /**
-     * Clears either an event or all events
+     * Unregisters an event handler based on event, or all
      * @chainable
      */
-    public function clear($event=null)
+    public function unregister($event=null)
     {
         if(!empty($event) && $event != '*')
             $this->_handlers[$event] = array();
@@ -130,6 +130,16 @@ class Events
             call_user_func_array(array($this,'trigger'), $call);
         }
 
+        return $this;
+    }
+
+    /**
+     * Discards any events queued with cork()
+     * @chainable
+     */
+    public function discard()
+    {
+        $this->_queue = array();
         return $this;
     }
 
