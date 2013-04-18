@@ -36,41 +36,41 @@ use \Pheasant\Types;
 
 class Post extends DomainObject
 {
-	public function properties()
-	{
-		return array(
-			'postid'   => new Types\Sequence(),
-			'title'    => new Types\String(255, 'required'),
-			'subtitle' => new Types\String(255),
-			'status'   => new Types\Enum(array('closed','open')),
-			'authorid' => new Types\Integer(11),
-			);
-	}
+  public function properties()
+  {
+    return array(
+      'postid'   => new Types\Sequence(),
+      'title'    => new Types\String(255, 'required'),
+      'subtitle' => new Types\String(255),
+      'status'   => new Types\Enum(array('closed','open')),
+      'authorid' => new Types\Integer(11),
+      );
+  }
 
-	public function relationships()
-	{
-		return array(
-			'Author' => Author::hasOne('authorid')
-			);
-	}
+  public function relationships()
+  {
+    return array(
+      'Author' => Author::hasOne('authorid')
+    );
+  }
 }
 
 class Author extends DomainObject
 {
-	public function properties()
-	{
-		return array(
-			'authorid' => new Types\Sequence(),
-			'fullname' => new Types\String(255, 'required')
-			);
-	}
+  public function properties()
+  {
+    return array(
+      'authorid' => new Types\Sequence(),
+      'fullname' => new Types\String(255, 'required')
+    );
+  }
 
-	public function relationships()
-	{
-		return array(
-			'Posts' => Post::hasOne('authorid')
-			);
-	}
+  public function relationships()
+  {
+    return array(
+      'Posts' => Post::hasOne('authorid')
+    );
+  }
 }
 
 // configure database connection
@@ -108,11 +108,9 @@ $users = User::findByFirstName('frank');
 // a single user named frank
 $users = User::one('firstname = ?', 'frank');
 
-// the most recent user
-$user = User::last();
+// a user by primary key
+$user = User::byId(1);
 
-// the most recent user named either frank or bob
-$user = User::findByFirstName(array('Frank','Bob')->last();
 ```
 
 Events
@@ -149,3 +147,31 @@ Optionally, domain objects provide the following implicit hooks which can be ove
 
 - afterCreate
 - beforeUpdate, afterUpdate
+
+Transactions
+------------------------------------
+
+Transactions can be created statically:
+
+```php
+<?php
+
+Post::transaction(function() {
+  $post = new Post(array('title'=>'First Post!'));
+  $post->save();
+});
+
+```
+
+Or transactions can be invoked on an instance:
+
+```php
+<?php
+
+$post = new Post(array('title'=>'First Post!'));
+
+$post->transaction(function($obj) {
+  $obj->save();
+});
+
+```
