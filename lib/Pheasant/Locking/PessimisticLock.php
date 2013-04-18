@@ -36,7 +36,10 @@ class PessimisticLock
             ;
 
         if(!$this->_object->equals($freshObject)) {
-            throw new StaleObjectException("Object has changed in database");
+            throw new StaleObjectException(sprintf(
+                "Object is stale, keys [%s] have changed in the database",
+                implode(', ', $this->_object->diff($freshObject))
+            ));
         }
     }
 }

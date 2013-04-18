@@ -439,6 +439,28 @@ class DomainObject
         return $this->toArray() == $object->toArray();
     }
 
+    /**
+     * Returns keys that differ between the two objects
+     */
+    public function diff($object)
+    {
+        return array_keys(array_diff($this->_data, $object->_data));
+    }
+
+    /**
+     * Reloads the contents of the object
+     */
+    public function reload()
+    {
+        $fresh = \Pheasant::instance()->finderFor($this)
+            ->find($this->className(), $this->identity()->toCriteria())
+            ->one()
+            ;
+
+        $this->_data = $fresh->_data;
+        return $this;
+    }
+
     // ----------------------------------------
     // object interface
 
