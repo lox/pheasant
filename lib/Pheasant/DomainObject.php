@@ -63,7 +63,6 @@ class DomainObject
             ;
     }
 
-
     /**
      * Returns an Identity object for the domain object
      * @return Identity
@@ -209,6 +208,20 @@ class DomainObject
             $transaction->execute();
 
         return $transaction;
+    }
+
+    /**
+     * Creates a concurrency lock on the domain object, throws an exception
+     * if the object is unsaved or differs from the contents in the db
+     * @throws Locking/StaleObjectException
+     * @chainable
+     */
+    public function lock($clause=null)
+    {
+        $lock = new Locking\PessimisticLock($this, $clause);
+        $lock->acquire();
+
+        return $this;
     }
 
     // ----------------------------------------
