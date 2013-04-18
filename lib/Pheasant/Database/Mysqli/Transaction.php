@@ -42,7 +42,7 @@ class Transaction
     }
 
     /**
-     * Adds a callback
+     * Adds a callback that gets passed any extra varargs as a arguments
      * @chainable
      */
     public function callback($callback)

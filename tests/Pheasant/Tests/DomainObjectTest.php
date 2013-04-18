@@ -117,4 +117,42 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
         $horse = AnimalWithNameDefault::byId(1);
         $this->assertEquals($horse->name, 'blargh');
     }
+
+    public function testObjectTransactionAsStatic()
+    {
+        Animal::transaction(function() {
+            $animal = new Animal(array('type'=>'llama'));
+            $animal->save();
+        });
+
+        $this->assertCount(1, Animal::findByType('llama'));
+    }
+
+    public function testObjectTransactionAsNonStatic()
+    {
+        $animal = new Animal(array('type'=>'frog'));
+
+        $animal->transaction(function($animal) {
+            $animal->save();
+        });
+
+        $this->assertCount(1, Animal::findByType('frog'));
+    }
+
+    public function testObjectTransactionNotExecuting()
+    {
+        $this->assertCount(0, Animal::findByType('llama'));
+
+        $t = Animal::transaction(function() {
+            $animal = new Animal(array('type'=>'llama'));
+            $animal->save();
+        }, false);
+
+        $this->assertCount(0, Animal::findByType('llama'));
+
+        $t->execute();
+        $this->assertCount(1, Animal::findByType('llama'));
+    }
+
+
 }

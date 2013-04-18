@@ -174,6 +174,30 @@ class DomainObject
         return self::schema()->newInstance(func_get_args())->save();
     }
 
+    /**
+     * Returns the connection object for the domain object
+     * @return Connection
+    */
+    public static function connection()
+    {
+        return Pheasant::instance()->connection();
+    }
+
+    /**
+     * Creates a transaction, can be called statically
+     * @return Transaction
+    */
+    public function transaction($closure, $execute=true)
+    {
+        $transaction = self::connection()->transaction();
+        $transaction->callback($closure, isset($this) ? $this : null);
+
+        if($execute)
+            $transaction->execute();
+
+        return $transaction;
+    }
+
     // ----------------------------------------
     // template methods
 
