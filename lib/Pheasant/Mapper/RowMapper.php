@@ -31,7 +31,7 @@ class RowMapper extends AbstractMapper implements Finder
     /**
      * Returns a table instance
      */
-    private function table()
+    public function table()
     {
         if(!isset($this->_table))
             $this->_table = $this->_connection->table($this->_tableName);
