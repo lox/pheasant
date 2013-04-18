@@ -279,7 +279,7 @@ class DomainObject
      */
     public static function __callStatic($method, $params)
     {
-        if (preg_match('/^(find|all|last$|byId$|one)/',$method)) {
+        if (preg_match('/^(find|all$|byId$|one)/',$method)) {
             return Finder\Wizard::fromClass(get_called_class())->dispatch($method, $params);
         } elseif (preg_match('/^(hasOne|hasMany|belongsTo)$/',$method)) {
             $refl = new \ReflectionClass('\Pheasant\\Relationships\\'.ucfirst($method));

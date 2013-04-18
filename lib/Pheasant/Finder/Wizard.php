@@ -40,17 +40,6 @@ class Wizard
         // find() and all() are aliases
         if (($method == 'find' && empty($params)) || $method == 'all') {
             return $this->find();
-        } elseif ($method == 'last' && empty($params)) {
-            $where = array();
-            $object = new $this->_class();
-            foreach ($object->identity() as $key=>$property) {
-                $sequence = sprintf("%s_%s_seq", $object->tableName(), $key);
-                $sequencePool = \Pheasant::instance()->connection()->sequencePool();
-                $id = $sequencePool->current($sequence);
-                $where[] = "`$key` = $id";
-            };
-
-            return $this->_finder->find($this->_class, new Criteria(implode(' AND ', $where)))->one();
         }
 
         // handle find or one with sql params
