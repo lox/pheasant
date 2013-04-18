@@ -80,11 +80,14 @@ class ResultIterator implements \SeekableIterator, \Countable
     }
 
     /**
-     * Seeks to a particular position in the result
+     * Seeks to a particular position in the result, offset is from 0.
      */
     public function seek($position)
     {
         if ($this->_position !== $position) {
+            if($position > ($this->_result->num_rows-1))
+                throw new \OutOfBoundsException("Unable to seek to offset $position");
+
             $this->_result->data_seek($this->_position = $position);
             $this->_currentRow = $this->_fetch();
             $this->_position = $position;

@@ -104,7 +104,7 @@ class QueryIterator implements \SeekableIterator, \Countable
     }
 
     /**
-     * Seeks to a particular position in the result
+     * Seeks to a particular position in the result. Offset is from 0.
      */
     public function seek($position)
     {

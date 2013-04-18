@@ -76,4 +76,16 @@ class CollectionTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertCount(1, $results);
         $this->assertEquals('Orangutan', $results->one()->name);
     }
+
+    public function testFirst()
+    {
+        $llama = Animal::find()->first();
+        $this->assertEquals('llama', $llama->type);
+    }
+
+    public function testLast()
+    {
+        $frog = Animal::find()->last();
+        $this->assertEquals('Red Frog', $frog->name);
+    }
 }

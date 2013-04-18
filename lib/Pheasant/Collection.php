@@ -42,7 +42,12 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 
     public function last()
     {
-        return $this->offsetGet($this->count());
+        return $this->offsetGet($this->count()-1);
+    }
+
+    public function first()
+    {
+        return $this->offsetGet(0);
     }
 
     public function toArray()
@@ -161,7 +166,6 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     public function offsetGet($offset)
     {
         $this->_iterator->seek($offset);
-
         return $this->_iterator->current();
     }
 
