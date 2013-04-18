@@ -11,7 +11,7 @@ class DomainObject
 {
     private $_data = array();
     private $_changed = array();
-    private $_saved=false;
+    private $_saved = false;
     private $_events;
 
     /**
@@ -27,10 +27,7 @@ class DomainObject
         $this->_data = $pheasant->schema($this)->defaults();
 
         // call user-defined constructor
-        $constructor = array($this,
-            method_exists($this, 'construct') ? 'construct' : '_defaultConstruct');
-
-        call_user_func_array($constructor, func_get_args());
+        call_user_func_array(array($this,'construct'), func_get_args());
     }
 
     /**
@@ -43,48 +40,16 @@ class DomainObject
         $class = get_called_class();
         $instance = $class::fromArray(array());
 
-        $pheasant->register($class, method_exists($class, 'mapper')
-                ? $instance->mapper()
-                : new Pheasant\Mapper\RowMapper($instance->tableName())
-                );
+        // register mappers and finders
+        $pheasant->register($class, $instance->mapper());
 
-        if(method_exists($class, 'properties'))
-            $builder->properties($instance->properties());
-
-        if(method_exists($class, 'relationships'))
-            $builder->relationships($instance->relationships());
-    }
-
-    /**
-     * Sets up the default internal event handlers
-     */
-    protected function _registerDefaultEventHandlers()
-    {
-        $this->events()
-            ->register('*', array($this, 'eventHandler'))
+        $builder
+            ->properties($instance->properties())
+            ->relationships($instance->relationships())
             ;
     }
 
-    /**
-     * Used by the default initialize() method, returns the table name to use
-     * @return string
-     */
-    public function tableName()
-    {
-        $tokens = explode('\\', get_class($this));
 
-        return strtolower(array_pop($tokens));
-    }
-
-    /**
-     * Called if construct() doesn't exist
-     * @return void
-     */
-    protected function _defaultConstruct()
-    {
-        foreach(func_get_args() as $arg)
-            if(is_array($arg)) $this->load($arg);
-    }
 
     /**
      * Returns an Identity object for the domain object
@@ -207,6 +172,64 @@ class DomainObject
     public static function create()
     {
         return self::schema()->newInstance(func_get_args())->save();
+    }
+
+    // ----------------------------------------
+    // template methods
+
+    /**
+     * Template method for a constructor
+     */
+    protected function construct()
+    {
+        foreach(func_get_args() as $arg)
+            if(is_array($arg)) $this->load($arg);
+    }
+
+    /**
+     * Returns an array of Property objects
+     */
+    protected function properties()
+    {
+        return array();
+    }
+
+    /**
+     * Returns an array of Relationship objects
+     */
+    protected function relationships()
+    {
+        return array();
+    }
+
+    /**
+     * Returns the mapper for the object
+     * @return Mapper
+     */
+    protected function mapper()
+    {
+        return new Pheasant\Mapper\RowMapper(
+            $this->tableName(), self::connection());
+    }
+
+    /**
+     * Used by the default initialize() method, returns the table name to use
+     * @return string
+     */
+    protected function tableName()
+    {
+        $tokens = explode('\\', get_class($this));
+        return strtolower(array_pop($tokens));
+    }
+
+    /**
+     * Sets up the default internal event handlers
+     */
+    protected function _registerDefaultEventHandlers()
+    {
+        $this->events()
+            ->register('*', array($this, 'eventHandler'))
+            ;
     }
 
     // ----------------------------------------
