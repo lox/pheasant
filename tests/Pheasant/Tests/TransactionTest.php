@@ -32,10 +32,8 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
             throw new \Exception('Eeeek!');
         });
 
-        try {
-            $transaction->execute();
-            $this->fail("exception should have been thrown");
-        } catch (\Exception $e) {}
+        $this->setExpectedException('\Exception');
+        $transaction->execute();
     }
 
     public function testCallbacksWithConnectionCalls()
@@ -106,6 +104,7 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
             throw new \Exception("Llamas :( :)");
         });
 
+        $this->setExpectedException('\Exception');
         $transaction->execute();
     }
 }

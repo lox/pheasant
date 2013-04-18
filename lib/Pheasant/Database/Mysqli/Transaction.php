@@ -35,6 +35,7 @@ class Transaction
         } catch(\Exception $e) {
             $this->_connection->execute('ROLLBACK');
             $this->_events->trigger('rollbackTransaction', $this->_connection);
+            throw $e;
         }
 
         return $this->results;
