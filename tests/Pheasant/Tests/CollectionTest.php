@@ -22,6 +22,12 @@ class CollectionTest extends \Pheasant\Tests\MysqlTestCase
         ));
     }
 
+    public function testOne()
+    {
+        $this->setExpectedException('Pheasant\ConstraintException');
+        $results = Animal::find()->one();
+    }
+
     public function testLimit()
     {
         $results = Animal::find()->limit(2)->toArray();

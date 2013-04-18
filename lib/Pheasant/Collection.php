@@ -35,7 +35,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     public function one()
     {
         if($this->count() != 1)
-            throw new Exception("Expected only 1 element, found ".$this->count());
+            throw new ConstraintException("Expected only 1 element, found ".$this->count());
 
         return $this->offsetGet(0);
     }
