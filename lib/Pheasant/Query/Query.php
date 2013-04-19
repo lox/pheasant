@@ -14,6 +14,7 @@ class Query implements \IteratorAggregate, \Countable
     private $_from=array();
     private $_joins=array();
     private $_limit=null;
+    private $_lock=null;
     private $_where;
     private $_group;
     private $_order;
@@ -40,6 +41,17 @@ class Query implements \IteratorAggregate, \Countable
 
         return $this;
     }
+
+    /**
+     * Adds a locking clause after the SELECT, defaults to FOR UPDATE
+     * @chainable
+     */
+    public function lock($clause='')
+    {
+        $this->_lock = $clause ?: 'FOR UPDATE';
+        return $this;
+    }
+
 
     /**
      * Sets the FROM clause, either a single table, an array or varargs.
@@ -166,7 +178,8 @@ class Query implements \IteratorAggregate, \Countable
             $this->_clause('WHERE', $this->_where),
             $this->_clause('GROUP BY', $this->_group),
             $this->_clause('ORDER BY', $this->_order),
-            $this->_limit
+            $this->_limit,
+            $this->_lock
             )));
     }
 

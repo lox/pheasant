@@ -109,4 +109,32 @@ class QueryTest extends \Pheasant\Tests\MysqlTestCase
             'SELECT userid FROM user ORDER BY userid',
             $query->toSql());
     }
+
+    public function testAddingDefaultLock()
+    {
+        $query = new Query();
+        $query
+            ->select('userid')
+            ->from('user')
+            ->lock()
+            ;
+
+        $this->assertEquals(
+            'SELECT userid FROM user FOR UPDATE',
+            $query->toSql());
+    }
+
+    public function testAddingLockWithClause()
+    {
+        $query = new Query();
+        $query
+            ->select('userid')
+            ->from('user')
+            ->lock('LOCK IN SHARE MODE')
+            ;
+
+        $this->assertEquals(
+            'SELECT userid FROM user LOCK IN SHARE MODE',
+            $query->toSql());
+    }
 }
