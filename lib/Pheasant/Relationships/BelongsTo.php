@@ -14,10 +14,11 @@ class BelongsTo extends HasOne
      */
     public function get($object, $key)
     {
-        $query = $this->query(
-            "{$this->foreign}=?", $object->get($this->local));
+        if(($localValue = $object->{$this->local}) === null)
+            return null;
 
-        return $this->hydrate($query->execute()->row());
+        return $this->hydrate($this->query("{$this->foreign}=?", $localValue)
+            ->execute()->row());
     }
 
     /* (non-phpdoc)

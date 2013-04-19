@@ -94,6 +94,14 @@ class RelationshipTestCase extends \Pheasant\Tests\MysqlTestCase
         $this->assertCount(1, $spiderman->Powers->filter('description LIKE ?', 'Super-human%')->toArray());
     }
 
+    public function testEmptyRelationships()
+    {
+        $hero = new Hero(array('alias'=>'Spider Man'));
+        $hero->save();
+
+        $this->assertNull($hero->SecretIdentity);
+    }
+
     private function _createHero($alias, $identity, $powers=array())
     {
         $hero = new Hero(array('alias'=>$alias));

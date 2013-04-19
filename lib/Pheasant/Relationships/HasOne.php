@@ -22,8 +22,11 @@ class HasOne extends RelationshipType
      */
     public function get($object, $key)
     {
+        if(($localValue = $object->{$this->local}) === null)
+            return null;
+
         $result = $this
-            ->query("{$this->foreign}=?", $object->{$this->local})
+            ->query("{$this->foreign}=?", $localValue)
             ->execute();
             ;
 
