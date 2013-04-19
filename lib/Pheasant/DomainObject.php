@@ -63,7 +63,6 @@ class DomainObject
             ;
     }
 
-
     /**
      * Returns an Identity object for the domain object
      * @return Identity
@@ -209,6 +208,20 @@ class DomainObject
             $transaction->execute();
 
         return $transaction;
+    }
+
+    /**
+     * Creates a concurrency lock on the domain object, throws an exception
+     * if the object is unsaved or differs from the contents in the db
+     * @throws Locking/StaleObjectException
+     * @chainable
+     */
+    public function lock($clause=null)
+    {
+        $lock = new Locking\PessimisticLock($this, $clause);
+        $lock->acquire();
+
+        return $this;
     }
 
     // ----------------------------------------
@@ -424,6 +437,28 @@ class DomainObject
     public function equals($object)
     {
         return $this->toArray() == $object->toArray();
+    }
+
+    /**
+     * Returns keys that differ between the two objects
+     */
+    public function diff($object)
+    {
+        return array_keys(array_diff($this->_data, $object->_data));
+    }
+
+    /**
+     * Reloads the contents of the object
+     */
+    public function reload()
+    {
+        $fresh = \Pheasant::instance()->finderFor($this)
+            ->find($this->className(), $this->identity()->toCriteria())
+            ->one()
+            ;
+
+        $this->_data = $fresh->_data;
+        return $this;
     }
 
     // ----------------------------------------

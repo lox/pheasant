@@ -135,6 +135,15 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     }
 
     /**
+     * Adds a locking clause to the query
+     */
+    public function lock($clause=null)
+    {
+        $this->_queryForWrite()->lock($clause);
+        return $this;
+    }
+
+    /**
      * Returns an iterator
      */
     public function getIterator()
