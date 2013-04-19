@@ -21,7 +21,7 @@ class Post extends DomainObject
             ));
     }
 
-    public function construct($title)
+    protected function construct($title)
     {
         $this->title = $title;
     }

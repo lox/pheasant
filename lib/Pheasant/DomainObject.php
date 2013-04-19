@@ -27,7 +27,21 @@ class DomainObject
         $this->_data = $pheasant->schema($this)->defaults();
 
         // call user-defined constructor
-        call_user_func_array(array($this,'construct'), func_get_args());
+        $constructor = method_exists($this,'construct')
+            ? 'construct'
+            : '_defaultConstruct'
+            ;
+
+        call_user_func_array(array($this,$constructor), func_get_args());
+    }
+
+    /**
+     * Default method called without a constructor
+     */
+    protected function _defaultConstruct()
+    {
+        foreach(func_get_args() as $arg)
+            if(is_array($arg)) $this->load($arg);
     }
 
     /**
@@ -48,7 +62,6 @@ class DomainObject
             ->relationships($instance->relationships())
             ;
     }
-
 
 
     /**
@@ -156,7 +169,7 @@ class DomainObject
     }
 
     /**
-     * Returns the Schema registered for this class. Can be called non-statically.
+     * Returns the Schema registered for this class.
      * @return Schema
     */
     public static function schema()
@@ -184,13 +197,13 @@ class DomainObject
     }
 
     /**
-     * Creates a transaction, can be called statically
+     * Creates a transaction, passes the instance
      * @return Transaction
     */
     public function transaction($closure, $execute=true)
     {
         $transaction = self::connection()->transaction();
-        $transaction->callback($closure, isset($this) ? $this : null);
+        $transaction->callback($closure, $this);
 
         if($execute)
             $transaction->execute();
@@ -200,15 +213,6 @@ class DomainObject
 
     // ----------------------------------------
     // template methods
-
-    /**
-     * Template method for a constructor
-     */
-    protected function construct()
-    {
-        foreach(func_get_args() as $arg)
-            if(is_array($arg)) $this->load($arg);
-    }
 
     /**
      * Returns an array of Property objects

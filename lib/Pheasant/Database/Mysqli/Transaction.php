@@ -84,5 +84,19 @@ class Transaction
                 $events->discard()->uncork();
             })
             ;
-      }
+    }
+    /**
+     * Creates a transaction and optionally execute a transaction
+     * @return Transaction
+    */
+    public static function create($closure, $execute=true)
+    {
+        $transaction = new self();
+        $transaction->callback($closure);
+
+        if($execute)
+            $transaction->execute();
+
+        return $transaction;
+    }
 }

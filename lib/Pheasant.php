@@ -181,4 +181,24 @@ class Pheasant
     {
         return self::$_instance = $instance;
     }
+
+    // ----------------------------------------
+    // static helpers
+
+    /**
+     * Creates a transaction, optionally executes
+     * @return Transaction
+    */
+    public static function transaction($closure, $execute=true)
+    {
+        $transaction = self::instance()->connection()->transaction();
+        $transaction->callback($closure);
+
+        if($execute)
+            $transaction->execute();
+
+        return $transaction;
+    }
+
+
 }

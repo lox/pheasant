@@ -151,12 +151,13 @@ Optionally, domain objects provide the following implicit hooks which can be ove
 Transactions
 ------------------------------------
 
-Transactions can be created statically:
+Transactions can be created globally:
 
 ```php
 <?php
 
-Post::transaction(function() {
+
+\Pheasant::transaction(function() {
   $post = new Post(array('title'=>'First Post!'));
   $post->save();
 });
