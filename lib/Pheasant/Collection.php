@@ -145,6 +145,33 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     }
 
     /**
+     * Applies a callback to all objects in Collection, saves them if
+     * the object has changed
+     * @chainable
+     */
+    public function save($callback)
+    {
+        foreach($this as $object) {
+            call_user_func($callback, $object);
+            if($object->changes()) $object->save();
+        }
+        return $this;
+    }
+
+    /**
+     * Delete all objects in a collection
+     * @chainable
+     */
+    public function delete()
+    {
+        // TODO: optimize this down into a single SQL call
+        foreach($this as $object) {
+            $object->delete();
+        }
+        return $this;
+    }
+
+    /**
      * Returns an iterator
      */
     public function getIterator()

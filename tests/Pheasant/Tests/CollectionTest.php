@@ -88,4 +88,35 @@ class CollectionTest extends \Pheasant\Tests\MysqlTestCase
         $frog = Animal::find()->last();
         $this->assertEquals('Red Frog', $frog->name);
     }
+
+    public function testIteratingAndSaving()
+    {
+        $animals = Animal::all()->filter('type="frog"');
+
+        foreach($animals as $animal) {
+            $animal->type = 'Test';
+            $animal->save();
+        }
+
+        $this->assertCount(2, Animal::findByType('Test'));
+    }
+
+    public function testSaving()
+    {
+        Animal::all()->save(function($animal) {
+            if($animal->type == 'frog') {
+                $animal->type = 'tadpole';
+            }
+        });
+
+        $this->assertCount(2, Animal::findByType('tadpole'));
+    }
+
+    public function testDelete()
+    {
+        Animal::findByType('frog')->delete();
+
+        $this->assertCount(1, Animal::all());
+    }
+
 }
