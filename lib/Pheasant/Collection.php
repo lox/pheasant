@@ -29,7 +29,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     }
 
     /**
-     * Return one and one only object from a collection, throws an exception
+     * Return one and one only object from a collection, throws a ConstraintException
      * if there is zero of >1 objects
      */
     public function one()
@@ -136,6 +136,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 
     /**
      * Adds a locking clause to the query
+     * @chainable
      */
     public function lock($clause=null)
     {

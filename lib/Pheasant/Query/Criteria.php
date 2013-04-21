@@ -52,6 +52,14 @@ class Criteria
         return $braces ? "({$this->_sql})" : $this->_sql;
     }
 
+    /**
+     * Returns whether the criteria is empty
+     */
+    public function isEmpty()
+    {
+        return $this->toSql(false) == '';
+    }
+
     public function __toString()
     {
         return $this->toSql();

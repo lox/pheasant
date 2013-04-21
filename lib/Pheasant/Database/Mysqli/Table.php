@@ -129,16 +129,17 @@ class Table
     /**
      * Updates a row into the table
      */
-    public function update($data, Criteria $where)
+    public function update($data, Criteria $where, $limit=false)
     {
         if(empty($data))
             throw new Exception("Can't insert an empty row");
 
         return $this->_connection->execute(sprintf(
-            'UPDATE %s SET %s WHERE %s',
+            'UPDATE %s SET %s WHERE %s%s',
             $this->_name->quoted(),
             $this->_buildSet($data),
-            $where
+            $where,
+            $limit ? ' LIMIT '.intval($limit) : ''
             ), array_values($data)
         );
     }

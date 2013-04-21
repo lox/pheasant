@@ -84,8 +84,15 @@ class RowMapper extends AbstractMapper implements Finder
     protected function update($object, $changes)
     {
         $schema = $object->schema();
+        $criteria = $object->identity()->toCriteria();
+
+        if($criteria->isEmpty())
+            throw new \InvalidArgumentException("Criteria is empty, refusing to update");
+
         $result = $this->table()->update($schema->marshal($changes),
-            $object->identity()->toCriteria());
+            $criteria,
+            $limit = 1
+            );
 
         // check for auto-increment
         foreach ($object->identity() as $key=>$property) {
