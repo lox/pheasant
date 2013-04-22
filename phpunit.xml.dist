@@ -17,7 +17,7 @@
     <whitelist>
       <directory>./</directory>
       <exclude>
-        <directory>./benchmark</directory>
+        <directory>./benchmarks</directory>
         <directory>./tests</directory>
         <directory>./vendor</directory>
       </exclude>
