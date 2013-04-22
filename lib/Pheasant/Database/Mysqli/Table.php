@@ -13,12 +13,28 @@ class Table
 
     /**
      * Constructor
-     * @param $name string the name of the table either db.name or name
+     * @param $name TableName
      */
     public function __construct($name, $connection)
     {
-        $this->_name = $name;
+        $this->_name = ($name instanceof TableName) ? $name : new TableName($name);
         $this->_connection = $connection;
+    }
+
+    /**
+     * Returns the name of the table as a TableName
+     */
+    public function name()
+    {
+        return $this->_name;
+    }
+
+    /**
+     * Return the string name of the table
+     */
+    public function __toString()
+    {
+        return (string) $this->name();
     }
 
     /**
@@ -58,6 +74,17 @@ class Table
     public function drop()
     {
         $this->_connection->execute(sprintf('DROP TABLE %s', $this->_name->quoted()));
+
+        return $this;
+    }
+
+    /**
+     * Drops the table if it exists
+     * @chainable
+     */
+    public function dropIfExists()
+    {
+        $this->_connection->execute(sprintf('DROP TABLE IF EXISTS %s', $this->_name->quoted()));
 
         return $this;
     }

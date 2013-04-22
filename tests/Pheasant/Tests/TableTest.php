@@ -127,6 +127,12 @@ class TableTest extends \Pheasant\Tests\MysqlTestCase
             iterator_to_array($this->connection()->execute("select firstname from user")->column()),
             array('Llama', 'Alpaca')
         );
+    }
 
+    public function testName()
+    {
+        $this->assertEquals('user', $this->table->name()->table);
+        $this->assertEquals('pheasanttest.user', (string) $this->table->name());
+        $this->assertEquals('pheasanttest.user', (string) $this->table);
     }
 }
