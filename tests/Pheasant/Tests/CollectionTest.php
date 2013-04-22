@@ -22,6 +22,12 @@ class CollectionTest extends \Pheasant\Tests\MysqlTestCase
         ));
     }
 
+    public function testIteratingEmpty()
+    {
+        foreach(Animal::find('type=?','mongoose') as $animal) {
+        }
+    }
+
     public function testOne()
     {
         $this->setExpectedException('Pheasant\ConstraintException');

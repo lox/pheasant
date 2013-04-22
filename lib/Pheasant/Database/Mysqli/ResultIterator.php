@@ -85,7 +85,7 @@ class ResultIterator implements \SeekableIterator, \Countable
     public function seek($position)
     {
         if ($this->_position !== $position) {
-            if($position > ($this->_result->num_rows-1))
+            if(($count = $this->_result->num_rows) && ($position > ($count-1)))
                 throw new \OutOfBoundsException("Unable to seek to offset $position");
 
             $this->_result->data_seek($this->_position = $position);
