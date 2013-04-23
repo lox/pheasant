@@ -57,9 +57,14 @@ class Schema
      */
     public function primary()
     {
-        return array_filter($this->_props, function($property) {
+        $columns = array_filter($this->_props, function($property) {
             return $property->type->options()->primary;
         });
+
+        if(empty($columns))
+            throw new Exception("No primary key defined for {$this->_class}");
+
+        return $columns;
     }
 
     /**

@@ -11,7 +11,7 @@ class UserPref extends DomainObject
     public function properties()
     {
         return array(
-            'userid' => new Types\Integer(),
+            'userid' => new Types\Integer(13, 'primary'),
             'pref' => new Types\String(),
             'value' => new Types\String(),
             );
