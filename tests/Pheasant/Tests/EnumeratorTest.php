@@ -11,7 +11,7 @@ class EnumeratorTest extends \Pheasant\Tests\MysqlTestCase
 
     public function testEnumerating()
     {
-        $dir = __DIR__.'/examples';
+        $dir = __DIR__.'/Examples';
         $files = array_map(function($f) { return substr(basename($f),0,-4); },
             glob($dir.'/*.php'));
 
