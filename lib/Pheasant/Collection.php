@@ -20,7 +20,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function __construct($class, $query, $add=false)
     {
-        $this->class = $class;
+        $this->_class = $class;
         $this->_query = $query;
         $this->_add = $add;
         $this->_schema = $schema = $class::schema();
@@ -96,7 +96,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
             } elseif (count($key[0]) === 2) {
                 $domainObject = $key[0][0];
 
-                foreach((new $this->class)->relationships() as $name => $class) {
+                foreach((new $this->_class)->relationships() as $name => $class) {
                     if($name === $domainObject) {
                         $table = (new $class)->tableName();
                         $column = $key[0][1];
