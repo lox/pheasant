@@ -20,6 +20,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function __construct($class, $query, $add=false)
     {
+        $this->_class = $class;
         $this->_query = $query;
         $this->_add = $add;
         $this->_schema = $schema = $class::schema();
