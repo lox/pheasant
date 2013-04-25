@@ -20,7 +20,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function __construct($class, $query, $add=false)
     {
-        $this->_class = $class;
+        $this->class = $class;
         $this->_query = $query;
         $this->_add = $add;
         $this->_schema = $schema = $class::schema();
@@ -101,6 +101,10 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
                         $table = (new $class)->tableName();
                         $column = $key[0][1];
                     }
+                }
+
+                if(!isset($table) || !isset($column)) {
+                    throw new Exception("{$domainObject} is not related.");
                 }
             }
 
