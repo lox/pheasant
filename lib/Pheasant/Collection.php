@@ -67,12 +67,47 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     }
 
     /**
-     * Orders the collection
+     * Adds a order by clause to the collection
      * @chainable
      */
-    public function order($sql, $params=array())
+    public function orderBy($ordering)
     {
-        $this->_queryForWrite()->orderBy($sql, $params);
+        if(!is_array($ordering)) {
+            $ordering = array($ordering);
+        }
+
+        foreach($ordering as $key) {
+            $key = explode(' ', $key);
+
+            // try to figure out sorting, if not set default to ASC.
+            if(count($key) === 1) {
+                $direction = 'ASC';
+            } else {
+                $direction = $key[1];
+            }
+
+            $key[0] = explode('.', $key[0]);
+
+            // try to figure out table.colname, if table is not set default to tableName().
+            if(count($key[0]) === 1) {
+                $table = (new $this->_class)->tableName();
+                $column = $key[0][0];
+            } elseif (count($key[0]) === 2) {
+                $domainObject = $key[0][0];
+
+                foreach((new $this->class)->relationships() as $name => $class) {
+                    if($name === $domainObject) {
+                        $table = (new $class)->tableName();
+                        $column = $key[0][1];
+                    }
+                }
+            }
+
+            if($this->_readonly)
+                throw new Exception("Collection is read-only during iteration");
+
+            $this->_query->orderBy("`{$table}`.`{$column}` {$direction}");
+        }
 
         return $this;
     }
