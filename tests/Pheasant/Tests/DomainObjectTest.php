@@ -14,7 +14,8 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
 
         $migrator = new \Pheasant\Migrate\Migrator();
         $migrator
-            ->create('animal', Animal::schema())
+            ->destroy(Animal::schema())
+            ->initialize(Animal::schema())
             ;
     }
 
