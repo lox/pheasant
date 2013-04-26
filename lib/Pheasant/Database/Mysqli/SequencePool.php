@@ -66,7 +66,7 @@ class SequencePool
             ->transaction(array($this,'_nextSequence'), strtoupper($sequence))
             ->execute();
 
-        return $results[0];
+        return (int)$results[0];
     }
 
     /**
@@ -77,7 +77,7 @@ class SequencePool
         $result = $this->_connection->execute(
             "SELECT id FROM sequences WHERE name=?", $sequence);
 
-        return $result[0]['id'] - 1;
+        return (int)$result[0]['id'] - 1;
     }
 
     /**
