@@ -158,6 +158,36 @@ class Schema
         return $refl->newInstanceArgs($args);
     }
 
+    /**
+     * Check if two objects have equal values as determined by their types
+     */
+    public function equals($o1, $o2)
+    {
+        // TODO: handle objects that don't match the schema
+        foreach($this->_props as $key=>$prop) {
+            if(!$prop->type->equals($o1->get($key), $o2->get($key)))
+                return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns the keys that differ from the second object to the first by their types
+     */
+    public function diff($o1, $o2)
+    {
+        $diff = array();
+
+        foreach($this->_props as $key=>$prop) {
+            if(!$prop->type->equals($o1->get($key), $o2->get($key)))
+                $diff []= $key;
+        }
+
+        return $diff;
+    }
+
+
     // ------------------------------------
     // route primitives to properties and relationships
 

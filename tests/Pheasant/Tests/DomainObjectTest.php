@@ -145,33 +145,6 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertCount(1, Animal::findByType('llama'));
     }
 
-    public function testDiff()
-    {
-        $animals = Animal::import(array(
-            array('type'=>'Hippo'),
-            array('type'=>'Cat'),
-        ));
-
-        $this->assertEquals(array('id', 'type'), $animals[0]->diff($animals[1]));
-
-        $alpaca = clone $animals[0];
-        $alpaca->type = 'Alpaca';
-
-        $this->assertEquals(array('type'), $animals[0]->diff($alpaca));
-    }
-
-    public function testDiffWithObjects()
-    {
-        $animals = Animal::import(array(
-            array('type'=>'Hippo'),
-            array('type'=>'Cat'),
-        ));
-
-        $animals[1]->type = new \DateTime();
-
-        $this->assertEquals(array('id', 'type'), $animals[0]->diff($animals[1]));
-    }
-
     public function testReloadWithoutClosure()
     {
         $llama = Animal::create(array('type'=>'llama'));

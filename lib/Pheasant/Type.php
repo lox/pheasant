@@ -20,6 +20,12 @@ interface Type
     public function marshal($value);
 
     /**
+     * Test if two unmarshalled values are equal
+     * @return boolean
+     */
+    public function equals($value1, $value2);
+
+    /**
      * Gets the sql for defining the column
      * @return string
      */
