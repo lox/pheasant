@@ -436,7 +436,7 @@ class DomainObject
      */
     public function equals($object)
     {
-        return $this->toArray() == $object->toArray();
+        return $this->schema()->equals($this, $object);
     }
 
     /**
@@ -444,14 +444,7 @@ class DomainObject
      */
     public function diff($object)
     {
-        $diff = array();
-
-        foreach($this->_data as $key=>$value) {
-            if(!array_key_exists($key, $object->_data) || $value !== $object->_data[$key])
-                $diff []= $key;
-        }
-
-        return $diff;
+        return $this->schema()->diff($this, $object);
     }
 
     /**
