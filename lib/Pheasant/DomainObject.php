@@ -444,7 +444,14 @@ class DomainObject
      */
     public function diff($object)
     {
-        return array_keys(array_diff($this->_data, $object->_data));
+        $diff = array();
+
+        foreach($this->_data as $key=>$value) {
+            if(!array_key_exists($key, $object->_data) || $value !== $object->_data[$key])
+                $diff []= $key;
+        }
+
+        return $diff;
     }
 
     /**
