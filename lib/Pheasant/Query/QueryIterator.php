@@ -116,7 +116,7 @@ class QueryIterator implements \SeekableIterator, \Countable
      */
     public function count()
     {
-        return $this->_query->count();
+        return $this->_resultSet()->count();
     }
 
     /**
