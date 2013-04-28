@@ -32,4 +32,24 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals("pheasanttest", $this->conn->selectedDatabase());
     }
+
+    public function testSelectDatabase()
+    {
+        $dsn = new Dsn('mysql://root@localhost?charset=utf8');
+        $conn = new Mysqli\Connection($dsn);
+
+        $this->assertNull($conn->selectedDatabase());
+
+        $conn->selectDatabase('pheasanttest');
+        $this->assertEquals('pheasanttest', $conn->selectedDatabase());
+    }
+
+    public function testSelectNonexistantDatabaseFails()
+    {
+        $dsn = new Dsn('mysql://root@localhost?charset=utf8');
+        $conn = new Mysqli\Connection($dsn);
+
+        $this->setExpectedException('\Pheasant\Database\Mysqli\Exception');
+        $conn->selectDatabase('llamassddfasdfsdfsdf');
+    }
 }
