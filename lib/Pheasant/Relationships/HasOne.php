@@ -9,12 +9,15 @@ use \Pheasant\PropertyReference;
  */
 class HasOne extends RelationshipType
 {
+    private $_allowEmpty;
+
     /**
      * Constructor
      */
-    public function __construct($class, $local, $foreign=null)
+    public function __construct($class, $local, $foreign=null, $allowEmpty=false)
     {
         parent::__construct($class, $local, $foreign);
+        $this->_allowEmpty = $allowEmpty;
     }
 
     /* (non-phpdoc)
@@ -30,9 +33,13 @@ class HasOne extends RelationshipType
             ->execute();
             ;
 
-        // TODO: is this the correct behaviour?
-        if(!count($result))
-            throw new \Pheasant\Exception("Failed to find a $key (via $this->foreign)");
+        if(!count($result)) {
+            if($this->_allowEmpty) {
+                return null;
+            } else {
+                throw new \Pheasant\Exception("Failed to find a $key (via $this->foreign)");
+            }
+        }
 
         return $this->hydrate($result->row());
     }
