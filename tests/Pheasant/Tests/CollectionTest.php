@@ -2,6 +2,8 @@
 
 namespace Pheasant\Tests;
 
+use \Pheasant\Collection;
+use \Pheasant\Query\Query;
 use \Pheasant\Tests\Examples\Animal;
 
 class CollectionTest extends \Pheasant\Tests\MysqlTestCase

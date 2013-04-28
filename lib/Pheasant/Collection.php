@@ -12,6 +12,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     private $_add=false;
     private $_readonly=false;
     private $_schema;
+    private $_count;
 
     /**
      * @param $class string the classname to hydrate
@@ -34,10 +35,13 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function one()
     {
-        if($this->count() != 1)
-            throw new ConstraintException("Expected only 1 element, found ".$this->count());
+        $object = $this->offsetGet(0);
 
-        return $this->offsetGet(0);
+        // execute after the query so we save a query
+        if(($count = $this->count()) != 1)
+            throw new ConstraintException("Expected only 1 element, found $count");
+
+        return $object;
     }
 
     public function last()
@@ -93,7 +97,10 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function count()
     {
-        return $this->_iterator->count();
+        if(!isset($this->_count))
+            $this->_count = $this->_iterator->count();
+
+        return $this->_count;
     }
 
     /**

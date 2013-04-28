@@ -194,7 +194,7 @@ class Query implements \IteratorAggregate, \Countable
      */
     public function execute()
     {
-        return $this->_connection->execute($this->toSql());
+        return $this->_resultset = $this->_connection->execute($this->toSql());
     }
 
     /* (non-phpdoc)
@@ -210,7 +210,7 @@ class Query implements \IteratorAggregate, \Countable
      */
     public function __call($method, $params)
     {
-        if(!in_array($method, array('row', 'scalar', 'column', 'count')))
+        if(!in_array($method, array('row', 'scalar', 'column')))
             throw new \BadMethodCallException("$method not implemented on Query or ResultSet");
 
         return call_user_func_array(array($this->execute(), $method), $params);
@@ -254,12 +254,12 @@ class Query implements \IteratorAggregate, \Countable
 
     public function count()
     {
-        // if there is a limit or a groupBy, fall back to row count
-        if (!empty($this->_limit)) {
+        if(isset($this->_resultset)) {
+            return $this->_resultset->count();
+        } else if(isset($this->_limit)) {
             return $this->execute()->count();
         } else {
             $query = clone $this;
-
             return $query->select("count(*) count")->execute()->scalar();
         }
     }
