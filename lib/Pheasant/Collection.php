@@ -46,11 +46,19 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 
     public function last()
     {
-        return $this->offsetGet($this->count()-1);
+        $last = $this->count()-1;
+
+        if(!$this->offsetExists($last))
+            throw new ConstraintException("No last element exist");
+
+        return $this->offsetGet($last);
     }
 
     public function first()
     {
+        if(!$this->offsetExists(0))
+            throw new ConstraintException("No first element exist");
+
         return $this->offsetGet(0);
     }
 
