@@ -45,13 +45,13 @@ class DomainObjectSequenceTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertEquals(1, $found->personid);
     }
 
-    // FIXME: is this desired behaviour?
     public function testSequenceFaileWhenManuallySet()
     {
         $person = new Person();
         $person->personid = 24;
         $person->save();
 
-        $this->assertEquals(24, $person->personid);
+        // FIXME: is this desired behaviour?
+        $this->assertEquals(1, $person->personid);
     }
 }
