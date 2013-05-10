@@ -15,7 +15,6 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
         parent::setUp();
 
         $this->mapper = \Mockery::mock('\Pheasant\Mapper\Mapper');
-
     }
 
     /**
@@ -182,6 +181,23 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
         $this->assertEquals('beholdLlamas', $fired2[0][0]);
     }
 
+    public function testSaveInAfterCreateDoesntLoop()
+    {
+        $this->mapper->shouldReceive('save')->times(2);
 
+        $this->initialize('Pheasant\Tests\Examples\EventTestObject', function($builder) {
+            $builder->properties(array(
+                'test' => new Types\String()
+            ));
+            $builder->events(array(
+                'afterCreate' => function($event, $obj) {
+                    $obj->save();
+                },
+            ));
+        });
 
+        $do = new EventTestObject();
+        $do->test = "blargh";
+        $do->save();
+    }
 }
