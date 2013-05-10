@@ -108,9 +108,9 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
             } elseif (count($key[0]) === 2) {
                 $domainObject = $key[0][0];
 
-                foreach((new $this->_class)->relationships() as $name => $class) {
-                    if($name === $domainObject) {
-                        $table = (new $class)->tableName();
+                foreach((new $this->_class)->relationships() as $k => $v) {
+                    if($k === $domainObject) {
+                        $table = (new $v->class)->tableName();
                         $column = $key[0][1];
                     }
                 }
