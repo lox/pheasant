@@ -32,19 +32,6 @@ class DomainObjectSequenceTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertEquals("Frank", $person->name);
     }
 
-    public function testSequencesPersistAfterSave_Bug57()
-    {
-        $person = Person::create(array());
-
-        $this->assertEquals(1, $person->personid);
-
-        $found = Person::byId(1);
-        $this->assertEquals(1, $found->personid);
-
-        $found->save();
-        $this->assertEquals(1, $found->personid);
-    }
-
     public function testSequenceFaileWhenManuallySet()
     {
         $person = new Person();
