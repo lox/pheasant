@@ -486,6 +486,6 @@ class DomainObject
     */
     public function __isset($key)
     {
-        return ($this->schema()->hasAttribute($key) && $this->$key);
+        return ($this->schema()->hasAttribute($key) && $this->$key !== null);
     }
 }
