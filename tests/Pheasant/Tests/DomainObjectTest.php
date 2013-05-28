@@ -157,4 +157,11 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
 
         $this->assertEquals('Frank', $llama->name);
     }
+
+    public function testIssetWithBooleanValues()
+    {
+        $llama = Animal::create(array('name' => false));
+
+        $this->assertTrue(isset($llama->name));
+    }
 }
