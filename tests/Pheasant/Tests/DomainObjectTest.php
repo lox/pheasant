@@ -161,14 +161,14 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
     public function testArrayAccess()
     {
         $llama = Animal::create(array('name' => 'Frank'));
-        $this->assertTrue($llama->offsetExists('name'));
-        $this->assertEquals("Frank", $llama->offsetGet('name'));
+        $this->assertTrue(isset($llama['name']));
+        $this->assertEquals("Frank", $llama['name']);
 
         $llama = Animal::create(array('name' => null));
-        $this->assertTrue($llama->offsetExists('name'));
-        $this->assertNull($llama->offsetGet('name'));
+        $this->assertTrue(isset($llama['name']));
+        $this->assertNull($llama['name']);
 
-        $llama->offsetSet('name', 'Joe');
-        $this->assertEquals("Joe", $llama->offsetGet('name'));
+        $llama['name'] = 'Joe';
+        $this->assertEquals("Joe", $llama['name']);
     }
 }

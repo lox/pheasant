@@ -499,12 +499,12 @@ class DomainObject implements \ArrayAccess
 
     public function offsetGet($offset)
     {
-        return $this->get($offset);
+        return $this->__get($offset);
     }
 
     public function offsetSet($offset, $value)
     {
-        return $this->set($offset, $value);
+        return $this->__set($offset, $value);
     }
 
     public function offsetUnset($offset)
