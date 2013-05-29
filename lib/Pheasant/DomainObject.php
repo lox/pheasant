@@ -7,7 +7,7 @@ use \Pheasant\PropertyReference;
 /**
  * An object which represents an entity in the problem domain.
  */
-class DomainObject
+class DomainObject implements \ArrayAccess
 {
     private $_data = array();
     private $_changed = array();
@@ -487,5 +487,28 @@ class DomainObject
     public function __isset($key)
     {
         return ($this->schema()->hasAttribute($key) && $this->$key);
+    }
+
+    // ----------------------------------------
+    // array object
+
+    public function offsetExists($offset)
+    {
+        return $this->schema()->hasAttribute($offset);
+    }
+
+    public function offsetGet($offset)
+    {
+        return $this->__get($offset);
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        return $this->__set($offset, $value);
+    }
+
+    public function offsetUnset($offset)
+    {
+        throw new \BadMethodCallException("unset not supported on Pheasant\\DomainObject");
     }
 }

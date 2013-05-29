@@ -157,4 +157,18 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
 
         $this->assertEquals('Frank', $llama->name);
     }
+
+    public function testArrayAccess()
+    {
+        $llama = Animal::create(array('name' => 'Frank'));
+        $this->assertTrue(isset($llama['name']));
+        $this->assertEquals("Frank", $llama['name']);
+
+        $llama = Animal::create(array('name' => null));
+        $this->assertTrue(isset($llama['name']));
+        $this->assertNull($llama['name']);
+
+        $llama['name'] = 'Joe';
+        $this->assertEquals("Joe", $llama['name']);
+    }
 }
