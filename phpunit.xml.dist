@@ -20,6 +20,11 @@
         <directory>./benchmarks</directory>
         <directory>./tests</directory>
         <directory>./vendor</directory>
+
+        <!-- Exclude interfaces from coverage -->
+        <file>./lib/Pheasant/Finder/Finder.php</file>
+        <file>./lib/Pheasant/Mapper/Mapper.php</file>
+        <file>./lib/Pheasant/Type.php</file>
       </exclude>
     </whitelist>
   </filter>
