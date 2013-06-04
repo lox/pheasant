@@ -10,7 +10,10 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        $this->dsn = new Dsn('mysql://root@localhost/pheasanttest?charset=utf8');
+        $dsn = getenv('PHEASANT_TEST_DSN')
+            ?: 'mysql://root@localhost/pheasanttest?charset=utf8';
+
+        $this->dsn = new Dsn($dsn);
         $this->conn = new Mysqli\Connection($this->dsn);
     }
 
