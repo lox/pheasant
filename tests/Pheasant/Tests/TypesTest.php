@@ -77,10 +77,10 @@ class TypesTest extends \Pheasant\Tests\MysqlTestCase
     public function testSet()
     {
         $type = new Types\Set(array('foo', 'bar'));
-        $this->assertMysqlColumnSql("`test` set('foo', 'bar')", $type);
+        $this->assertMysqlColumnSql("`test` set('foo','bar')", $type);
 
         $type = new Types\Set(array('foo', 'bar'), 'notnull');
-        $this->assertMysqlColumnSql("`test` set('foo', 'bar') not null", $type);
+        $this->assertMysqlColumnSql("`test` set('foo','bar') not null", $type);
     }
 
     public function assertMysqlColumnSql($sql, $type)
