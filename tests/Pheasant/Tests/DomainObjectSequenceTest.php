@@ -32,15 +32,13 @@ class DomainObjectSequenceTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertEquals("Frank", $person->name);
     }
 
-    //FIXME: what behaviour is optimal for this case?
-    /*
-    public function testSequenceManuallySet()
+    public function testSequenceFaileWhenManuallySet()
     {
         $person = new Person();
         $person->personid = 24;
         $person->save();
 
-        $this->assertEquals(24, $person->personid);
+        // FIXME: is this desired behaviour?
+        $this->assertEquals(1, $person->personid);
     }
-    */
 }

@@ -20,9 +20,18 @@
         <directory>./benchmarks</directory>
         <directory>./tests</directory>
         <directory>./vendor</directory>
+
+        <!-- Exclude interfaces from coverage -->
+        <file>./lib/Pheasant/Finder/Finder.php</file>
+        <file>./lib/Pheasant/Mapper/Mapper.php</file>
+        <file>./lib/Pheasant/Type.php</file>
       </exclude>
     </whitelist>
   </filter>
+
+  <logging>
+    <log type="coverage-clover" target="build/logs/clover.xml"/>
+  </logging>
 
   <!-- Test listeners -->
   <listeners>

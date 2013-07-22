@@ -14,7 +14,8 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
 
         $migrator = new \Pheasant\Migrate\Migrator();
         $migrator
-            ->create('animal', Animal::schema())
+            ->destroy(Animal::schema())
+            ->initialize(Animal::schema())
             ;
     }
 
@@ -144,21 +145,6 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertCount(1, Animal::findByType('llama'));
     }
 
-    public function testDiff()
-    {
-        $animals = Animal::import(array(
-            array('type'=>'Hippo'),
-            array('type'=>'Cat'),
-        ));
-
-        $this->assertEquals(array('id', 'type'), $animals[0]->diff($animals[1]));
-
-        $alpaca = clone $animals[0];
-        $alpaca->type = 'Alpaca';
-
-        $this->assertEquals(array('type'), $animals[0]->diff($alpaca));
-    }
-
     public function testReloadWithoutClosure()
     {
         $llama = Animal::create(array('type'=>'llama'));
@@ -170,5 +156,12 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
         $llama->reload();
 
         $this->assertEquals('Frank', $llama->name);
+    }
+
+    public function testIssetWithBooleanValues()
+    {
+        $llama = Animal::create(array('name' => false));
+
+        $this->assertTrue(isset($llama->name));
     }
 }

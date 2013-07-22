@@ -42,4 +42,12 @@ abstract class Base implements \Pheasant\Type
     {
         return $value;
     }
+
+    /* (non-phpdoc)
+     * @see \Pheasant\Type::equals
+     */
+    public function equals($value1, $value2)
+    {
+        return $value1 == $value2;
+    }
 }

@@ -39,7 +39,24 @@ class Connection
             $this->_dsn->params['charset'] : 'utf8';
         $this->_strict = isset($this->_dsn->params['strict']) ?
             $this->_dsn->params['strict'] : false;
-        $this->_selectedDatabase = $this->_dsn->database;
+
+        if(!empty($this->_dsn->database))
+            $this->_selectedDatabase = $this->_dsn->database;
+    }
+
+    /**
+     * Selects a particular database
+     * @chainable
+     */
+    public function selectDatabase($database)
+    {
+        $mysqli = $this->_mysqli();
+
+        if(!$mysqli->select_db($database))
+            throw new Exception($mysqli->error, $mysqli->errno);
+
+        $this->_selectedDatabase = $database;
+        return $this;
     }
 
     /**
@@ -207,6 +224,10 @@ class Connection
         return $this->_filter;
     }
 
+    /**
+     * Returns the selected database
+     * @return string
+     */
     public function selectedDatabase()
     {
         return $this->_selectedDatabase;

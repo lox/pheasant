@@ -35,12 +35,23 @@ class SequencePool
     }
 
     /**
-     * Clears the sequence pool
+     * Clears either the whole pool
      * @chainable
      */
     public function clear()
     {
         $this->_connection->table(self::TABLE)->truncate();
+        return $this;
+    }
+
+    /**
+     * Deletes a given sequence from the pool
+     * @chainable
+     */
+    public function delete($sequence)
+    {
+        $this->_connection->execute(
+            "DELETE FROM sequences WHERE name=?", $sequence);
 
         return $this;
     }
@@ -55,7 +66,7 @@ class SequencePool
             ->transaction(array($this,'_nextSequence'), strtoupper($sequence))
             ->execute();
 
-        return $results[0];
+        return (int)$results[0];
     }
 
     /**
@@ -66,7 +77,7 @@ class SequencePool
         $result = $this->_connection->execute(
             "SELECT id FROM sequences WHERE name=?", $sequence);
 
-        return $result[0]['id'] - 1;
+        return (int)$result[0]['id'] - 1;
     }
 
     /**

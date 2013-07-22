@@ -92,10 +92,10 @@ class DomainObject
 
         $this->events()->wrap(array($event, 'Save'), $this, function($obj) use ($mapper) {
             $mapper->save($obj);
-        });
 
-        $this->_saved = true;
-        $this->_changed = array();
+            // ensure we clear the changes before after events fire
+            $obj->markSaved(true)->clearChanges();
+        });
 
         return $this;
     }
@@ -145,10 +145,11 @@ class DomainObject
 
         $this->events()->wrap(array('Delete'), $this, function($obj) use($mapper) {
             $mapper->delete($obj);
+
+            // ensure we clear the changes before after events fire
+            $obj->markSaved(false)->clearChanges();
         });
 
-        $this->_saved = false;
-        $this->_changed = array();
         return $this;
     }
 
@@ -436,7 +437,7 @@ class DomainObject
      */
     public function equals($object)
     {
-        return $this->toArray() == $object->toArray();
+        return $this->schema()->equals($this, $object);
     }
 
     /**
@@ -444,7 +445,7 @@ class DomainObject
      */
     public function diff($object)
     {
-        return array_keys(array_diff($this->_data, $object->_data));
+        return $this->schema()->diff($this, $object);
     }
 
     /**
@@ -485,6 +486,6 @@ class DomainObject
     */
     public function __isset($key)
     {
-        return ($this->schema()->hasAttribute($key) && $this->$key);
+        return ($this->schema()->hasAttribute($key) && $this->$key !== null);
     }
 }

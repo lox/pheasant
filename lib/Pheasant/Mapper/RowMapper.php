@@ -40,19 +40,23 @@ class RowMapper extends AbstractMapper implements Finder
     }
 
     /**
+     * Generates a sequence name for a property
+     * @return string
+     */
+    public function sequenceName($property)
+    {
+        $sequence = $property->type->options()->sequence;
+        return $sequence ?: sprintf("%s_%s_seq", $this->_tableName, $property->name);
+    }
+
+    /**
      * Generates a sequence for a property
      * @return int
      */
     private function sequence($property)
     {
-        $sequence = $property->type->options()->sequence;
-
-        // generate if needed
-        if(!is_string($sequence))
-            $sequence = sprintf("%s_%s_seq",
-                $this->_tableName, $property->name);
-
-        return $this->_connection->sequencePool()->next($sequence);
+        return $this->_connection->sequencePool()
+            ->next($this->sequenceName($property));
     }
 
     /**
@@ -93,12 +97,6 @@ class RowMapper extends AbstractMapper implements Finder
             $criteria,
             $limit = 1
             );
-
-        // check for auto-increment
-        foreach ($object->identity() as $key=>$property) {
-            if($property->type->options()->auto_increment)
-                $object->{$key} = $result->lastInsertId();
-        }
     }
 
     /**
@@ -138,6 +136,6 @@ class RowMapper extends AbstractMapper implements Finder
     public function initialize($schema)
     {
         $migrator = new \Pheasant\Migrate\Migrator();
-        $migrator->create($this->_tableName, $schema);
+        $migrator->initialize($schema);
     }
 }

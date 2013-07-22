@@ -6,10 +6,11 @@ class MysqlTestCase extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
+        $dsn = getenv('PHEASANT_TEST_DSN')
+            ?: 'mysql://root@localhost/pheasanttest?charset=utf8';
+
         // initialize a new pheasant
-        $this->pheasant = \Pheasant::setup(
-            'mysql://root@localhost/pheasanttest?charset=utf8'
-            );
+        $this->pheasant = \Pheasant::setup($dsn);
 
         // wipe sequence pool
         $this->pheasant->connection()

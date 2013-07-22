@@ -52,7 +52,7 @@ class Pheasant
      */
     public function initialize($subject, $callback=null)
     {
-        $class = is_string($subject) ? $subject : get_class($subject);
+        $class = is_string($subject) ? ltrim($subject,'\\') : $subject::className();
 
         // initialize the object if needed
         if (!isset($this->_schema[$class])) {
@@ -97,7 +97,7 @@ class Pheasant
      */
     public function registerMapper($class, $mapper)
     {
-        $this->_mappers[$class] = $mapper;
+        $this->_mappers[ltrim($class,'\\')] = $mapper;
 
         return $this;
     }
@@ -107,7 +107,7 @@ class Pheasant
      */
     public function registerFinder($class, $mapper)
     {
-        $this->_finders[$class] = $mapper;
+        $this->_finders[ltrim($class,'\\')] = $mapper;
 
         return $this;
     }
