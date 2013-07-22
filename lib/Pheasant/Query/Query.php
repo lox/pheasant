@@ -16,7 +16,7 @@ class Query implements \IteratorAggregate, \Countable
     private $_limit=null;
     private $_where;
     private $_group;
-    private $_order;
+    private $_order=array();
 
     // resultset
     private $_connection;
@@ -138,7 +138,7 @@ class Query implements \IteratorAggregate, \Countable
     public function orderBy($sql, $params=array())
     {
         $binder = new Binder();
-        $this->_order = $binder->magicBind($sql, (array) $params);
+        $this->_order[] = $binder->magicBind($sql, (array) $params);
 
         return $this;
     }
