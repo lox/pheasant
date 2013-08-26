@@ -31,6 +31,12 @@ class Query implements \IteratorAggregate, \Countable
         $this->_connection = $connection ?: Pheasant::instance()->connection();
     }
 
+    public function setConnection($connection)
+    {
+        $this->_connection = $connection;
+        return $this;
+    }
+
     /**
      * Sets the SELECT clause, either a single column, an array or varargs.
      * @chainable
@@ -195,6 +201,15 @@ class Query implements \IteratorAggregate, \Countable
     public function execute()
     {
         return $this->_resultset = $this->_connection->execute($this->toSql());
+    }
+
+    /**
+     * Executes the query with the provided connection
+     * @return Result
+     */
+    public function asyncExecute()
+    {
+        return $this->_resultset = $this->_connection->asyncExecute($this->toSql());
     }
 
     /* (non-phpdoc)
