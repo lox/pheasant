@@ -47,6 +47,15 @@ class Property
     }
 
     /**
+     * Returns a bool for whether the property is virtual
+     * @return bool
+     */
+    public function isVirtual()
+    {
+        return property_exists($this->type->options(), 'virtual');
+    }
+
+    /**
      * Return a closure for accessing the value of the property
      * @return closure
      */
