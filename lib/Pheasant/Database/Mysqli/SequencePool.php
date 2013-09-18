@@ -81,6 +81,17 @@ class SequencePool
     }
 
     /**
+     * Closes a connection
+     * @chainable
+     */
+    public function close()
+    {
+        $this->_connection->close();
+
+        return $this;
+    }
+
+    /**
      * Called within a transaction, gets the next sequence value
      * @access private
      */
