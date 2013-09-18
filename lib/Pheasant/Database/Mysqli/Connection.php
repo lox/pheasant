@@ -80,6 +80,9 @@ class Connection
         if(isset($this->_link))
             $this->_link->close();
 
+        if(isset($this->_sequencePool))
+            $this->_sequencePool->close();
+
         return $this;
     }
 
