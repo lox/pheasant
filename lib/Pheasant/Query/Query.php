@@ -157,6 +157,15 @@ class Query implements \IteratorAggregate, \Countable
     }
 
     /**
+     * Convenience method for orderBy, to be consistent with where and andWhere.
+     * @chainable
+     */
+    public function andOrderBy($sql, $params=array())
+    {
+        return $this->orderBy($sql, $params);
+    }
+
+    /**
      * Adds a limit clause
      * @chainable
      */
