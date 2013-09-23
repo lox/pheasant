@@ -48,13 +48,13 @@ class CollectionTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertCount(2, $results);
     }
 
-    public function testOrder()
+    public function testOrderBy()
     {
-        $results = Animal::find()->order('type ASC')->toArray();
+        $results = Animal::find()->orderBy('type ASC')->toArray();
         $this->assertEquals('frog', $results[0]->type);
         $this->assertEquals('llama', $results[2]->type);
 
-        $results = Animal::find()->order('type DESC')->toArray();
+        $results = Animal::find()->orderBy('type DESC')->toArray();
         $this->assertEquals('llama', $results[0]->type);
         $this->assertEquals('frog', $results[2]->type);
     }
