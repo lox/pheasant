@@ -21,7 +21,7 @@ class Schema
      * @param string the classname for the described domain object
      * @param array an array of parameters
      */
-     public function __construct($class, $params=array())
+    public function __construct($class, $params=array())
     {
         $this->_class = $class;
 
