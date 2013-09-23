@@ -3,7 +3,7 @@
 namespace Pheasant;
 
 /**
- * A schema describes what a DomainObject can contain and how to access it's attributes.
+ * A schema describes what a DomainObject can contain and how to access its attributes.
  */
 class Schema
 {
