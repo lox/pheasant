@@ -17,7 +17,7 @@ class Query implements \IteratorAggregate, \Countable
     private $_lock=null;
     private $_where;
     private $_group;
-    private $_order;
+    private $_order=array();
 
     // resultset
     private $_connection;
@@ -150,9 +150,18 @@ class Query implements \IteratorAggregate, \Countable
     public function orderBy($sql, $params=array())
     {
         $binder = new Binder();
-        $this->_order = $binder->magicBind($sql, (array) $params);
+        $this->_order[] = $binder->magicBind($sql, (array) $params);
 
         return $this;
+    }
+
+    /**
+     * Convenience method for orderBy, to be consistent with where and andWhere.
+     * @chainable
+     */
+    public function andOrderBy($sql, $params=array())
+    {
+        return $this->orderBy($sql, $params);
     }
 
     /**
