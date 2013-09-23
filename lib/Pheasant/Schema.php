@@ -3,7 +3,7 @@
 namespace Pheasant;
 
 /**
- * A schema describes what a DomainObject can contain and how to access it's attributes.
+ * A schema describes what a DomainObject can contain and how to access its attributes.
  */
 class Schema
 {
@@ -21,7 +21,7 @@ class Schema
      * @param string the classname for the described domain object
      * @param array an array of parameters
      */
-     public function __construct($class, $params=array())
+    public function __construct($class, $params=array())
     {
         $this->_class = $class;
 
