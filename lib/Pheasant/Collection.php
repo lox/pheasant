@@ -21,6 +21,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function __construct($class, $query, $add=false)
     {
+        $this->_class = $class;
         $this->_query = $query;
         $this->_add = $add;
         $this->_schema = $schema = $class::schema();
@@ -79,12 +80,51 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     }
 
     /**
-     * Orders the collection
+     * Adds a order by clause to the collection
      * @chainable
      */
-    public function order($sql, $params=array())
+    public function orderBy($ordering)
     {
-        $this->_queryForWrite()->orderBy($sql, $params);
+        if(!is_array($ordering)) {
+            $ordering = array($ordering);
+        }
+
+        foreach($ordering as $key) {
+            $key = explode(' ', $key);
+
+            // try to figure out sorting, if not set default to ASC.
+            if(count($key) === 1) {
+                $direction = 'ASC';
+            } else {
+                $direction = $key[1];
+            }
+
+            $key[0] = explode('.', $key[0]);
+
+            // try to figure out table.colname, if table is not set default to tableName().
+            if(count($key[0]) === 1) {
+                $table = (new $this->_class)->tableName();
+                $column = $key[0][0];
+            } elseif (count($key[0]) === 2) {
+                $domainObject = $key[0][0];
+
+                foreach((new $this->_class)->relationships() as $k => $v) {
+                    if($k === $domainObject) {
+                        $table = (new $v->class)->tableName();
+                        $column = $key[0][1];
+                    }
+                }
+
+                if(!isset($table) || !isset($column)) {
+                    throw new Exception("{$domainObject} is not related.");
+                }
+            }
+
+            if($this->_readonly)
+                throw new Exception("Collection is read-only during iteration");
+
+            $this->_query->orderBy("`{$table}`.`{$column}` {$direction}");
+        }
 
         return $this;
     }
