@@ -30,8 +30,8 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     }
 
     /**
-     * Return one and one only object from a collection, throws a ConstraintException
-     * if there is zero of >1 objects
+     * Return one and one only object from a collection
+     * @throws ConstraintException if there are zero or >1 objects
      */
     public function one()
     {
