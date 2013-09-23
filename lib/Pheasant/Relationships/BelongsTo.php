@@ -10,7 +10,7 @@ namespace Pheasant\Relationships;
 class BelongsTo extends HasOne
 {
     /* (non-phpdoc)
-     * @see RelationshipType::get()
+     * @see Relationship::get()
      */
     public function get($object, $key)
     {
@@ -22,7 +22,7 @@ class BelongsTo extends HasOne
     }
 
     /* (non-phpdoc)
-     * @see RelationshipType::set()
+     * @see Relationship::set()
      */
     public function set($object, $key, $value)
     {

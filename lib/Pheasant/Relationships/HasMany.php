@@ -3,11 +3,12 @@
 namespace Pheasant\Relationships;
 
 use \Pheasant\Collection;
+use \Pheasant\Relationship;
 
 /**
  * A HasMany relationship represents a 1 to N relationship.
  */
-class HasMany extends RelationshipType
+class HasMany extends Relationship
 {
     /**
      * Constructor
@@ -18,7 +19,7 @@ class HasMany extends RelationshipType
     }
 
     /* (non-phpdoc)
-     * @see RelationshipType::get()
+     * @see Relationship::get()
      */
     public function get($object, $key)
     {
@@ -29,7 +30,7 @@ class HasMany extends RelationshipType
     }
 
     /* (non-phpdoc)
-     * @see RelationshipType::add()
+     * @see Relationship::add()
      */
     public function add($object, $value)
     {
