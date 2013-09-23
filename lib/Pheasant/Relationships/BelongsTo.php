@@ -17,6 +17,10 @@ class BelongsTo extends HasOne
         if(($localValue = $object->{$this->local}) === null)
             return null;
 
+        if (isset($this->_cache[$localValue])) {
+            return $this->_cache[$localValue];
+        }
+
         return $this->hydrate($this->query("{$this->foreign}=?", $localValue)
             ->execute()->row());
     }

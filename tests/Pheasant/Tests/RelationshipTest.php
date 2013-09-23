@@ -112,11 +112,38 @@ class RelationshipTestCase extends \Pheasant\Tests\MysqlTestCase
         $identity->save();
 
         foreach ($powers as $power) {
-                $power = new Power(array('description'=>$power));
-                $hero->Powers []= $power;
-                $power->save();
+            $power = new Power(array('description'=>$power));
+            $hero->Powers []= $power;
+            $power->save();
         }
 
-        return $hero;
+        return $hero->save();
+    }
+
+    public function testWith()
+    {
+        $spiderman = $this->_createHero('Spider Man', 'Peter Parker', array(
+            'Super-human Strength', 'Spider Senses'
+        ));
+        $superman = $this->_createHero('Super Man', 'Clark Kent', array(
+            'Super-human Strength', 'Invulnerability'
+        ));
+        $batman = $this->_createHero('Batman', 'Bruce Wayne', array(
+            'Richness', 'Super-human Intellect'
+        ));
+
+        $queries = 0;
+
+        $this->connection()->filterChain()->onQuery(function ($sql) use (&$queries) {
+            ++$queries;
+            //var_dump($sql);
+            return $sql;
+        });
+
+        foreach (Hero::all()->with('SecretIdentity') as $hero) {
+            $this->assertNotNull($hero->SecretIdentity);
+        }
+
+        $this->assertEquals($queries, 3);
     }
 }
