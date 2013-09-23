@@ -4,17 +4,66 @@ namespace Pheasant;
 
 class Relationship
 {
-    public $name, $type;
+    public $class, $local, $foreign;
 
-    public function __construct($name, $type)
+
+    public function __construct($class, $local, $foreign=null)
     {
-        $this->name = $name;
-        $this->type = $type;
+        $this->class = $class;
+        $this->local = $local;
+        $this->foreign = empty($foreign) ? $local : $foreign;
     }
 
-    public function __toString()
+    public function get($object, $key)
     {
-        return $this->name;
+        throw new \BadMethodCallException(
+            "Get not supported on ".get_class($this));
+    }
+
+    public function set($object, $key, $value)
+    {
+        throw new \BadMethodCallException(
+            "Set not supported on ".get_class($this));
+    }
+
+    public function add($object, $value)
+    {
+        throw new \BadMethodCallException(
+            "Add not supported on ".get_class($this));
+    }
+
+    /**
+     * Delegates to the finder for querying
+     * @return Query
+     */
+    protected function query($sql, $params)
+    {
+        return \Pheasant::instance()->finderFor($this->class)
+            ->query(new \Pheasant\Query\Criteria($sql, $params))
+            ;
+    }
+
+    /**
+     * Delegates to the schema for hydrating
+     * @return DomainObject
+     */
+    protected function hydrate($row)
+    {
+        return \Pheasant::instance()
+            ->schema($this->class)->hydrate($row);
+    }
+
+    /**
+     * Helper function that creates a closure that calls the add function
+     * @return Closure
+     */
+    protected function adder($object)
+    {
+        $rel = $this;
+
+        return function($value) use ($object, $rel) {
+            return $rel->add($object, $value);
+        };
     }
 
     // -------------------------------------
@@ -22,19 +71,19 @@ class Relationship
 
     public function getter($key)
     {
-        $type = $this->type;
+        $rel = $this;
 
-        return function($object) use ($key, $type) {
-            return $type->get($object, $key);
+        return function($object) use ($key, $rel) {
+            return $rel->get($object, $key);
         };
     }
 
     public function setter($key)
     {
-        $type = $this->type;
+        $rel = $this;
 
-        return function($object, $value) use ($key, $type) {
-            return $type->set($object, $key, $value);
+        return function($object, $value) use ($key, $rel) {
+            return $rel->set($object, $key, $value);
         };
     }
 }

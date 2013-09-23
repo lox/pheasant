@@ -1,13 +1,15 @@
 <?php
 
 namespace Pheasant\Relationships;
+
 use \Pheasant\PropertyReference;
+use \Pheasant\Relationship;
 
 /**
  * A HasOne relationship represents a 1->1 relationship. The foreign domain object
  * is responsible for maintaining a key referencing a local attribute.
  */
-class HasOne extends RelationshipType
+class HasOne extends Relationship
 {
     private $_allowEmpty;
 
@@ -21,7 +23,7 @@ class HasOne extends RelationshipType
     }
 
     /* (non-phpdoc)
-     * @see RelationshipType::get()
+     * @see Relationship::get()
      */
     public function get($object, $key)
     {
@@ -45,7 +47,7 @@ class HasOne extends RelationshipType
     }
 
     /* (non-phpdoc)
-     * @see RelationshipType::set()
+     * @see Relationship::set()
      */
     public function set($object, $key, $value)
     {

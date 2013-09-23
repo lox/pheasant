@@ -40,8 +40,7 @@ class SchemaBuilder
      */
     public function relationships($map)
     {
-        foreach($map as $name=>$type)
-            $this->_relationships[$name] = new Relationship($name, $type);
+        $this->_relationships = $map;
 
         return $this;
     }
@@ -75,51 +74,6 @@ class SchemaBuilder
     }
 
     /**
-     * Adds a collection of {@link HasOne} relationships
-     * @chainable
-     */
-    public function hasOne($map)
-    {
-        return $this->_addRelationships($map,
-            '\Pheasant\Relationships\HasOne');
-    }
-
-    /**
-     * Adds a collection of {@link HasMany} relationships
-     * @chainable
-     */
-    public function hasMany($map)
-    {
-        return $this->_addRelationships($map,
-            '\Pheasant\Relationships\HasMany');
-    }
-
-    /**
-     * Adds a collection of {@link BelongsTo} relationships
-     * @chainable
-     */
-    public function belongsTo($map)
-    {
-        return $this->_addRelationships($map,
-            '\Pheasant\Relationships\BelongsTo');
-    }
-
-    /**
-     * Adds a collection of relationships
-     * @chainable
-     */
-    public function _addRelationships($map, $relClass)
-    {
-        foreach ($map as $name=>$array) {
-            $class = new \ReflectionClass($relClass);
-            $this->_relationships[$name] = new Relationship($name,
-                $class->newInstanceArgs($array));
-        }
-
-        return $this;
-    }
-
-    /**
      * Builds a schema object
      */
     public function build($class)
@@ -135,4 +89,4 @@ class SchemaBuilder
             'events' => $this->_events
         ));
     }
-    }
+}
