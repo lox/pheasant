@@ -178,4 +178,18 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
         $llama['name'] = 'Joe';
         $this->assertEquals("Joe", $llama['name']);
     }
+
+    public function testSettingTheSameValueDoesntTriggerChanged() {
+        $animal = new Animal(array('type' => 'horse'));
+        $animal->save();
+        $animal->load(array('type' => 'horse'));
+        $this->assertCount(0, $animal->changes());
+    }
+
+    public function testChanged() {
+        $animal = new Animal(array('type' => 'horse'));
+        $animal->save();
+        $animal->load(array('type' => 'frog'));
+        $this->assertEquals(array('type'=>'frog'), $animal->changes());
+    }
 }
