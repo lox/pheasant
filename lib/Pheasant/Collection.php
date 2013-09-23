@@ -3,6 +3,7 @@
 namespace Pheasant;
 
 use \Pheasant;
+use \Pheasant\Query\Criteria;
 use \Pheasant\Query\QueryIterator;
 
 class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
@@ -60,6 +61,42 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
             throw new ConstraintException("No first element exist");
 
         return $this->offsetGet(0);
+    }
+
+    /**
+     * Eagerly load related objects
+     */
+    public function with($relations)
+    {
+        $relations = is_array($relations) ? $relations : array($relations);
+
+        $relationships = $this->_schema->relationships();
+
+        // Discard irrelevant relationships
+        foreach ($relationships as $name => $rel) {
+            if (!in_array($name, $relations)) {
+                unset($relationships[$name]);
+            }
+        }
+
+        foreach ($relationships as $name => $rel) {
+            $query = clone $this->_query;
+            $ids = iterator_to_array(
+                $query->select('DISTINCT '.$rel->type->local)->execute()->column()
+            );
+
+            $criteria = new Criteria($rel->type->foreign.'=?', array($ids));
+
+            $relatedObjects = Pheasant::instance()
+                ->finderFor($rel->type->class)
+                ->find($rel->type->class, $criteria);
+
+            foreach ($relatedObjects as $obj) {
+                $rel->type->cache($obj);
+            }
+        }
+
+        return $this;
     }
 
     public function toArray()

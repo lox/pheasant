@@ -28,6 +28,10 @@ class HasOne extends RelationshipType
         if(($localValue = $object->{$this->local}) === null)
             return null;
 
+        if (isset($this->_cache[$localValue])) {
+            return $this->_cache[$localValue];
+        }
+
         $result = $this
             ->query("{$this->foreign}=?", $localValue)
             ->execute();

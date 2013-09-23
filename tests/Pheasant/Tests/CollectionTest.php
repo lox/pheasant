@@ -126,5 +126,4 @@ class CollectionTest extends \Pheasant\Tests\MysqlTestCase
 
         $this->assertCount(1, Animal::all());
     }
-
 }

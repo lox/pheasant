@@ -5,6 +5,7 @@ namespace Pheasant\Relationships;
 class RelationshipType
 {
     public $class, $local, $foreign;
+    protected $_cache = array();
 
     public function __construct($class, $local, $foreign=null)
     {
@@ -29,6 +30,11 @@ class RelationshipType
     {
         throw new \BadMethodCallException(
             "Add not supported on ".get_class($this));
+    }
+
+    public function cache($object)
+    {
+        $this->_cache[$object->{$this->local}] = $object;
     }
 
     /**
