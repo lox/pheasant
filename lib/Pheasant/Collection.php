@@ -81,8 +81,19 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     /**
      * Orders the collection
      * @chainable
+     * @deprecated
      */
     public function order($sql, $params=array())
+    {
+        trigger_error("`order` is deprecated, use `orderBy` instead.", E_USER_NOTICE);
+        $this->orderBy($sql, $params);
+    }
+
+    /**
+     * Orders the collection
+     * @chainable
+     */
+    public function orderBy($sql, $params=array())
     {
         $this->_queryForWrite()->orderBy($sql, $params);
 
