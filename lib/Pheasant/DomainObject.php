@@ -16,7 +16,7 @@ class DomainObject
 
     /**
      * The final constructer which initializes the object. Subclasses
-     * can implement {@link constructor()} instead
+     * can implement {@link construct()} instead
      */
     final public function __construct()
     {
