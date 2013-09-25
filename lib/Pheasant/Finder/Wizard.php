@@ -106,12 +106,25 @@ class Wizard
         if(!preg_match('/^(findBy|oneBy)(.*?)$/', $method, $m))
             throw new \BadMethodCallException("Unable to parse $method");
 
-        // split on AND or OR and case boundries
-        $sql = strtolower(preg_replace('/(?<=[a-z0-9\b])(Or|And)(?=[A-Z])/',' $1 ',$m[2]));
+        // make method name into query format (preserve case)
+        $sql = preg_replace('/(?<=[a-z0-9\b])(Or|And)(?=[A-Z])/',' $1 ',$m[2]);
+
+        // check if all the columns are present in schema
+        // try underscore naming if one isn't present
+        $try_underscore_naming = false;
+        foreach (explode(' ', strtolower($sql)) as $column) {
+          if (!($column == 'and' || $column == 'or') && !$this->_schema->hasAttribute($column)) {
+            $try_underscore_naming = true;
+            break;
+          }
+        }
+
+        if($try_underscore_naming)
+          $sql = preg_replace('/([a-z])([A-Z])/', '$1_$2', $sql);
 
         // add parameter binds
         return preg_replace_callback('/\b([\w-]+)\b/', function($m) {
             return ($m[0] != 'or' && $m[0] != 'and') ? "{$m[0]}=?" : $m[0];
-        }, $sql);
+        }, strtolower($sql));
     }
 }
