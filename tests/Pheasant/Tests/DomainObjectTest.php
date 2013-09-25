@@ -5,6 +5,8 @@ namespace Pheasant\Tests;
 use \Pheasant\Tests\Examples\Animal;
 use \Pheasant\Tests\Examples\AnotherAnimal;
 use \Pheasant\Tests\Examples\AnimalWithNameDefault;
+use \Pheasant\Tests\Examples\Hero;
+use \Pheasant\Tests\Examples\Power;
 
 class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
 {
@@ -177,6 +179,19 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
 
         $llama['name'] = 'Joe';
         $this->assertEquals("Joe", $llama['name']);
+    }
+
+    public function testReadingRemoteProperty()
+    {
+        $hero = (new Hero(array('alias' => 'Mr. Incredible')))->save();
+
+        $power = new Power(array('description' => ''));
+        $power->Hero = $hero;
+        $power->save();
+
+        $this->assertEquals('Mr. Incredible', $power->Hero->alias);
+        $power->Hero->alias = 'Elastigirl';
+        $this->assertEquals('Elastigirl', $power->Hero->alias);
     }
 
     public function testSettingTheSameValueDoesntTriggerChanged() {
