@@ -106,21 +106,28 @@ class Wizard
         if(!preg_match('/^(findBy|oneBy)(.*?)$/', $method, $m))
             throw new \BadMethodCallException("Unable to parse $method");
 
-        // make method name into query format (preserve case)
+        // split on AND or OR and case boundries, preserving case
         $sql = preg_replace('/(?<=[a-z0-9\b])(Or|And)(?=[A-Z])/',' $1 ',$m[2]);
 
-        // check if all the columns are present in schema
-        // try underscore naming if one isn't present
-        $try_underscore_naming = false;
-        foreach (explode(' ', strtolower($sql)) as $column) {
-          if (!($column == 'and' || $column == 'or') && !$this->_schema->hasAttribute($column)) {
-            $try_underscore_naming = true;
-            break;
-          }
-        }
+        // change camelCase words into underscore separation
+        $underscore_sql = preg_replace('/([a-z])([A-Z])/', '$1_$2', $sql);
 
-        if($try_underscore_naming)
-          $sql = preg_replace('/([a-z])([A-Z])/', '$1_$2', $sql);
+        // if the properties are all single word properties
+        // the strings will be equal
+        if ($sql != $underscore_sql) {
+            // check to see if user is using underscore column names
+            $underscore_naming = true;
+            foreach (explode(' ', strtolower($underscore_sql)) as $column) {
+                if (!($column == 'and' || $column == 'or') && !$this->_schema->hasAttribute($column)) {
+                    $underscore_naming = false;
+                    break;
+                }
+            }
+
+            if($underscore_naming)
+                $sql = $underscore_sql;
+
+        }
 
         // add parameter binds
         return preg_replace_callback('/\b([\w-]+)\b/', function($m) {
