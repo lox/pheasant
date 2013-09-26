@@ -125,7 +125,7 @@ class Schema
     public function marshal($row)
     {
         foreach($this->_props as $key=>$prop) {
-            if(isset($row[$key])) {
+            if(isset($row[$key]) && !$prop->isVirtual()) {
                 $row[$key] = $prop->type->marshal($row[$key]);
             }
         }
