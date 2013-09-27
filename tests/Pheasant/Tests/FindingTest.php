@@ -113,6 +113,14 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
     }
 
     // ----------------------------------
+    // Test find events
+    public function testHydrateEventAfterFind()
+    {
+        $cletus = User::one('lastname = ?', array('Llamas','Kasady'));
+        $this->assertEquals(array('onHydrate'), $cletus->events);
+    }
+
+    // ----------------------------------
     // Test other collection methods
 
     public function testFilter()
