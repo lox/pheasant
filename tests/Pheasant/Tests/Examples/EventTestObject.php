@@ -17,4 +17,9 @@ class EventTestObject extends DomainObject
     {
         $this->events []= __FUNCTION__;
     }
+
+    public function onHydrate()
+    {
+        $this->events []= __FUNCTION__;
+    }
 }
