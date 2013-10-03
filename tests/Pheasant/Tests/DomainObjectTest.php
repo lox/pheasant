@@ -192,4 +192,10 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
         $animal->load(array('type' => 'frog'));
         $this->assertEquals(array('type'=>'frog'), $animal->changes());
     }
+
+    public function testStringCoercion()
+    {
+        $llama = Animal::create(array('id' => 123));
+        $this->assertEquals('Pheasant\Tests\Examples\Animal[id=123]', (string) $llama);
+    }
 }
