@@ -315,9 +315,9 @@ class DomainObject implements \ArrayAccess
      */
     public function eventHandler($e)
     {
-        $on_event = 'on'.ucfirst($e);
-        if (method_exists($this, $on_event)) {
-            call_user_func(array($this, $on_event), $on_event);
+        $onEvent = 'on'.ucfirst($e);
+        if (method_exists($this, $onEvent)) {
+            call_user_func(array($this, $onEvent), $onEvent);
         } elseif (method_exists($this, $e)) {
             call_user_func(array($this, $e), $e);
         }
