@@ -31,4 +31,18 @@ class Identity implements \IteratorAggregate
     {
         return new Query\Criteria($this->toArray());
     }
+
+    public function __toString()
+    {
+        $array = $this->toArray();
+
+        $keyValues = array_map(
+            function ($k) use ($array) {
+                return sprintf('%s=%s', $k, $array[$k]);
+            },
+            array_keys($array)
+        );
+
+        return sprintf('[%s]', implode(',', $keyValues));
+    }
 }
