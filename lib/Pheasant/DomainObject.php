@@ -491,6 +491,14 @@ class DomainObject implements \ArrayAccess
         return ($this->schema()->hasAttribute($key) && $this->$key !== null);
     }
 
+    /**
+     * String coercion. Returns a value like "ClassName[pkcol1=foo,pkcol2=bar]"
+     */
+    public function __toString()
+    {
+        return $this->className() . (string) $this->identity();
+    }
+
     // ----------------------------------------
     // array object
 
