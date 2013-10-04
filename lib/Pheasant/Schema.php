@@ -106,7 +106,9 @@ class Schema
     public function hydrate($row)
     {
         $class = $this->_class;
-        return $class::fromArray($this->unmarshal($row));
+        $ret = $class::fromArray($this->unmarshal($row));
+        $ret->events()->trigger('hydrate', $ret);
+        return $ret;
     }
 
     /**
