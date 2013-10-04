@@ -38,8 +38,12 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         $object = $this->offsetGet(0);
 
         // execute after the query so we save a query
-        if(($count = $this->count()) != 1)
+        $count = $this->count();
+        if ($count === 0) {
+            throw new NotFoundException("Expected 1 element, found 0");
+        } elseif ($count > 1) {
             throw new ConstraintException("Expected only 1 element, found $count");
+        }
 
         return $object;
     }

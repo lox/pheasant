@@ -30,7 +30,13 @@ class CollectionTest extends \Pheasant\Tests\MysqlTestCase
         }
     }
 
-    public function testOne()
+    public function testOneWhenZero()
+    {
+        $this->setExpectedException('Pheasant\NotFoundException');
+        $results = Animal::findByName('nonexistent')->one();
+    }
+
+    public function testOneWhenMany()
     {
         $this->setExpectedException('Pheasant\ConstraintException');
         $results = Animal::find()->one();
