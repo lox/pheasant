@@ -94,7 +94,22 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
         $do->test = 'llamas'; // need some change
         $do->save();
 
-        $this->assertEquals(array('beforeSave','afterSave'), $do->events);
+        $this->assertEquals(array('onHydrate', 'beforeSave','afterSave'), $do->events);
+    }
+
+    public function testOnHydrateEvents()
+    {
+        $this->initialize('Pheasant\Tests\Examples\EventTestObject', function($builder) {
+            $builder->properties(array(
+                'test' => new Types\String()
+                ));
+        });
+
+        $do = new EventTestObject(array(
+          'test' => 'llamas',
+        ));
+
+        $this->assertEquals(array('onHydrate'), $do->events);
     }
 
     /**
