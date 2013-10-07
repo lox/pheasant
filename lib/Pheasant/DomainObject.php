@@ -33,7 +33,6 @@ class DomainObject implements \ArrayAccess
             ;
 
         call_user_func_array(array($this,$constructor), func_get_args());
-        $this->events()->trigger('hydrate', $this);
     }
 
     /**
@@ -311,15 +310,14 @@ class DomainObject implements \ArrayAccess
     }
 
     /**
-     * Handles events for the domain object
+     * Handles events for the domain object, looks for local methods named after
+     * the event, e.g beforeSave. The event is passed as a parameter
+     * @return void
      */
-    public function eventHandler($e)
+    public function eventHandler($e, $obj)
     {
-        $onEvent = 'on'.ucfirst($e);
-        if (method_exists($this, $onEvent)) {
-            call_user_func(array($this, $onEvent), $onEvent);
-        } elseif (method_exists($this, $e)) {
-            call_user_func(array($this, $e), $e);
+        if(method_exists($this, $e)) {
+            call_user_func(array($this, $e), $e, $obj);
         }
     }
 

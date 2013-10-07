@@ -107,7 +107,7 @@ class Schema
     {
         $class = $this->_class;
         $ret = $class::fromArray($this->unmarshal($row));
-        $ret->events()->trigger('hydrate', $ret);
+        $ret->events()->trigger('afterHydrate', $ret);
         return $ret;
     }
 

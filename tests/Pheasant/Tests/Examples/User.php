@@ -9,8 +9,6 @@ use \Pheasant\Types\String;
 
 class User extends DomainObject
 {
-    public $events=array();
-
     public function properties()
     {
         return array(
@@ -25,10 +23,5 @@ class User extends DomainObject
         return array(
             'UserPrefs' => UserPref::hasMany('userid'),
             );
-    }
-
-    public function onHydrate()
-    {
-        $this->events[] = __FUNCTION__;
     }
 }

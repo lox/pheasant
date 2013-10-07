@@ -116,8 +116,16 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
     // Test find events
     public function testHydrateEventAfterFind()
     {
+        $events = array();
+
+        $this->pheasant->schema('\Pheasant\Tests\Examples\User')
+            ->events()->register('*', function($e, $obj) use(&$events) {
+                $events []= $e;
+            });
+
+
         $cletus = User::one('lastname = ?', array('Llamas','Kasady'));
-        $this->assertEquals(array('onHydrate'), $cletus->events);
+        $this->assertEquals(array('afterHydrate'), $events);
     }
 
     // ----------------------------------
