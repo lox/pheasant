@@ -51,24 +51,6 @@ class BindingTest extends \Pheasant\Tests\MysqlTestCase
             );
     }
 
-    public function testArrayBindingUsingIn()
-    {
-        $binder = new Binder();
-        $this->assertEquals(
-            "a IN ('1','2')",
-            $binder->magicBind('a IN ?', array(array(1, 2)))
-        );
-    }
-
-    public function testArrayBindingUsingNotIn()
-    {
-        $binder = new Binder();
-        $this->assertEquals(
-            "a NOT IN ('1','2')",
-            $binder->magicBind('a not in ?', array(array(1, 2)))
-            );
-    }
-
     public function testInjectingStatements()
     {
         $binder = new Binder();
