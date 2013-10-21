@@ -107,7 +107,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     /**
      * Counts the number or results in the query
      */
-    public function count()
+    public function count($distinct=null)
     {
         if(!isset($this->_count))
             $this->_count = $this->_iterator->count();
@@ -208,6 +208,14 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         return $this->filter($sql, $params);
     }
 
+    /**
+     * Gets the underlying query object
+     */
+    public function query()
+    {
+        return $this->_queryForWrite();
+    }
+
     private function _queryForWrite()
     {
         if($this->_readonly)
@@ -215,6 +223,19 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 
         return $this->_query;
     }
+
+    // ----------------------------------
+    // helpers for common aggregate functions
+
+    public function aggregate($function, $fields=null)
+    {
+        return $this->_queryForWrite()->select(sprintf('%s(%s)', $function, $fields))->execute()->scalar();
+    }
+
+    public function sum($field) { return $this->aggregate('SUM', $field); }
+    public function max($field) { return $this->aggregate('MAX', $field); }
+    public function min($field) { return $this->aggregate('MIN', $field); }
+    public function avg($field) { return $this->aggregate('AVG', $field); }
 
     // ----------------------------------
     // array access

@@ -133,4 +133,10 @@ class CollectionTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertCount(1, Animal::all());
     }
 
+    public function testAggregateFunctions()
+    {
+        $this->assertEquals(3, Animal::all()->max('id'));
+        $this->assertEquals(1, Animal::all()->min('id'));
+        $this->assertEquals(6, Animal::all()->sum('id'));
+    }
 }
