@@ -198,4 +198,12 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
         $llama = Animal::create(array('id' => 123));
         $this->assertEquals('Pheasant\Tests\Examples\Animal[id=123]', (string) $llama);
     }
+
+    public function testFindWithIn()
+    {
+        $llama = Animal::create(array('id' => 123));
+        $all = Animal::find('id in ?', array(1, 2, 3, 123));
+
+        $this->assertCount(1, $all);
+    }
 }

@@ -24,31 +24,29 @@ class Binder
      * - a!=? or a<>? becomes a IS NOT NULL if passed null
      * - a=? becomes a IN (1, 2, 3) if passed array(1, 2, 3)
      * - a!=? or a<>? becomes a NOT IN (1, 2, 3) if passed array(1, 2, 3)
+     * - a not in ? or a not in ? becomes a NOT IN (1, 2, 3) if passed array(1, 2, 3)
      * @return string
      */
     public function magicBind($sql, array $params=array())
     {
-        return $this->_bindInto('\w+\s*(?:!=|=|<>)\s*\?|\?', $sql, $params, function($binder, $param, $token) use ($sql) {
+        return $this->_bindInto('\w+\s*(?:!=|=|<>|(?:not\s+)?in)\s*\?|\?', $sql, $params, function($binder, $param, $token) use ($sql) {
             if ($token == '?') {
                 return $binder->quote($param);
             } else {
-                if(!preg_match("/^(.+?)(\s*(?:!=|=|<>)\s*)(.+?)$/", $token, $m))
+                if(!preg_match("/^(.+?)(\s*(?:!=|=|<>|(?:not\s+)?in)\s*)(.+?)$/i", $token, $m))
                     throw new \InvalidArgumentException("Failed to parse magic token $token");
 
                 $lhs = $m[1];
                 $op = trim($m[2]);
                 $rhs = $m[3];
 
-                if(($op == '!=' || $op == '<>') && is_array($param))
-
+                if(is_array($param) && ($op == '!=' || $op == '<>'  || strcasecmp($op, 'not in') == 0))
                     return $lhs . ' NOT IN ' . $binder->reduce($param);
 
-                if($op == '=' && is_array($param))
-
+                if(is_array($param) && ($op == '=' || strcasecmp($op, 'in') == 0))
                     return $lhs . ' IN ' . $binder->reduce($param);
 
                 if(is_null($param))
-
                     return $lhs . ' IS'.($op == '=' ? '' : ' NOT').' NULL';
 
                 return $lhs . $m[2] . $binder->quote($binder->escape($param));
@@ -73,7 +71,6 @@ class Binder
     public function quote($string)
     {
         if(is_null($string))
-
             return 'NULL';
         else if(is_bool($string))
             return $string === true ? 1 : "''";
@@ -105,7 +102,7 @@ class Binder
 
         // http://stackoverflow.com/questions/5695240/php-regex-to-ignore-escaped-quotes-within-quotes
         // this could be done with back refs, but this is much faster
-        $regex = "/('[^'\\\\]*(?:\\\\.[^'\\\\]*)*'|\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"|$pattern)/";
+        $regex = "/('[^'\\\\]*(?:\\\\.[^'\\\\]*)*'|\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"|$pattern)/i";
 
         foreach (preg_split($regex, $sql, -1, PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY) as $token) {
             if ($token == '?' || ($token[0] != '"' && $token[0] != "'" && preg_match("/$pattern/", $token))) {

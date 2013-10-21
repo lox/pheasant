@@ -6,6 +6,8 @@ class MysqlTestCase extends \PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
+        date_default_timezone_set('UTC');
+
         $dsn = getenv('PHEASANT_TEST_DSN')
             ?: 'mysql://root@localhost/pheasanttest?charset=utf8';
 
