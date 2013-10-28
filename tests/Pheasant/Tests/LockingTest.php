@@ -59,5 +59,22 @@ class LockingTest extends \Pheasant\Tests\MysqlTestCase
             $animal->lock();
         });
     }
+
+    public function testLockAndReloadAnInstance()
+    {
+        $animal = Animal::create(array('type' => 'Llama'));
+
+        // fudge the data in the background
+        $this->connection()->execute('UPDATE animal SET type="walrus" WHERE id=1');
+
+        $animal->transaction(function($animal) {
+            $animal->lockAndReload();
+        });
+
+       $this->assertEquals(
+            $animal->type,
+            'walrus'
+        );
+    }
 }
 

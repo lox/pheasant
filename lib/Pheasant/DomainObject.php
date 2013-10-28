@@ -225,6 +225,22 @@ class DomainObject implements \ArrayAccess
         return $this;
     }
 
+    /**
+     * Creates a concurrency lock on the domain object and reloads it with the
+     * locked contents
+     * @chainable
+     */
+    public function lockAndReload($clause=null)
+    {
+        $lock = new Locking\PessimisticLock($this, $clause);
+        $lock->acquire(true);
+
+        // reload using the locked object's data
+        $this->_data = $lock->object->_data;
+
+        return $this;
+    }
+
     // ----------------------------------------
     // template methods
 
