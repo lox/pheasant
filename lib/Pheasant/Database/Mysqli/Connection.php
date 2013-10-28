@@ -153,8 +153,13 @@ class Connection
                     $sql, $mysqli->thread_id, (microtime(true)-$timer)*1000, is_object($r) ? $r->num_rows : 0);
             }
 
-            if($mysqli->error)
-                throw new Exception($mysqli->error, $mysqli->errno);
+            if ($mysqli->error) {
+                if (preg_match('/^deadlock found/i', $mysqli->error)) {
+                    throw new DeadlockException($mysqli->error, $mysqli->errno);
+                } else {
+                    throw new Exception($mysqli->error, $mysqli->errno);
+                }
+            }
 
             return new ResultSet($mysqli, $r === true ? false : $r);
         });
