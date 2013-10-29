@@ -5,7 +5,10 @@ namespace Pheasant\Tests;
 use \Pheasant\Query\Criteria;
 use \Pheasant;
 use \Pheasant\Tests\Examples\User;
+use \Pheasant\Tests\Examples\UserUnderscore;
 use \Pheasant\Tests\Examples\UserPref;
+use \Pheasant\Tests\Examples\UserUnderscorePref;
+
 
 class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
 {
@@ -17,6 +20,8 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
         $migrator
             ->create('user', User::schema())
             ->create('userpref', UserPref::schema())
+            ->create('userunderscore', UserUnderscore::schema())
+            ->create('userunderscorepref', UserUnderscorePref::schema())
             ;
 
         // create some users
@@ -24,15 +29,27 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
             array('firstname'=>'Frank','lastname'=>'Castle'),
             array('firstname'=>'Cletus','lastname'=>'Kasady')
         ));
+        $this->users_underscore = UserUnderscore::import(array(
+            array('first_name'=>'Frank','last_name'=>'Castle'),
+            array('first_name'=>'Cletus','last_name'=>'Kasady')
+        ));
 
         // create some user prefs
         $this->userprefs = UserPref::import(array(
             array('User'=>$this->users[0],'pref'=>'autologin','value'=>'yes'),
             array('User'=>$this->users[1],'pref'=>'autologin','value'=>'no')
         ));
+        $this->user_underscore_prefs = UserUnderscorePref::import(array(
+            array('User'=>$this->users_underscore[0],'pref'=>'autologin','value'=>'yes'),
+            array('User'=>$this->users_underscore[1],'pref'=>'autologin','value'=>'no')
+        ));
+
 
         $this->assertTrue($this->userprefs[0]->User->equals($this->users[0]));
         $this->assertTrue($this->userprefs[1]->User->equals($this->users[1]));
+
+        $this->assertTrue($this->user_underscore_prefs[0]->User->equals($this->users_underscore[0]));
+        $this->assertTrue($this->user_underscore_prefs[1]->User->equals($this->users_underscore[1]));
     }
 
     public function testFindAll()
@@ -85,9 +102,23 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
         $this->assertEquals($users[0]->lastname, 'Kasady');
     }
 
+    public function testFindManyByMagicalUnderscoreColumn()
+    {
+        $users = UserUnderscore::findByLastName('Kasady');
+        $this->assertEquals(count($users), 1);
+        $this->assertEquals($users[0]->first_name, 'Cletus');
+        $this->assertEquals($users[0]->last_name, 'Kasady');
+    }
+
     public function testFindManyByMultipleMagicalColumns()
     {
         $users = User::findByLastNameOrFirstName('Kasady', 'Frank');
+        $this->assertEquals(count($users), 2);
+    }
+
+    public function testFindManyByMultipleMagicalUnderscoreColumns()
+    {
+        $users = UserUnderscore::findByLastNameOrFirstName('Kasady', 'Frank');
         $this->assertEquals(count($users), 2);
     }
 
@@ -103,6 +134,13 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
         $cletus = User::oneByFirstName('Cletus');
         $this->assertEquals($cletus->firstname, 'Cletus');
         $this->assertEquals($cletus->lastname, 'Kasady');
+    }
+
+    public function testOneByMagicalUnderscoreColumn()
+    {
+        $cletus = UserUnderscore::oneByFirstName('Cletus');
+        $this->assertEquals($cletus->first_name, 'Cletus');
+        $this->assertEquals($cletus->last_name, 'Kasady');
     }
 
     public function testFindByIn()
