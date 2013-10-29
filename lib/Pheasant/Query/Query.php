@@ -150,7 +150,7 @@ class Query implements \IteratorAggregate, \Countable
     public function orderBy($sql, $params=array())
     {
         $binder = new Binder();
-        $this->_order[] = $binder->magicBind($sql, (array) $params);
+        $this->_order = array($binder->magicBind($sql, (array) $params));
 
         return $this;
     }
@@ -161,7 +161,10 @@ class Query implements \IteratorAggregate, \Countable
      */
     public function andOrderBy($sql, $params=array())
     {
-        return $this->orderBy($sql, $params);
+        $binder = new Binder();
+        $this->_order[] = $binder->magicBind($sql, (array) $params);
+
+        return $this;
     }
 
     /**
