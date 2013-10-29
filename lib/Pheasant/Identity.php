@@ -32,6 +32,11 @@ class Identity implements \IteratorAggregate
         return new Query\Criteria($this->toArray());
     }
 
+    public function equals($other)
+    {
+        return $this->toArray() == $other->toArray();
+    }
+
     public function __toString()
     {
         $array = $this->toArray();
