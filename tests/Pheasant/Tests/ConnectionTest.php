@@ -59,6 +59,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function testDeadlockException()
     {
         $this->setExpectedException('\Pheasant\Database\Mysqli\DeadlockException');
-        $this->conn->execute("SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Deadlock found'");
+        $this->conn->execute("SIGNAL SQLSTATE '40001' SET MYSQL_ERRNO='1213'");
     }
 }

@@ -154,7 +154,7 @@ class Connection
             }
 
             if ($mysqli->error) {
-                if (preg_match('/^deadlock found/i', $mysqli->error)) {
+                if ($mysqli->errno === 1213 || $mysqli->errno === 1479) {
                     throw new DeadlockException($mysqli->error, $mysqli->errno);
                 } else {
                     throw new Exception($mysqli->error, $mysqli->errno);
