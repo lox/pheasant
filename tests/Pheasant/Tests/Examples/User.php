@@ -15,6 +15,7 @@ class User extends DomainObject
             'userid' => new Types\Sequence(),
             'firstname' => new Types\String(),
             'lastname' => new Types\String(),
+            'group' => new Types\String(),
             );
     }
 

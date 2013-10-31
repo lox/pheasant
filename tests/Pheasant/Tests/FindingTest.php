@@ -54,6 +54,13 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
         $this->assertEquals(2, $users->count());
     }
 
+    public function testFindWithReservedWord()
+    {
+        User::create(array('group' => 'default'));
+        $users = User::findByGroup('default');
+        $this->assertEquals(count($users), 1);
+    }
+
     public function testFindMany()
     {
         $users = User::find("lastname = ? and firstname = ?", 'Kasady', 'Cletus');
