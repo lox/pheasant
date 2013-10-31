@@ -111,7 +111,7 @@ class Wizard
 
         // add parameter binds
         return preg_replace_callback('/\b([\w-]+)\b/', function($m) {
-            return ($m[0] != 'or' && $m[0] != 'and') ? "{$m[0]}=?" : $m[0];
+            return ($m[0] != 'or' && $m[0] != 'and') ? "`{$m[0]}`=?" : $m[0];
         }, $sql);
     }
 }
