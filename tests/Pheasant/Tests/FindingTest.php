@@ -182,4 +182,14 @@ class FindingTestCase extends \Pheasant\Tests\MysqlTestCase
         $this->assertTrue($users[0]->isSaved());
         $this->assertEquals($users[0]->changes(), array());
     }
+
+    public function testFindWithArray()
+    {
+        User::create(array('lastname' => 'a'));
+        User::create(array('lastname' => 'b'));
+        User::create(array('lastname' => 'c'));
+        $users = User::findByLastname(array('a', 'b'));
+        $this->assertEquals(count($users), 2);
+    }
+
 }

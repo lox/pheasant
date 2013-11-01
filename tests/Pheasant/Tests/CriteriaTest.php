@@ -12,6 +12,9 @@ class CriteriaTest extends \Pheasant\Tests\MysqlTestCase
         $c = new Criteria('column = ?', 'test');
         $this->assertEquals("(column = 'test')", $c->toSql());
 
+        $c = new Criteria('`column` = ?', array(array('a', 'b')));
+        $this->assertEquals("(`column` IN ('a','b'))", $c->toSql());
+
         $c = new Criteria('column > ?', 55);
         $this->assertEquals("(column > '55')", $c->toSql());
     }

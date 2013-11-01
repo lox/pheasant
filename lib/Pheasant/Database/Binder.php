@@ -28,7 +28,8 @@ class Binder
      */
     public function magicBind($sql, array $params=array())
     {
-        return $this->_bindInto('\w+\s*(?:!=|=|<>)\s*\?|\?', $sql, $params, function($binder, $param, $token) use ($sql) {
+        // Pro regex tip: The syntax \g{-1} is regex syntax to match backreferences using a relative number
+        return $this->_bindInto('(`?)\w+\g{-1}\s*(?:!=|=|<>)\s*\?|\?', $sql, $params, function($binder, $param, $token) use ($sql) {
             if ($token == '?') {
                 return $binder->quote($param);
             } else {
