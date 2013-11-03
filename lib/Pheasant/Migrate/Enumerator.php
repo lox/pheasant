@@ -29,7 +29,8 @@ class Enumerator implements \IteratorAggregate
                 foreach($classes as $class) {
                     $fullClass = empty($namespace) ? "\\$class" : "\\$namespace\\$class";
 
-                    if(is_a($fullClass, "\Pheasant\DomainObject", true)) {
+                    $reflection = new \ReflectionClass($fullClass);
+                    if(is_a($fullClass, "\Pheasant\DomainObject", true) && $reflection->isInstantiable()) {
                         $result []= $fullClass;
                     }
                 }
