@@ -176,3 +176,8 @@ $post->transaction(function($obj) {
 });
 
 ```
+
+Contributors
+------------
+
+Many thanks to @dhotson, @michaeldewildt, @rbone, @harto, @jorisleker, @tombb, @Jud, @bjornpost, @creativej
