@@ -55,4 +55,10 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('\Pheasant\Database\Mysqli\Exception');
         $conn->selectDatabase('llamassddfasdfsdfsdf');
     }
+
+    public function testDeadlockException()
+    {
+        $this->setExpectedException('\Pheasant\Database\Mysqli\DeadlockException');
+        $this->conn->execute("SIGNAL SQLSTATE '40001' SET MYSQL_ERRNO='1213'");
+    }
 }
