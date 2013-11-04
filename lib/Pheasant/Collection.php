@@ -229,7 +229,8 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 
     public function aggregate($function, $fields=null)
     {
-        return $this->_queryForWrite()->select(sprintf('%s(%s)', $function, $fields))->execute()->scalar();
+        $query = clone $this->_query;
+        return $query->select(sprintf('%s(%s)', $function, $fields))->execute()->scalar();
     }
 
     public function sum($field) { return $this->aggregate('SUM', $field); }
