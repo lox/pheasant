@@ -28,6 +28,10 @@ class Binder
      */
     public function magicBind($sql, array $params=array())
     {
+        if(substr_count($sql, '?') < count($params)) {
+            $params = array($params);
+        }
+
         return $this->_bindInto('\w+\s*(?:!=|=|<>)\s*\?|\?', $sql, $params, function($binder, $param, $token) use ($sql) {
             if ($token == '?') {
                 return $binder->quote($param);
