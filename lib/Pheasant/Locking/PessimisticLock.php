@@ -10,8 +10,7 @@ class PessimisticLock
     private $_clause;
 
     /**
-     * The domain object to be locked. This is set to the locked object
-     * after acquiring the lock.
+     * The domain object to be locked.
      */
     public $object;
 
@@ -26,10 +25,11 @@ class PessimisticLock
 
     /**
      * Acquire the lock on the object
-     * @param bool whether or not to throw an exception if the object's
-     *        contents differ from the db
+     * @param callable $onObjectChanged A closure that is called for when the
+     *        locked object differs from the original. Takes the original object
+     *        and the locked object as its arguments.
      */
-    public function acquire($force=false)
+    public function acquire($onObjectChanged=null)
     {
         if(!$this->object->isSaved()) {
             throw new LockingException("Can't lock unsaved objects");
@@ -43,12 +43,8 @@ class PessimisticLock
             ->one()
             ;
 
-        if(!$force && !$this->object->equals($freshObject)) {
-            throw new StaleObjectException(sprintf(
-                "Object is stale, keys [%s] have changed in the database",
-                implode(', ', $this->object->diff($freshObject))
-            ));
+        if(!$this->object->equals($freshObject) && $onObjectChanged) {
+           call_user_func($onObjectChanged, $this->object, $freshObject);
         }
-        $this->object = $freshObject;
     }
 }
