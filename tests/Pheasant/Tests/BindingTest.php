@@ -117,4 +117,13 @@ class BindingTest extends \Pheasant\Tests\MysqlTestCase
             "name='\"' and llamas='24'"
         );
     }
+
+    public function testBindWithBackquote()
+    {
+        $binder = new Binder();
+        $this->assertEquals(
+            $binder->magicBind('`id`=?', array(1)),
+            "`id`='1'"
+        );
+    }
 }

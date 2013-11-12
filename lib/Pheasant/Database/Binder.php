@@ -28,7 +28,7 @@ class Binder
      */
     public function magicBind($sql, array $params=array())
     {
-        return $this->_bindInto('\w+\s*(?:!=|=|<>)\s*\?|\?', $sql, $params, function($binder, $param, $token) use ($sql) {
+        return $this->_bindInto('`?\w+`?\s*(?:!=|=|<>)\s*\?|\?', $sql, $params, function($binder, $param, $token) use ($sql) {
             if ($token == '?') {
                 return $binder->quote($param);
             } else {
