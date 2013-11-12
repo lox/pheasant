@@ -36,17 +36,20 @@ class LockingTest extends \Pheasant\Tests\MysqlTestCase
         ));
     }
 
-    public function testLockingAnInstanceThrowsExceptionsWhenStale()
+    public function testLockingStaleInstance()
     {
         $animal = Animal::create(array('type'=>'Llama'));
 
         // fudge the data in the background
         $this->connection()->execute('UPDATE animal SET type="walrus" WHERE id=1');
 
-        $this->setExpectedException('\Pheasant\Locking\StaleObjectException');
-        $animal->transaction(function($animal) {
-            $animal->lock();
+        $lockedType = null;
+        $animal->transaction(function($animal) use (&$lockedType) {
+            $animal->lock(function ($stale, $locked) use (&$lockedType) {
+                $lockedType = $locked->type;
+            });
         });
+        $this->assertEquals($lockedType, 'walrus');
     }
 
     public function testLockingAnUnsavedInstanceThrowsExceptions()
