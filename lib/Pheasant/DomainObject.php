@@ -211,15 +211,22 @@ class DomainObject implements \ArrayAccess
     }
 
     /**
-     * Creates a concurrency lock on the domain object, throws an exception
-     * if the object is unsaved or differs from the contents in the db
-     * @throws Locking/StaleObjectException
+     * Creates a concurrency lock on the domain object, with an optional
+     * closure to execute if the object has changed in the db when the lock
+     * finally provided. Closure gets the original and the new object
      * @chainable
      */
-    public function lock($clause=null)
+    public function lock($onChanged=null)
     {
-        $lock = new Locking\PessimisticLock($this, $clause);
-        $lock->acquire();
+        $lock = new Locking\PessimisticLock($this);
+        $locked = $lock->acquire();
+
+        if(is_callable($onChanged) && !$locked->equals($this)) {
+            call_user_func($onChanged, $this, $locked);
+        }
+
+        // reload data from locked
+        $this->_data = $locked->_data;
 
         return $this;
     }
