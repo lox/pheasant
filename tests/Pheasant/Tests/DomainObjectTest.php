@@ -19,6 +19,33 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
             ;
     }
 
+    public function testLoad()
+    {
+        $animal = new Animal();
+        $animal->load(array(
+            'type' => 'walrus',
+            'name' => 'Frank the Walrus',
+        ));
+
+        $this->assertEquals($animal->type, 'walrus');
+        $this->assertEquals($animal->name, 'Frank the Walrus');
+    }
+
+    public function testFilteredLoad()
+    {
+        $animal = new Animal();
+        $animal->load(array(
+            'type' => 'walrus',
+            'name' => 'Frank the Walrus',
+            'inject' => 'Bobby tables; DROP ALL TABLES'
+        ), array('type', 'name'));
+
+        $this->assertCount(2, $animal->changes());
+        $this->assertEquals($animal->type, 'walrus');
+        $this->assertEquals($animal->name, 'Frank the Walrus');
+        $this->assertFalse(isset($animal->inject));
+    }
+
     public function testDefaultProperties()
     {
         $animal = new Animal();

@@ -423,10 +423,16 @@ class DomainObject implements \ArrayAccess
 
     /**
      * Loads an array of values into the object
+     * @param $filter only processes the keys listed, or false for all
      * @chainable
      */
-    public function load($array)
+    public function load($array, $filter=false)
     {
+        // apply the optional filter
+        if(is_array($filter)) {
+            $array = array_intersect_key($array, array_fill_keys($filter, NULL));
+        }
+
         foreach ($array as $key=>$value) {
             if(is_object($value) || is_array($value))
                 $this->$key = $value;
