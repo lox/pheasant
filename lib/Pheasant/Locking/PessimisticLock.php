@@ -7,7 +7,7 @@ namespace Pheasant\Locking;
  */
 class PessimisticLock
 {
-    private $_object, $_clause;
+    private $_object;
 
     /**
      * Constructor
@@ -20,6 +20,7 @@ class PessimisticLock
 
     /**
      * Acquire the lock on the object
+     * @return object the reloaded object
      */
     public function acquire()
     {
@@ -29,17 +30,10 @@ class PessimisticLock
 
         $finder = \Pheasant::instance()->finderFor($this->_object);
 
-        $freshObject = $finder
+        return $freshObject = $finder
             ->find($this->_object->className(), $this->_object->identity()->toCriteria())
             ->lock($this->_clause)
             ->one()
             ;
-
-        if (!$this->_object->equals($freshObject)) {
-            throw new StaleObjectException(sprintf(
-                "Object is stale, keys [%s] have changed in the database",
-                implode(', ', $this->_object->diff($freshObject))
-            ));
-        }
     }
 }
