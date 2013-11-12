@@ -108,6 +108,18 @@ class QueryTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertEquals(
             'SELECT userid FROM user ORDER BY userid',
             $query->toSql());
+
+        $query = new Query();
+        $query
+            ->select('foo')
+            ->from('bar')
+            ->orderBy('baz')
+            ->orderBy('moo')
+            ;
+
+        $this->assertEquals(
+            'SELECT foo FROM bar ORDER BY baz, moo',
+            $query->toSql());
     }
 
     public function testAddingDefaultLock()
