@@ -80,13 +80,13 @@ class RelationshipTestCase extends \Pheasant\Tests\MysqlTestCase
 
     public function testFilteringCollectionsReturnedByRelationships()
     {
-        $spiderman = $this->_createHero('Spider Man', 'Peter Parker', array(
+        $spiderman = Hero::createHelper('Spider Man', 'Peter Parker', array(
             'Super-human Strength', 'Spider Senses'
         ));
-        $superman = $this->_createHero('Super Man', 'Clark Kent', array(
+        $superman = Hero::createHelper('Super Man', 'Clark Kent', array(
             'Super-human Strength', 'Invulnerability'
         ));
-        $batman = $this->_createHero('Batman', 'Bruce Wayne', array(
+        $batman = Hero::createHelper('Batman', 'Bruce Wayne', array(
             'Richness', 'Super-human Intellect'
         ));
 
@@ -100,23 +100,5 @@ class RelationshipTestCase extends \Pheasant\Tests\MysqlTestCase
         $hero->save();
 
         $this->assertNull($hero->SecretIdentity);
-    }
-
-    private function _createHero($alias, $identity, $powers=array())
-    {
-        $hero = new Hero(array('alias'=>$alias));
-        $hero->save();
-
-        $identity = new SecretIdentity(array('realname'=>$identity));
-        $hero->SecretIdentity = $identity;
-        $identity->save();
-
-        foreach ($powers as $power) {
-                $power = new Power(array('description'=>$power));
-                $hero->Powers []= $power;
-                $power->save();
-        }
-
-        return $hero;
     }
 }

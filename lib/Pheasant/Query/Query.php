@@ -109,27 +109,27 @@ class Query implements \IteratorAggregate, \Countable
      * Adds an INNER JOIN clause, either with a {@link Query} object or raw sql
      * @chainable
      */
-    public function innerJoin($mixed, $criteria, $derived='derived')
+    public function innerJoin($mixed, $criteria, $alias='')
     {
-        return $this->_join('INNER JOIN', $mixed, $criteria, $derived);
+        return $this->_join('INNER JOIN', $mixed, $criteria, $alias);
     }
 
     /**
      * Adds a LEFT JOIN clause, either with a {@link Query} object or raw sql
      * @chainable
      */
-    public function leftJoin($mixed, $criteria, $derived='derived')
+    public function leftJoin($mixed, $criteria, $alias='')
     {
-        return $this->_join('LEFT JOIN', $mixed, $criteria, $derived);
+        return $this->_join('LEFT JOIN', $mixed, $criteria, $alias);
     }
 
     /**
      * Adds a RIGHT JOIN clause, either with a {@link Query} object or raw sql
      * @chainable
      */
-    public function rightJoin($mixed, $criteria, $derived='derived')
+    public function rightJoin($mixed, $criteria, $alias='')
     {
-        return $this->_join('RIGHT JOIN', $mixed, $criteria, $derived);
+        return $this->_join('RIGHT JOIN', $mixed, $criteria, $alias);
     }
 
     /**
@@ -232,12 +232,15 @@ class Query implements \IteratorAggregate, \Countable
     // -------------------------------------------
     // private helper methods
 
-    private function _join($type, $mixed, $criteria, $derived='derived')
+    private function _join($type, $mixed, $criteria, $alias='')
     {
-        if(is_object($mixed))
-            $mixed = sprintf('(%s) %s', $mixed, $derived);
-
-        $this->_joins []= sprintf('%s %s %s', $type, $mixed, $criteria);
+        if(is_object($mixed)) {
+            $this->_joins []= sprintf('%s (%s) %s %s', $type, $mixed, $alias ?: 'derived', $criteria);
+        } else if($alias) {
+            $this->_joins []= sprintf('%s `%s` AS %s %s', $type, $mixed, $alias, $criteria);    
+        } else {
+            $this->_joins []= sprintf('%s `%s` %s', $type, $mixed, $criteria);
+        }
 
         return $this;
     }

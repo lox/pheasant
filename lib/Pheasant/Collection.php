@@ -7,12 +7,14 @@ use \Pheasant\Query\QueryIterator;
 
 class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 {
-    private $_query;
-    private $_iterator;
-    private $_add=false;
-    private $_readonly=false;
-    private $_schema;
-    private $_count;
+    private
+        $_query,
+        $_iterator,
+        $_add=false,
+        $_readonly=false,
+        $_schema,
+        $_count
+        ;
 
     /**
      * @param $class string the classname to hydrate
@@ -24,7 +26,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         $this->_query = $query;
         $this->_add = $add;
         $this->_schema = $schema = $class::schema();
-        $this->_iterator = new QueryIterator($query, function($row) use ($schema) {
+        $this->_iterator = new QueryIterator($this->_query, function($row) use ($schema) {
             return $schema->hydrate($row);
         });
     }
