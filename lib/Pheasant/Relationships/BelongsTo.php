@@ -15,6 +15,7 @@ class BelongsTo extends HasOne
     public function get($object, $key)
     {
         if(($localValue = $object->{$this->local}) === null)
+
             return null;
 
         return $this->hydrate($this->query("{$this->foreign}=?", $localValue)

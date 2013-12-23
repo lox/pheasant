@@ -23,7 +23,7 @@ class PessimisticLock
      */
     public function acquire()
     {
-        if(!$this->_object->isSaved()) {
+        if (!$this->_object->isSaved()) {
             throw new LockingException("Can't lock unsaved objects");
         }
 
@@ -35,7 +35,7 @@ class PessimisticLock
             ->one()
             ;
 
-        if(!$this->_object->equals($freshObject)) {
+        if (!$this->_object->equals($freshObject)) {
             throw new StaleObjectException(sprintf(
                 "Object is stale, keys [%s] have changed in the database",
                 implode(', ', $this->_object->diff($freshObject))

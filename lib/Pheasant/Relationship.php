@@ -6,7 +6,6 @@ class Relationship
 {
     public $class, $local, $foreign;
 
-
     public function __construct($class, $local, $foreign=null)
     {
         $this->class = $class;

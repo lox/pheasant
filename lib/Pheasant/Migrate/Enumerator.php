@@ -24,13 +24,13 @@ class Enumerator implements \IteratorAggregate
     {
         $result = array();
 
-        if(fnmatch("*.php", $file)) {
-            foreach($this->_getClassFiles($file) as $namespace=>$classes) {
-                foreach($classes as $class) {
+        if (fnmatch("*.php", $file)) {
+            foreach ($this->_getClassFiles($file) as $namespace=>$classes) {
+                foreach ($classes as $class) {
                     $fullClass = empty($namespace) ? "\\$class" : "\\$namespace\\$class";
 
                     $reflection = new \ReflectionClass($fullClass);
-                    if(is_a($fullClass, "\Pheasant\DomainObject", true) && $reflection->isInstantiable()) {
+                    if (is_a($fullClass, "\Pheasant\DomainObject", true) && $reflection->isInstantiable()) {
                         $result []= $fullClass;
                     }
                 }
@@ -59,8 +59,7 @@ class Enumerator implements \IteratorAggregate
                         $namespace = $namespace ? $namespace . "\\" . $tokens[$i][1] : $tokens[$i][1];
                         $dlm = true;
                     }
-                }
-            elseif ($dlm && ($tokens[$i][0] != T_NS_SEPARATOR) && ($tokens[$i][0] != T_STRING)) {
+                } elseif ($dlm && ($tokens[$i][0] != T_NS_SEPARATOR) && ($tokens[$i][0] != T_STRING)) {
                 $dlm = false;
             }
             if (($tokens[$i - 2][0] == T_CLASS || (isset($tokens[$i - 2][1]) && $tokens[$i - 2][1] == "phpclass"))
@@ -82,8 +81,8 @@ class Enumerator implements \IteratorAggregate
         $iterator = new \RecursiveIteratorIterator($iterator, \RecursiveIteratorIterator::SELF_FIRST);
         $classes = array();
 
-        foreach($iterator as $file) {
-            if($file->isFile() && ($result = $this->_getDomainObjectsFromFile($file->getRealPath()))) {
+        foreach ($iterator as $file) {
+            if ($file->isFile() && ($result = $this->_getDomainObjectsFromFile($file->getRealPath()))) {
                 $classes = array_merge($classes, $result);
             }
         }

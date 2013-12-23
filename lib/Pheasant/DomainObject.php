@@ -143,7 +143,7 @@ class DomainObject implements \ArrayAccess
     {
         $mapper = Pheasant::instance()->mapperFor($this);
 
-        $this->events()->wrap(array('Delete'), $this, function($obj) use($mapper) {
+        $this->events()->wrap(array('Delete'), $this, function($obj) use ($mapper) {
             $mapper->delete($obj);
 
             // ensure we clear the changes before after events fire
@@ -152,7 +152,6 @@ class DomainObject implements \ArrayAccess
 
         return $this;
     }
-
 
     /**
      * Returns the object as an array
@@ -261,6 +260,7 @@ class DomainObject implements \ArrayAccess
     protected function tableName()
     {
         $tokens = explode('\\', get_class($this));
+
         return strtolower(array_pop($tokens));
     }
 
@@ -316,7 +316,7 @@ class DomainObject implements \ArrayAccess
      */
     public function eventHandler($e, $obj)
     {
-        if(method_exists($this, $e)) {
+        if (method_exists($this, $e)) {
             call_user_func(array($this, $e), $e, $obj);
         }
     }
@@ -352,6 +352,7 @@ class DomainObject implements \ArrayAccess
         } elseif (preg_match('/^(hasOne|hasMany|belongsTo)$/',$method)) {
             $refl = new \ReflectionClass('\Pheasant\\Relationships\\'.ucfirst($method));
             array_unshift($params, get_called_class());
+
             return $refl->newInstanceArgs($params);
         } else {
             throw new \BadMethodCallException("No static method $method available");
@@ -405,7 +406,7 @@ class DomainObject implements \ArrayAccess
      */
     public function set($prop, $value)
     {
-        if(!isset($this->_data[$prop]) || $this->_data[$prop] != $value) {
+        if (!isset($this->_data[$prop]) || $this->_data[$prop] != $value) {
             $this->_data[$prop] = $value;
             $this->_changed[] = $prop;
         }
@@ -429,7 +430,7 @@ class DomainObject implements \ArrayAccess
     public function load($array, $filter=false)
     {
         // apply the optional filter
-        if(is_array($filter)) {
+        if (is_array($filter)) {
             $array = array_intersect_key($array, array_fill_keys($filter, NULL));
         }
 
@@ -470,6 +471,7 @@ class DomainObject implements \ArrayAccess
             ;
 
         $this->_data = $fresh->_data;
+
         return $this;
     }
 

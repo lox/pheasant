@@ -56,7 +56,7 @@ class Events
      */
     public function trigger($event, $object)
     {
-        if($this->_corked) {
+        if ($this->_corked) {
             $this->_queue []= func_get_args();
         } else {
             foreach ((array) $event as $e) {
@@ -115,6 +115,7 @@ class Events
     public function cork()
     {
         $this->_corked = true;
+
         return $this;
     }
 
@@ -126,7 +127,7 @@ class Events
     {
         $this->_corked = false;
 
-        while($call = array_shift($this->_queue)) {
+        while ($call = array_shift($this->_queue)) {
             call_user_func_array(array($this,'trigger'), $call);
         }
 
@@ -140,6 +141,7 @@ class Events
     public function discard()
     {
         $this->_queue = array();
+
         return $this;
     }
 

@@ -18,11 +18,11 @@ class MysqlPlatform
         $result = array();
 
         // certain parameters have to occur first
-        if(isset($options->unsigned)) {
+        if (isset($options->unsigned)) {
             $result []= 'unsigned';
         }
 
-        if(isset($options->zerofill)) {
+        if (isset($options->zerofill)) {
             $result []= 'zerofill';
         }
 

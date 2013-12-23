@@ -32,7 +32,7 @@ class Transaction
             $this->_events->trigger('startTransaction', $this->_connection);
             $this->_connection->execute('COMMIT');
             $this->_events->trigger('commitTransaction', $this->_connection);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->_connection->execute('ROLLBACK');
             $this->_events->trigger('rollbackTransaction', $this->_connection);
             throw $e;
@@ -51,7 +51,7 @@ class Transaction
         $args = array_slice(func_get_args(),1);
 
         // use an event handler to dispatch to the callback
-        $this->_events->register('startTransaction', function($event, $connection) use($t, $callback, $args) {
+        $this->_events->register('startTransaction', function($event, $connection) use ($t, $callback, $args) {
             $t->results []= call_user_func_array($callback, $args);
         });
 
@@ -74,13 +74,13 @@ class Transaction
     public function deferEvents($events)
     {
         $this->_events
-            ->register('startTransaction', function() use($events) {
+            ->register('startTransaction', function() use ($events) {
                 $events->cork();
             })
-            ->register('commitTransaction', function() use($events) {
+            ->register('commitTransaction', function() use ($events) {
                 $events->uncork();
             })
-            ->register('rollbackTransaction', function() use($events) {
+            ->register('rollbackTransaction', function() use ($events) {
                 $events->discard()->uncork();
             })
             ;

@@ -108,6 +108,7 @@ class Schema
         $class = $this->_class;
         $ret = $class::fromArray($this->unmarshal($row));
         $ret->events()->trigger('afterHydrate', $ret);
+
         return $ret;
     }
 
@@ -126,8 +127,8 @@ class Schema
      */
     public function marshal($row)
     {
-        foreach($this->_props as $key=>$prop) {
-            if(isset($row[$key])) {
+        foreach ($this->_props as $key=>$prop) {
+            if (isset($row[$key])) {
                 $row[$key] = $prop->type->marshal($row[$key]);
             }
         }
@@ -141,8 +142,8 @@ class Schema
      */
     public function unmarshal($row)
     {
-        foreach($this->_props as $key=>$prop) {
-            if(isset($row[$key])) {
+        foreach ($this->_props as $key=>$prop) {
+            if (isset($row[$key])) {
                 $row[$key] = $prop->type->unmarshal($row[$key]);
             }
         }
@@ -157,6 +158,7 @@ class Schema
     public function newInstance($args=array())
     {
         $refl = new \ReflectionClass($this->_class);
+
         return $refl->newInstanceArgs($args);
     }
 
@@ -166,8 +168,9 @@ class Schema
     public function equals($o1, $o2)
     {
         // TODO: handle objects that don't match the schema
-        foreach($this->_props as $key=>$prop) {
+        foreach ($this->_props as $key=>$prop) {
             if(!$prop->type->equals($o1->get($key), $o2->get($key)))
+
                 return false;
         }
 
@@ -181,14 +184,13 @@ class Schema
     {
         $diff = array();
 
-        foreach($this->_props as $key=>$prop) {
+        foreach ($this->_props as $key=>$prop) {
             if(!$prop->type->equals($o1->get($key), $o2->get($key)))
                 $diff []= $key;
         }
 
         return $diff;
     }
-
 
     // ------------------------------------
     // route primitives to properties and relationships
@@ -200,6 +202,7 @@ class Schema
     public function getter($attr)
     {
         if(isset($this->_getters[$attr]))
+
             return $this->_getters[$attr];
 
         else if(isset($this->_props[$attr]))
@@ -218,6 +221,7 @@ class Schema
     public function setter($attr)
     {
         if(isset($this->_setters[$attr]))
+
             return $this->_setters[$attr];
 
         else if(isset($this->_props[$attr]))
@@ -235,6 +239,7 @@ class Schema
     public function hasAttribute($attr)
     {
         if(isset($this->_setters[$attr]))
+
             return true;
 
         else if(isset($this->_props[$attr]))

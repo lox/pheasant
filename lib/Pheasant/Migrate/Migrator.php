@@ -43,17 +43,17 @@ class Migrator
         $columns = array();
 
         // build a map of properties to create
-        foreach($schema->properties() as $prop)
-        {
+        foreach ($schema->properties() as $prop) {
             $columns[$prop->name] = $prop->type;
 
             // reset sequences as we go
-            if(property_exists($prop->type, 'sequence')) {
+            if (property_exists($prop->type, 'sequence')) {
                 $sequencePool->delete($mapper->sequenceName($prop));
             }
         }
 
         $table->create($columns);
+
         return $this;
     }
 
@@ -69,9 +69,8 @@ class Migrator
         $sequencePool->initialize();
 
         // delete any sequences
-        foreach($schema->properties() as $prop)
-        {
-            if(property_exists($prop->type, 'sequence')) {
+        foreach ($schema->properties() as $prop) {
+            if (property_exists($prop->type, 'sequence')) {
                 $sequencePool->delete($mapper->sequenceName($prop));
             }
         }

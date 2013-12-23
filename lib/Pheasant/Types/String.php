@@ -12,7 +12,7 @@ class String extends Base
     /**
      * Constructor
      */
-    public function __construct($length=255, $options=null)
+    public function __construct($length = 255, $options = null)
     {
         parent::__construct($options);
         $this->_length = intval($length);
@@ -23,19 +23,16 @@ class String extends Base
      */
     public function columnSql($column, $platform)
     {
-        if($this->_length <= 255)
+        if ($this->_length <= 255) {
             return $platform->columnSql($column, "varchar({$this->_length})", $this->options());
-
-        else if($this->_length <= 65534)
+        } elseif ($this->_length <= 65534) {
             return $platform->columnSql($column, "text", $this->options());
-
-        else if($this->_length <= 16777214)
+        } elseif ($this->_length <= 16777214) {
             return $platform->columnSql($column, "mediumtext", $this->options());
-
-        else if($this->_length <= 4294967294)
+        } elseif ($this->_length <= 4294967294) {
             return $platform->columnSql($column, "longtext", $this->options());
-
-        else
+        } else {
             throw new \BadMethodCallException("Unhandled string length of {$this->_length}");
+        }
     }
 }

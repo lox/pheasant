@@ -24,6 +24,7 @@ class Integer extends Base
     public function columnSql($column, $platform)
     {
         $type = $this->width ? "int({$this->width})" : "int";
+
         return $platform->columnSql($column, $type, $this->options());
     }
 

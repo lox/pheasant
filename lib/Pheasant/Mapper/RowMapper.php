@@ -46,6 +46,7 @@ class RowMapper extends AbstractMapper implements Finder
     public function sequenceName($property)
     {
         $sequence = $property->type->options()->sequence;
+
         return $sequence ?: sprintf("%s_%s_seq", $this->_tableName, $property->name);
     }
 

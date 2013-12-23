@@ -31,4 +31,3 @@ class DateTime extends Base
         return $value->format("c");
     }
 }
-

@@ -42,4 +42,3 @@ class Set extends Base
         return implode(',',$value);
     }
 }
-

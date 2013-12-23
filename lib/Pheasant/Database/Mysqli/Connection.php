@@ -56,6 +56,7 @@ class Connection
             throw new Exception($mysqli->error, $mysqli->errno);
 
         $this->_selectedDatabase = $database;
+
         return $this;
     }
 

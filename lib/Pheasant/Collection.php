@@ -160,6 +160,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     public function lock($clause=null)
     {
         $this->_queryForWrite()->lock($clause);
+
         return $this;
     }
 
@@ -170,10 +171,11 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function save($callback)
     {
-        foreach($this as $object) {
+        foreach ($this as $object) {
             call_user_func($callback, $object);
             if($object->changes()) $object->save();
         }
+
         return $this;
     }
 
@@ -184,9 +186,10 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     public function delete()
     {
         // TODO: optimize this down into a single SQL call
-        foreach($this as $object) {
+        foreach ($this as $object) {
             $object->delete();
         }
+
         return $this;
     }
 
@@ -230,6 +233,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     public function aggregate($function, $fields=null)
     {
         $query = clone $this->_query;
+
         return $query->select(sprintf('%s(%s)', $function, $fields))->execute()->scalar();
     }
 
@@ -244,6 +248,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     public function offsetGet($offset)
     {
         $this->_iterator->seek($offset);
+
         return $this->_iterator->current();
     }
 

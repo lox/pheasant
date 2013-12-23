@@ -146,7 +146,7 @@ class Pheasant
      */
     public function events()
     {
-        if(!isset($this->_events)) {
+        if (!isset($this->_events)) {
             $this->_events = new \Pheasant\Events();
         }
 
@@ -199,6 +199,5 @@ class Pheasant
 
         return $transaction;
     }
-
 
 }

@@ -31,4 +31,3 @@ class UnixTimestamp extends Base
         return $value->getTimestamp();
     }
 }
-

@@ -28,6 +28,7 @@ class HasOne extends Relationship
     public function get($object, $key)
     {
         if(($localValue = $object->{$this->local}) === null)
+
             return null;
 
         $result = $this
@@ -35,8 +36,8 @@ class HasOne extends Relationship
             ->execute();
             ;
 
-        if(!count($result)) {
-            if($this->_allowEmpty) {
+        if (!count($result)) {
+            if ($this->_allowEmpty) {
                 return null;
             } else {
                 throw new \Pheasant\Exception("Failed to find a $key (via $this->foreign)");

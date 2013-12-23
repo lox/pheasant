@@ -49,6 +49,7 @@ class Query implements \IteratorAggregate, \Countable
     public function lock($clause='')
     {
         $this->_lock = $clause ?: 'FOR UPDATE';
+
         return $this;
     }
 
@@ -254,12 +255,13 @@ class Query implements \IteratorAggregate, \Countable
 
     public function count()
     {
-        if(isset($this->_resultset)) {
+        if (isset($this->_resultset)) {
             return $this->_resultset->count();
-        } else if(isset($this->_limit)) {
+        } elseif (isset($this->_limit)) {
             return $this->execute()->count();
         } else {
             $query = clone $this;
+
             return $query->select("count(*) count")->execute()->scalar();
         }
     }
