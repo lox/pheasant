@@ -133,10 +133,8 @@ class RowMapper extends AbstractMapper implements Finder
      */
     public function find($class, Criteria $criteria=null)
     {
-        // extract a short version of the classname
-        $alias = explode("\\", str_replace('_', '\\', $class));
-
-        return new Collection($class, $this->query($criteria, end($alias)));
+        return new Collection($class, 
+            $this->query($criteria, $this->_pheasant->schema($class)->alias()));
     }
 
     /* (non-phpdoc)

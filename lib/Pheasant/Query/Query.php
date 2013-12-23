@@ -234,10 +234,10 @@ class Query implements \IteratorAggregate, \Countable
 
     private function _join($type, $mixed, $criteria, $alias='')
     {
-        if(is_object($mixed)) {
+        if (is_object($mixed)) {
             $this->_joins []= sprintf('%s (%s) %s %s', $type, $mixed, $alias ?: 'derived', $criteria);
-        } else if($alias) {
-            $this->_joins []= sprintf('%s `%s` AS %s %s', $type, $mixed, $alias, $criteria);    
+        } elseif ($alias) {
+            $this->_joins []= sprintf('%s `%s` AS %s %s', $type, $mixed, $alias, $criteria);
         } else {
             $this->_joins []= sprintf('%s `%s` %s', $type, $mixed, $criteria);
         }
@@ -272,7 +272,7 @@ class Query implements \IteratorAggregate, \Countable
     {
         if (isset($this->_resultset)) {
             return $this->_resultset->count();
-        } elseif (isset($this->_limit)) {
+        } elseif (isset($this->_limit) || isset($this->_group)) {
             return $this->execute()->count();
         } else {
             $query = clone $this;

@@ -43,6 +43,16 @@ class Schema
     }
 
     /**
+     * A short alias for the object, used in queries
+     * @return string
+     */
+    public function alias()
+    {
+        $fragments = explode("\\", str_replace('_', '\\', $this->_class));
+        return end($fragments);
+    }
+
+    /**
      * Returns an identity for a domain object
      * @return Identity
      */
@@ -97,6 +107,18 @@ class Schema
     public function relationships()
     {
         return $this->_rels;
+    }
+
+    /**
+     * Returns a particular Relationship
+     * @return Relationship
+     */
+    public function relationship($name)
+    {
+        if(!isset($this->_rels[$name]))
+            throw new \InvalidArgumentException("Unknown relationship $name");
+
+        return $this->_rels[$name];
     }
 
     /**

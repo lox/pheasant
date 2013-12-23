@@ -119,7 +119,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     /**
      * Counts the number or results in the query
      */
-    public function count($distinct=null)
+    public function count()
     {
         if(!isset($this->_count))
             $this->_count = $this->_iterator->count();
@@ -237,6 +237,97 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
             throw new Exception("Collection is read-only during iteration");
 
         return $this->_query;
+    }
+
+    /**
+     * Join other related objects into a collection for the purpose of filtering. Relationships
+     * is either a flat array of relationships (as defined in the object's schema) or a nested array
+     * @chainable
+     */
+    public function join($rels, $joinType='inner')
+    {
+        foreach($this->_normalizeRelationshipArray($rels) as $alias=>$nested) {
+            $schema = $this->_addJoinForRelationship(
+                $this->_schema, $alias, $nested, $joinType
+            );
+        }
+
+        $groupBy = array();
+        $alias = $this->_schema->alias();
+
+        // add the primary keys to the group by
+        foreach($this->_schema->primary() as $key=>$v) {
+            $groupBy []= sprintf("%s.`%s`", $alias, $key);
+        }
+
+        $this->_queryForWrite()->groupBy(implode(',', $groupBy));
+
+        return $this;
+    }
+
+    /**
+     * Takes either a flat array of relationships or a nested key=>value array and returns 
+     * it as a nested format
+     * @return array
+     */
+    private function _normalizeRelationshipArray($array) 
+    {
+        $nested = array();
+
+        foreach($array as $key=>$value) {
+            if(is_numeric($key)) {
+                $nested[$value] = array();
+            } else {
+                $nested[$key] = $value;
+            }
+        }
+
+        return $nested;
+    }
+
+    /**
+     * Adds a join clause to the internal query for the given schema and relationship. Optionally
+     * takes a nested list of relationships that will be recursively joined as needed.
+     * @return void 
+     */
+    private function _addJoinForRelationship($schema, $relName, $nested=array(), $joinType='inner') 
+    {
+        if(!in_array($joinType, array('inner','left','right'))) {
+            throw new \InvalidArgumentException("Unsupported join type: $joinType");
+        }
+        
+        list($relName, $alias) = $this->_parseRelName($relName); 
+        $rel = $schema->relationship($relName);
+
+        // look up schema and table for both sides of join
+        $localTable = \Pheasant::instance()->mapperFor($schema->className())->table();
+        $remoteSchema = \Pheasant::instance()->schema($rel->class);
+        $remoteTable = \Pheasant::instance()->mapperFor($rel->class)->table();
+
+        $joinMethod = $joinType.'Join';
+        $this->_queryForWrite()->$joinMethod($remoteTable->name()->table, sprintf(
+            'ON `%s`.`%s`=`%s`.`%s`',
+            $localTable->name()->table,
+            $rel->local,
+            $alias,
+            $rel->foreign
+            ),
+            $alias
+        );
+
+        foreach($this->_normalizeRelationshipArray($nested) as $relName=>$nested) {
+            $this->_addJoinForRelationship($remoteSchema, $relName, $nested, $joinType);
+        }
+    }
+
+    /**
+     * Parses `RelName r1` as array('RelName', 'r1') or `Relname` as array('RelName','RelName')
+     * @return array
+     */
+    private function _parseRelName($relName)
+    {
+        $parts = explode(' ', $relName, 2);
+        return isset($parts[1]) ? $parts : array($parts[0], $parts[0]);
     }
 
     // ----------------------------------
