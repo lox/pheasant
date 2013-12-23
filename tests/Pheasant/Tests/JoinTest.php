@@ -62,4 +62,15 @@ class JoinTestCase extends \Pheasant\Tests\MysqlTestCase
         $this->assertEquals('Super-human Strength', $collection[0]->description);
         $this->assertEquals('Spider Senses', $collection[1]->description);
     }
+
+    public function testJoinedResultsOnlyHaveThePrimaryObjectsColumns()
+    {
+        $collection = Hero::all()->join(array('Powers'));
+
+        $this->assertEquals(
+            array('heroid','alias','identityid'),
+            array_keys($collection[0]->toArray())
+        );
+    }
+
 }

@@ -24,7 +24,7 @@ class Connection
     public static
         $counter=0,
         $timer=0,
-        $debug=true
+        $debug=false
         ;
 
     /**

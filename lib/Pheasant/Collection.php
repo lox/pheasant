@@ -248,6 +248,9 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     {
         $schemaAlias = $this->_schema->alias();
 
+        // only return the main object's columns
+        $this->_queryForWrite()->select("$schemaAlias.*");
+
         foreach($this->_normalizeRelationshipArray($rels) as $alias=>$nested) {
             $schema = $this->_addJoinForRelationship(
                 $schemaAlias, $this->_schema, $alias, $nested, $joinType
