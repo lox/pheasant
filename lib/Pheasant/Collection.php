@@ -246,22 +246,23 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function join($rels, $joinType='inner')
     {
+        $schemaAlias = $this->_schema->alias();
+
         foreach($this->_normalizeRelationshipArray($rels) as $alias=>$nested) {
             $schema = $this->_addJoinForRelationship(
-                $this->_schema, $alias, $nested, $joinType
+                $schemaAlias, $this->_schema, $alias, $nested, $joinType
             );
         }
 
         $groupBy = array();
-        $alias = $this->_schema->alias();
 
         // add the primary keys to the group by
         foreach($this->_schema->primary() as $key=>$v) {
-            $groupBy []= sprintf("%s.`%s`", $alias, $key);
+            $groupBy []= sprintf("%s.`%s`", $schemaAlias, $key);
         }
 
         $this->_queryForWrite()->groupBy(implode(',', $groupBy));
-
+        
         return $this;
     }
 
@@ -290,7 +291,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
      * takes a nested list of relationships that will be recursively joined as needed.
      * @return void 
      */
-    private function _addJoinForRelationship($schema, $relName, $nested=array(), $joinType='inner') 
+    private function _addJoinForRelationship($parentAlias, $schema, $relName, $nested=array(), $joinType='inner') 
     {
         if(!in_array($joinType, array('inner','left','right'))) {
             throw new \InvalidArgumentException("Unsupported join type: $joinType");
@@ -307,7 +308,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         $joinMethod = $joinType.'Join';
         $this->_queryForWrite()->$joinMethod($remoteTable->name()->table, sprintf(
             'ON `%s`.`%s`=`%s`.`%s`',
-            $localTable->name()->table,
+            $parentAlias,
             $rel->local,
             $alias,
             $rel->foreign
@@ -316,7 +317,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         );
 
         foreach($this->_normalizeRelationshipArray($nested) as $relName=>$nested) {
-            $this->_addJoinForRelationship($remoteSchema, $relName, $nested, $joinType);
+            $this->_addJoinForRelationship($alias, $remoteSchema, $relName, $nested, $joinType);
         }
     }
 
