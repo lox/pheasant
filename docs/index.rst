@@ -1,5 +1,5 @@
 
-Pheasant
+Pheasant Documentation
 ======================================
 
 Pheasant is a bare-bones data mapper written specifically for PHP 5.3.1+ and MySQL. Rather
@@ -27,12 +27,3 @@ Contents
    gettingstarted
    configuration
    domainobjects
-
-
-Indices and tables
-------------------
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
