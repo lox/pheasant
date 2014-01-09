@@ -19,6 +19,7 @@ class TypeMarshallingTest extends \Pheasant\Tests\MysqlTestCase
                 'id' => new Types\Integer(null, 'primary auto_increment'),
                 'type' => new Types\String(128),
                 'isllama' => new Types\Boolean(array('default'=>true)),
+                'weight' => new Types\Decimal(5, 1),
                 'timecreated' => new Types\DateTime(),
                 'unixtime' => new Types\UnixTimestamp(),
             ));
@@ -37,6 +38,15 @@ class TypeMarshallingTest extends \Pheasant\Tests\MysqlTestCase
         $llamaById = DomainObject::byId(1);
         $this->assertSame($llamaById->id, 1);
         $this->assertSame($llamaById->type, 'Llama');
+    }
+
+    public function testDecimalTypesAreUnmarshalled()
+    {
+        $object = new DomainObject(array('type'=>'Llama', 'weight' => 88.5));
+        $object->save();
+
+        $llamaById = DomainObject::byId(1);
+        $this->assertSame($llamaById->weight, 88.5);
     }
 
     public function testBooleanTypesAreUnmarshalled()
