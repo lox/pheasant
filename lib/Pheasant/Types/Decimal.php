@@ -26,4 +26,12 @@ class Decimal extends Base
     {
         return $platform->columnSql($column, "decimal({$this->_length},{$this->_scale})", $this->options());
     }
+
+    /* (non-phpdoc)
+     * @see \Pheasant\Type::unmarshal
+     */
+    public function unmarshal($value)
+    {
+        return (float)$value;
+    }
 }
