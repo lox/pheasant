@@ -22,6 +22,7 @@ class TypeMarshallingTest extends \Pheasant\Tests\MysqlTestCase
                 'weight' => new Types\Decimal(5, 1),
                 'timecreated' => new Types\DateTime(),
                 'unixtime' => new Types\UnixTimestamp(),
+                'state' => new Types\Enum(array('pending', 'open', 'expired'))
             ));
         });
 
@@ -92,6 +93,14 @@ class TypeMarshallingTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertSame($llamaById->unixtime->getTimestamp(), $ts->getTimestamp());
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testEnumTypesErrorOnInvalidData()
+    {
+        $object = new DomainObject(array('type'=>'Llama', 'state'=>'alpaca'));
+        $object->save();
+    }
 
 
 }
