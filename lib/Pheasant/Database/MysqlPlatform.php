@@ -27,6 +27,10 @@ class MysqlPlatform
         }
 
         foreach ($options as $key=>$value) {
+            if ($key == 'allowed') {
+                continue;
+            }
+
             switch ($key) {
                 case 'primary':
                     $result [] = 'primary key';
