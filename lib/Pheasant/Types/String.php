@@ -35,4 +35,20 @@ class String extends Base
             throw new \BadMethodCallException("Unhandled string length of {$this->_length}");
         }
     }
+
+    /* (non-phpdoc)
+     * @see \Pheasant\Type::marshal
+     */
+    public function marshal($value)
+    {
+        if ($this->options()->allowed && !in_array($value, $this->options()->allowed)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Allowed values for this field are %s.',
+                    implode(', ', $this->options()->allowed)
+                )
+            );
+        }
+        return $value;
+    }
 }

@@ -44,6 +44,7 @@ class MysqlPlatform
                 case 'sequence':
                 case 'unsigned':
                 case 'zerofill':
+                case 'allowed':
                     break;
 
                 default:

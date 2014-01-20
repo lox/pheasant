@@ -22,6 +22,7 @@ class TypeMarshallingTest extends \Pheasant\Tests\MysqlTestCase
                 'weight' => new Types\Decimal(5, 1),
                 'timecreated' => new Types\DateTime(),
                 'unixtime' => new Types\UnixTimestamp(),
+                'camelidvariant' => new Types\String(128, array('allowed'=>array('llama', 'alpaca'))),
             ));
         });
 
@@ -92,6 +93,22 @@ class TypeMarshallingTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertSame($llamaById->unixtime->getTimestamp(), $ts->getTimestamp());
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testStringAllowedValuesAreEnforced()
+    {
+        $object = new DomainObject(array('camelidvariant' => 'squirrel'));
+        $object->save();
+    }
 
+    public function testStringAllowedValues()
+    {
+        $object = new DomainObject(array('camelidvariant' => 'llama'));
+        $object->save();
 
+        $llamaById = DomainObject::byId(1);
+        $this->assertSame($llamaById->camelidvariant, 'llama');
+
+    }
 }
