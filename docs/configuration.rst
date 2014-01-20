@@ -75,4 +75,7 @@ connections via the connection manager:
 
 Allowing Pheasant objects to use different connections is a feature that is under development.
 
+.. glossary::
 
+   PSR-0
+      A standard for for interoperable PHP autoloaders See https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md
