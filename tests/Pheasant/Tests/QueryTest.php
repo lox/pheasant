@@ -137,6 +137,21 @@ class QueryTest extends \Pheasant\Tests\MysqlTestCase
             $query->toSql());
     }
 
+    public function testAddingChainedOrderBy()
+    {
+        $query = new Query();
+        $query
+            ->select('first_name, last_name')
+            ->from('users')
+            ->orderBy('last_name ASC')
+            ->orderBy('first_name')
+            ;
+
+        $this->assertEquals(
+            'SELECT first_name, last_name FROM users ORDER BY last_name ASC, first_name',
+            $query->toSql());
+    }
+
     public function testAddingDefaultLock()
     {
         $query = new Query();
