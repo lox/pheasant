@@ -27,10 +27,6 @@ class MysqlPlatform
         }
 
         foreach ($options as $key=>$value) {
-            if ($key == 'allowed') {
-                continue;
-            }
-
             switch ($key) {
                 case 'primary':
                     $result [] = 'primary key';
@@ -48,6 +44,7 @@ class MysqlPlatform
                 case 'sequence':
                 case 'unsigned':
                 case 'zerofill':
+                case 'allowed':
                     break;
 
                 default:
