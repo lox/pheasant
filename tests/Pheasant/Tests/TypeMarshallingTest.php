@@ -102,4 +102,13 @@ class TypeMarshallingTest extends \Pheasant\Tests\MysqlTestCase
         $object->save();
     }
 
+    public function testStringAllowedValues()
+    {
+        $object = new DomainObject(array('camelidvariant' => 'llama'));
+        $object->save();
+
+        $llamaById = DomainObject::byId(1);
+        $this->assertSame($llamaById->camelidvariant, 'llama');
+
+    }
 }
