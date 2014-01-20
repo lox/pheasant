@@ -114,7 +114,7 @@ class QueryTest extends \Pheasant\Tests\MysqlTestCase
             ->select('foo')
             ->from('bar')
             ->orderBy('baz')
-            ->orderBy('moo')
+            ->andOrderBy('moo')
             ;
 
         $this->assertEquals(
@@ -122,7 +122,7 @@ class QueryTest extends \Pheasant\Tests\MysqlTestCase
             $query->toSql());
     }
 
-    public function testAddingChainedOrderBy()
+    public function testChainedOrderByReplacesOrderBy()
     {
         $query = new Query();
         $query
@@ -133,7 +133,7 @@ class QueryTest extends \Pheasant\Tests\MysqlTestCase
             ;
 
         $this->assertEquals(
-            'SELECT first_name, last_name FROM users ORDER BY last_name ASC, first_name',
+            'SELECT first_name, last_name FROM users ORDER BY first_name',
             $query->toSql());
     }
 
