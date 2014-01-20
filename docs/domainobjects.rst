@@ -21,16 +21,16 @@ The initialization happens in `DomainObject::initialize`, for which the default 
 look for several template methods in the object.
 
 properties()
-    A map of column names to Type objects (see :doc:`mapping/types`)
+    A map of column names to Type objects (see `mapping/types`)
 
 relationships()
-    A map of keys to RelationType objects representing 1-n or 1-1 relationships  (see :doc:`mapping/relationships`)
+    A map of keys to RelationType objects representing 1-n or 1-1 relationships  (see `mapping/relationships`)
 
 tableName()
     The database table name to map to, defaults to the name of the class
 
 mapper()
-    The mapper instance to use, defaults to the :doc:`mapping/rowmapper`.
+    The mapper instance to use, defaults to the `mapping/rowmapper`.
 
 Property Access
 ---------------
