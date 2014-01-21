@@ -89,7 +89,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
      */
     public function order($sql, $params=array())
     {
-        $this->orderBy($sql, $params);
+        return $this->orderBy($sql, $params);
     }
 
     /**
