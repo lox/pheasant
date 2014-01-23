@@ -240,6 +240,22 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     }
 
     /**
+     * Return only unique combinations of the domain object in the collection, e.g such
+     * as when you want only the unique objects that are the result of a join on
+     * conditions. Only columns from the primary object will be in the result.
+     * @chainable
+     */
+    public function unique()
+    {
+        $this->_queryForWrite()
+            ->distinct()
+            ->select($this->_schema->alias().".*")
+            ;
+
+        return $this;
+    }
+
+    /**
      * Join other related objects into a collection for the purpose of filtering. Relationships
      * is either a flat array of relationships (as defined in the object's schema) or a nested array
      * @chainable
@@ -249,9 +265,9 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         $schemaAlias = $this->_schema->alias();
 
         // only return the main object's columns
-        $this->_queryForWrite()->select("$schemaAlias.*");
+        // $this->_queryForWrite()->select("$schemaAlias.*");
 
-        foreach($this->_normalizeRelationshipArray($rels) as $alias=>$nested) {
+        foreach ($this->_normalizeRelationshipArray($rels) as $alias=>$nested) {
             $schema = $this->_addJoinForRelationship(
                 $schemaAlias, $this->_schema, $alias, $nested, $joinType
             );
@@ -260,26 +276,25 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         $groupBy = array();
 
         // add the primary keys to the group by
-        foreach($this->_schema->primary() as $key=>$v) {
+        foreach ($this->_schema->primary() as $key=>$v) {
             $groupBy []= sprintf("%s.`%s`", $schemaAlias, $key);
         }
 
-        $this->_queryForWrite()->groupBy(implode(',', $groupBy));
-        
+        //$this->_queryForWrite()->groupBy(implode(',', $groupBy));
         return $this;
     }
 
     /**
-     * Takes either a flat array of relationships or a nested key=>value array and returns 
+     * Takes either a flat array of relationships or a nested key=>value array and returns
      * it as a nested format
      * @return array
      */
-    private function _normalizeRelationshipArray($array) 
+    private function _normalizeRelationshipArray($array)
     {
         $nested = array();
 
-        foreach($array as $key=>$value) {
-            if(is_numeric($key)) {
+        foreach ($array as $key=>$value) {
+            if (is_numeric($key)) {
                 $nested[$value] = array();
             } else {
                 $nested[$key] = $value;
@@ -292,15 +307,15 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     /**
      * Adds a join clause to the internal query for the given schema and relationship. Optionally
      * takes a nested list of relationships that will be recursively joined as needed.
-     * @return void 
+     * @return void
      */
-    private function _addJoinForRelationship($parentAlias, $schema, $relName, $nested=array(), $joinType='inner') 
+    private function _addJoinForRelationship($parentAlias, $schema, $relName, $nested=array(), $joinType='inner')
     {
-        if(!in_array($joinType, array('inner','left','right'))) {
+        if (!in_array($joinType, array('inner','left','right'))) {
             throw new \InvalidArgumentException("Unsupported join type: $joinType");
         }
-        
-        list($relName, $alias) = $this->_parseRelName($relName); 
+
+        list($relName, $alias) = $this->_parseRelName($relName);
         $rel = $schema->relationship($relName);
 
         // look up schema and table for both sides of join
@@ -319,7 +334,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
             $alias
         );
 
-        foreach($this->_normalizeRelationshipArray($nested) as $relName=>$nested) {
+        foreach ($this->_normalizeRelationshipArray($nested) as $relName=>$nested) {
             $this->_addJoinForRelationship($alias, $remoteSchema, $relName, $nested, $joinType);
         }
     }
@@ -331,6 +346,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     private function _parseRelName($relName)
     {
         $parts = explode(' ', $relName, 2);
+
         return isset($parts[1]) ? $parts : array($parts[0], $parts[0]);
     }
 

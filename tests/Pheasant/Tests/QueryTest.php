@@ -164,4 +164,18 @@ class QueryTest extends \Pheasant\Tests\MysqlTestCase
             'SELECT userid FROM user LOCK IN SHARE MODE',
             $query->toSql());
     }
+
+    public function testDistinctColumn()
+    {
+        $query = new Query();
+        $query
+            ->distinct()
+            ->select('userid')
+            ->from('user')
+            ;
+
+        $this->assertEquals(
+            'SELECT DISTINCT userid FROM user',
+            $query->toSql());
+    }
 }

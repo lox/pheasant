@@ -32,9 +32,29 @@ class JoinTestCase extends \Pheasant\Tests\MysqlTestCase
         ));
     }
 
-    public function testBasicJoining()
+    public function testBasicJoiningResultsInCartesianProduct()
     {
         $collection = Hero::all()->join(array('Powers', 'SecretIdentity'));
+        $objects = iterator_to_array($collection);
+
+        // the cartesian product of hero x identity x power
+        $this->assertCount(3 * 2, $collection);
+    }
+
+    public function testBasicJoiningBringsInAllColumns()
+    {
+        $collection = Hero::all()->join(array('Powers', 'SecretIdentity'));
+        $objects = iterator_to_array($collection);
+
+        $this->assertTrue($collection[0]->has('realname'));
+        $this->assertTrue($collection[0]->has('description'));
+    }
+
+    public function testJoiningWithUnique()
+    {
+        $collection = Hero::all()
+            ->join(array('Powers', 'SecretIdentity'))
+            ->unique();
         $objects = iterator_to_array($collection);
 
         $this->assertCount(3, $collection);
@@ -47,7 +67,7 @@ class JoinTestCase extends \Pheasant\Tests\MysqlTestCase
             ->filter('SecretIdentity.realname = ?', "Peter Parker")
             ;
 
-        $this->assertCount(1, $collection);
+        $this->assertCount(1 * 2, $collection);
         $this->assertEquals("Spider Man", $collection[0]->alias);
     }
 
@@ -62,15 +82,4 @@ class JoinTestCase extends \Pheasant\Tests\MysqlTestCase
         $this->assertEquals('Super-human Strength', $collection[0]->description);
         $this->assertEquals('Spider Senses', $collection[1]->description);
     }
-
-    public function testJoinedResultsOnlyHaveThePrimaryObjectsColumns()
-    {
-        $collection = Hero::all()->join(array('Powers'));
-
-        $this->assertEquals(
-            array('heroid','alias','identityid'),
-            array_keys($collection[0]->toArray())
-        );
-    }
-
 }

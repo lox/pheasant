@@ -18,6 +18,7 @@ class Query implements \IteratorAggregate, \Countable
     private $_where;
     private $_group;
     private $_order=array();
+    private $_distinct=false;
 
     // resultset
     private $_connection;
@@ -38,6 +39,17 @@ class Query implements \IteratorAggregate, \Countable
     public function select($column)
     {
         $this->_select = $this->_arguments(func_get_args());
+
+        return $this;
+    }
+
+    /**
+     * Whether to prefix the SELECT clause with DISTINCT
+     * @chainable
+     */
+    public function distinct($value=true)
+    {
+        $this->_distinct = $value;
 
         return $this;
     }
@@ -185,7 +197,8 @@ class Query implements \IteratorAggregate, \Countable
     public function toSql()
     {
         return implode(' ', array_filter(array(
-            $this->_clause('SELECT', $this->_select),
+            $this->_clause(($this->_distinct
+                ? 'SELECT DISTINCT' : 'SELECT'), $this->_select),
             $this->_clause('FROM', $this->_from),
             implode(' ', $this->_joins),
             $this->_clause('WHERE', $this->_where),
