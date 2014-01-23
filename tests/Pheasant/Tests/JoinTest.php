@@ -60,6 +60,16 @@ class JoinTestCase extends \Pheasant\Tests\MysqlTestCase
         $this->assertCount(3, $collection);
     }
 
+    public function testJoiningWithGroupBy()
+    {
+        $collection = Hero::all()
+            ->join(array('Powers', 'SecretIdentity'))
+            ->groupBy('Hero.heroid');
+        $objects = iterator_to_array($collection);
+
+        $this->assertCount(3, $collection);
+    }
+
     public function testJoiningAndFiltering()
     {
         $collection = Hero::all()

@@ -264,23 +264,24 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     {
         $schemaAlias = $this->_schema->alias();
 
-        // only return the main object's columns
-        // $this->_queryForWrite()->select("$schemaAlias.*");
-
         foreach ($this->_normalizeRelationshipArray($rels) as $alias=>$nested) {
             $schema = $this->_addJoinForRelationship(
                 $schemaAlias, $this->_schema, $alias, $nested, $joinType
             );
         }
 
-        $groupBy = array();
+        return $this;
+    }
 
-        // add the primary keys to the group by
-        foreach ($this->_schema->primary() as $key=>$v) {
-            $groupBy []= sprintf("%s.`%s`", $schemaAlias, $key);
-        }
+    /**
+     * Groups domain objects particular columns, either a single column an array. This
+     * method is additive, it won't replace previous groupBy's
+     * @chainable
+     */
+    public function groupBy($columns)
+    {
+        $this->_queryForWrite()->groupBy(implode(',', (array) $columns));
 
-        //$this->_queryForWrite()->groupBy(implode(',', $groupBy));
         return $this;
     }
 
