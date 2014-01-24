@@ -49,6 +49,7 @@ class Schema
     public function alias()
     {
         $fragments = explode("\\", str_replace('_', '\\', $this->_class));
+
         return end($fragments);
     }
 
@@ -58,7 +59,7 @@ class Schema
      */
     public function identity($object)
     {
-        return new Identity($this->primary(), $object);
+        return new Identity(get_class($object), $this->primary(), $object);
     }
 
     /**

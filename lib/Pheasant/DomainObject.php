@@ -221,7 +221,7 @@ class DomainObject implements \ArrayAccess
         $lock = new Locking\PessimisticLock($this);
         $locked = $lock->acquire();
 
-        if(is_callable($onChanged) && !$locked->equals($this)) {
+        if (is_callable($onChanged) && !$locked->equals($this)) {
             call_user_func($onChanged, $this, $locked);
         }
 
@@ -514,7 +514,7 @@ class DomainObject implements \ArrayAccess
      */
     public function __toString()
     {
-        return $this->className() . (string) $this->identity();
+        return (string) $this->identity();
     }
 
     // ----------------------------------------
