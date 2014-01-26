@@ -93,6 +93,25 @@ class TypeMarshallingTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertSame($llamaById->unixtime->getTimestamp(), $ts->getTimestamp());
     }
 
+    public function testDecimalTypesAreMarshalledCorrectInLocale()
+    {
+        $prevLocale = setlocale(LC_ALL, "0");
+
+        /**
+         * Locale with decimal_point = ","
+         * So a float 88.5 becomes 88,5.
+         */
+        setlocale(LC_ALL, 'nl_NL');
+
+        $object = new DomainObject(array('type'=>'Llama', 'weight' => 88.5));
+        $object->save();
+
+        $llamaById = DomainObject::byId(1);
+        $this->assertSame($llamaById->weight, 88.5);
+
+        setlocale(LC_ALL, $prevLocale);
+    }
+
     /**
      * @expectedException InvalidArgumentException
      */
