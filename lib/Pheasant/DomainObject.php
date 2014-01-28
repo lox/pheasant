@@ -187,7 +187,8 @@ class DomainObject implements \ArrayAccess
     }
 
     /**
-     * Returns the connection object for the domain object
+     * Returns the connection object for the domain object.
+     * This can be overridden on a per-class basis.
      * @return Connection
     */
     public static function connection()
@@ -201,7 +202,7 @@ class DomainObject implements \ArrayAccess
     */
     public function transaction($closure, $execute=true)
     {
-        $transaction = self::connection()->transaction();
+        $transaction = static::connection()->transaction();
         $transaction->callback($closure, $this);
 
         if($execute)
@@ -257,7 +258,7 @@ class DomainObject implements \ArrayAccess
     protected function mapper()
     {
         return new Pheasant\Mapper\RowMapper(
-            $this->tableName(), self::connection());
+            $this->tableName(), static::connection());
     }
 
     /**
