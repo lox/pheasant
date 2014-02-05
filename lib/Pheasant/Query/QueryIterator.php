@@ -8,10 +8,10 @@ use \Pheasant\Pheasant;
  */
 class QueryIterator implements \SeekableIterator, \Countable
 {
-    private $_query;
-    private $_hydrator;
+    protected $_query;
+    protected $_hydrator;
     private $_iterator;
-    private $_resultSet;
+    protected $_resultSet;
 
     /**
      * Constructor
@@ -39,7 +39,7 @@ class QueryIterator implements \SeekableIterator, \Countable
     /**
      * Returns the query result set iterator, executing the query if needed
      */
-    private function _resultSet()
+    protected function _resultSet()
     {
         if (!isset($this->_resultSet)) {
             $this->_resultSet = $this->_query->execute();

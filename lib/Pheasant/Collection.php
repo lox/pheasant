@@ -4,6 +4,7 @@ namespace Pheasant;
 
 use \Pheasant;
 use \Pheasant\Query\QueryIterator;
+use \Pheasant\Query\AsyncQueryIterator;
 
 class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 {
@@ -27,6 +28,21 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         $this->_iterator = new QueryIterator($query, function($row) use ($schema) {
             return $schema->hydrate($row);
         });
+    }
+
+    public function async($connection='default')
+    {
+        $connection = is_object($connection)
+            ? $connection
+            : Pheasant::instance()->connection($connection);
+
+        $this->_query->setConnection($connection);
+        $schema = $this->_schema;
+        $this->_iterator = new AsyncQueryIterator($this->_query, function($row) use ($schema) {
+            return $schema->hydrate($row);
+        });
+        $this->_readonly = true;
+        return $this;
     }
 
     /**

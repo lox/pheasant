@@ -166,6 +166,36 @@ class Connection
         });
     }
 
+    public function asyncExecute($sql, $params=array())
+    {
+        if(!is_array($params))
+            $params = array_slice(func_get_args(),1);
+
+        $mysqli = $this->_mysqli();
+        $sql = count($params) ? $this->binder()->bind($sql, $params) : $sql;
+
+        // delegate execution to the filter chain
+        return $this->_filter->execute($sql, function($sql) use ($mysqli) {
+
+            \Pheasant\Database\Mysqli\Connection::$counter++;
+
+            $timer = microtime(true);
+            $r = $mysqli->query($sql, MYSQLI_ASYNC);
+
+            \Pheasant\Database\Mysqli\Connection::$timer += microtime(true)-$timer;
+
+            if (\Pheasant\Database\Mysqli\Connection::$debug) {
+                printf("<pre>Pheasant executed <code>%s</code> on thread #%d in %.2fms, returned %d rows</pre>\n\n",
+                    $sql, $mysqli->thread_id, (microtime(true)-$timer)*1000, is_object($r) ? $r->num_rows : 0);
+            }
+
+            if($mysqli->error)
+                throw new Exception($mysqli->error, $mysqli->errno);
+
+            return new AsyncResultSet($mysqli);
+        });
+    }
+
     /**
      * @return Transaction
      */
