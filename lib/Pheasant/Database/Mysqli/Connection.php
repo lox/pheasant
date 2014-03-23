@@ -18,13 +18,13 @@ class Connection
         $_filter,
         $_sequencePool,
         $_strict,
-        $_selectedDatabase
+        $_selectedDatabase,
+        $_debug=false
         ;
 
     public static
         $counter=0,
-        $timer=0,
-        $debug=false
+        $timer=0
         ;
 
     /**
@@ -42,6 +42,8 @@ class Connection
 
         if(!empty($this->_dsn->database))
             $this->_selectedDatabase = $this->_dsn->database;
+
+        $this->_debug = getenv('PHEASANT_DEBUG');
     }
 
     /**
@@ -137,19 +139,24 @@ class Connection
             $params = array_slice(func_get_args(),1);
 
         $mysqli = $this->_mysqli();
+        $debug = $this->_debug;
         $sql = count($params) ? $this->binder()->bind($sql, $params) : $sql;
 
         // delegate execution to the filter chain
-        return $this->_filter->execute($sql, function($sql) use ($mysqli) {
-
+        return $this->_filter->execute($sql, function($sql) use ($mysqli, $debug) {
             \Pheasant\Database\Mysqli\Connection::$counter++;
 
-            $timer = microtime(true);
+            if($debug) {
+                $timer = microtime(true);
+            }
+
             $r = $mysqli->query($sql, MYSQLI_STORE_RESULT);
 
-            \Pheasant\Database\Mysqli\Connection::$timer += microtime(true)-$timer;
+            if($debug) {
+                \Pheasant\Database\Mysqli\Connection::$timer += microtime(true)-$timer;
+            }
 
-            if (\Pheasant\Database\Mysqli\Connection::$debug) {
+            if ($debug) {
                 printf("<pre>Pheasant executed <code>%s</code> on thread #%d in %.2fms, returned %d rows</pre>\n\n",
                     $sql, $mysqli->thread_id, (microtime(true)-$timer)*1000, is_object($r) ? $r->num_rows : 0);
             }
