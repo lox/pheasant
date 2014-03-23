@@ -12,6 +12,7 @@ class DomainObject implements \ArrayAccess
     private $_data = array();
     private $_changed = array();
     private $_saved = false;
+    private $_overriden = array();
     private $_events;
 
     /**
@@ -329,6 +330,20 @@ class DomainObject implements \ArrayAccess
     }
 
     // ----------------------------------------
+    // cache functions
+
+    /**
+     * Defines a closure that is called when the property is accessed.
+     * The closure is passed the property and the domain object.
+     * @chainable
+     */
+    public function override($property, $closure)
+    {
+        $this->_overriden[$property] = $closure;
+        return $this;
+    }
+
+    // ----------------------------------------
     // static helpers
 
     /**
@@ -490,6 +505,10 @@ class DomainObject implements \ArrayAccess
      */
     public function __get($key)
     {
+        if(isset($this->_overriden[$key])) {
+            return call_user_func($this->_overriden[$key], $key, $this);
+        }
+
         return call_user_func($this->schema()->getter($key), $this);
     }
 
