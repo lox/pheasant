@@ -34,4 +34,9 @@ class Decimal extends Base
     {
         return (float)$value;
     }
+
+    public function marshal($value)
+    {
+        return str_replace(',', '.', (string)$value);
+    }
 }
