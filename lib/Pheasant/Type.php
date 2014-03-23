@@ -15,7 +15,7 @@ interface Type
 
     /**
      * Convert from a PHP format to a database format
-     * @return mixed
+     * @return either a scalar or a TypedValue
      */
     public function marshal($value);
 

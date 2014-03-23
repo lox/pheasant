@@ -73,6 +73,7 @@ class RowMapper extends AbstractMapper implements Finder
                 $object->set($key, $this->sequence($property));
         }
 
+        // marshal, escape, insert
         $result = $this->table()
             ->insert($schema->marshal($object->toArray()));
 

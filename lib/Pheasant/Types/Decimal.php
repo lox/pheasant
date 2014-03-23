@@ -2,6 +2,8 @@
 
 namespace Pheasant\Types;
 
+use \Pheasant\Database\TypedValue;
+
 /**
  * A basic decimal type
  */
@@ -33,5 +35,13 @@ class Decimal extends Base
     public function unmarshal($value)
     {
         return (float)$value;
+    }
+
+    /* (non-phpdoc)
+     * @see \Pheasant\Type::marshal
+     */
+    public function marshal($value)
+    {
+        return new TypedValue((float) $value);
     }
 }

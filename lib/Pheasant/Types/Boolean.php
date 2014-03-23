@@ -2,6 +2,8 @@
 
 namespace Pheasant\Types;
 
+use \Pheasant\Database\TypedValue;
+
 /**
  * A basic string type
  */
@@ -21,5 +23,13 @@ class Boolean extends Base
     public function unmarshal($value)
     {
         return (bool) $value;
+    }
+
+    /* (non-phpdoc)
+     * @see \Pheasant\Type::marshal
+     */
+    public function marshal($value)
+    {
+        return new TypedValue((bool)$value);
     }
 }

@@ -28,6 +28,6 @@ class DateTime extends Base
      */
     public function marshal($value)
     {
-        return $value->format("c");
+        return parent::marshal($value->format("c"));
     }
 }
