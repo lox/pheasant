@@ -12,6 +12,7 @@ class QueryIterator implements \SeekableIterator, \Countable
     private $_hydrator;
     private $_iterator;
     private $_resultSet;
+    private $_before=array();
 
     /**
      * Constructor
@@ -37,13 +38,26 @@ class QueryIterator implements \SeekableIterator, \Countable
     }
 
     /**
+     * Add a callback to be called with the query before it's executed
+     * @chainable
+     */
+    public function before($callback)
+    {
+        $this->_before []= $callback;
+
+        return $this;
+    }
+
+    /**
      * Returns the query result set iterator, executing the query if needed
      */
     private function _resultSet()
     {
         if (!isset($this->_resultSet)) {
+            foreach ($this->_before as $callback) {
+                $callback($this->_query);
+            }
             $this->_resultSet = $this->_query->execute();
-            //printf("%s => %d\n", $this->_query, $this->_resultSet->count());
         }
 
         return $this->_resultSet;
