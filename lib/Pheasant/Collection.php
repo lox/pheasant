@@ -13,7 +13,8 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         $_add=false,
         $_readonly=false,
         $_schema,
-        $_count
+        $_count,
+        $_includes=array()
         ;
 
     /**
@@ -26,9 +27,24 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         $this->_query = $query;
         $this->_add = $add;
         $this->_schema = $schema = $class::schema();
-        $this->_iterator = new QueryIterator($this->_query, function($row) use ($schema) {
-            return $schema->hydrate($row);
-        });
+        $this->_iterator = new QueryIterator($this->_query, array($this,'hydrate'));
+    }
+
+    /**
+     * Hydrates a row to a DomainObject
+     */
+    public function hydrate($row)
+    {
+        $hydrated = $this->_schema->hydrate($row);
+
+        // apply any eager-loaded includes
+        foreach($this->_includes as $prop=>$includer) {
+            $hydrated->override($prop, function($prop, $obj) use($includer) {
+                return $includer->get($obj, $prop);
+            });
+        }
+
+        return $hydrated;
     }
 
     /**
@@ -264,10 +280,9 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     {
         $schemaAlias = $this->_schema->alias();
 
-        foreach ($this->_normalizeRelationshipArray($rels) as $alias=>$nested) {
-            $schema = $this->_addJoinForRelationship(
-                $schemaAlias, $this->_schema, $alias, $nested, $joinType
-            );
+        foreach (Relationship::normalizeMap($rels) as $alias=>$nested) {
+            Relationship::addJoin($this->_queryForWrite(),
+                $schemaAlias, $this->_schema, $alias, $nested, $joinType);
         }
 
         return $this;
@@ -286,69 +301,18 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     }
 
     /**
-     * Takes either a flat array of relationships or a nested key=>value array and returns
-     * it as a nested format
-     * @return array
+     * Eager load relationships to avoid the N+1 problem
+     * @chainable
      */
-    private function _normalizeRelationshipArray($array)
+    public function includes($rels)
     {
-        $nested = array();
-
-        foreach ($array as $key=>$value) {
-            if (is_numeric($key)) {
-                $nested[$value] = array();
-            } else {
-                $nested[$key] = $value;
-            }
+        foreach (Relationship::normalizeMap($rels) as $alias=>$nested) {
+            $this->_includes[$alias] = new Relationships\Includer(
+                $this->_query, $this->_schema->relationship($alias)
+            );
         }
 
-        return $nested;
-    }
-
-    /**
-     * Adds a join clause to the internal query for the given schema and relationship. Optionally
-     * takes a nested list of relationships that will be recursively joined as needed.
-     * @return void
-     */
-    private function _addJoinForRelationship($parentAlias, $schema, $relName, $nested=array(), $joinType='inner')
-    {
-        if (!in_array($joinType, array('inner','left','right'))) {
-            throw new \InvalidArgumentException("Unsupported join type: $joinType");
-        }
-
-        list($relName, $alias) = $this->_parseRelName($relName);
-        $rel = $schema->relationship($relName);
-
-        // look up schema and table for both sides of join
-        $localTable = \Pheasant::instance()->mapperFor($schema->className())->table();
-        $remoteSchema = \Pheasant::instance()->schema($rel->class);
-        $remoteTable = \Pheasant::instance()->mapperFor($rel->class)->table();
-
-        $joinMethod = $joinType.'Join';
-        $this->_queryForWrite()->$joinMethod($remoteTable->name()->table, sprintf(
-            'ON `%s`.`%s`=`%s`.`%s`',
-            $parentAlias,
-            $rel->local,
-            $alias,
-            $rel->foreign
-            ),
-            $alias
-        );
-
-        foreach ($this->_normalizeRelationshipArray($nested) as $relName=>$nested) {
-            $this->_addJoinForRelationship($alias, $remoteSchema, $relName, $nested, $joinType);
-        }
-    }
-
-    /**
-     * Parses `RelName r1` as array('RelName', 'r1') or `Relname` as array('RelName','RelName')
-     * @return array
-     */
-    private function _parseRelName($relName)
-    {
-        $parts = explode(' ', $relName, 2);
-
-        return isset($parts[1]) ? $parts : array($parts[0], $parts[0]);
+        return $this;
     }
 
     // ----------------------------------

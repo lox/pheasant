@@ -101,4 +101,31 @@ class RelationshipTestCase extends \Pheasant\Tests\MysqlTestCase
 
         $this->assertNull($hero->SecretIdentity);
     }
+
+    public function testIncludes()
+    {
+        $spiderman = Hero::createHelper('Spider Man', 'Peter Parker', array(
+            'Super-human Strength', 'Spider Senses'
+        ));
+        $superman = Hero::createHelper('Super Man', 'Clark Kent', array(
+            'Super-human Strength', 'Invulnerability'
+        ));
+        $batman = Hero::createHelper('Batman', 'Bruce Wayne', array(
+            'Richness', 'Super-human Intellect'
+        ));
+
+        $queries = 0;
+
+        $this->connection()->filterChain()->onQuery(function ($sql) use (&$queries) {
+            ++$queries;
+            return $sql;
+        });
+
+        foreach (Hero::all()->includes(array('SecretIdentity')) as $hero) {
+            $this->assertNotNull($hero->SecretIdentity);
+        }
+
+        $this->assertEquals($queries, 3);
+    }
+
 }

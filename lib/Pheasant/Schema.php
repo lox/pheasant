@@ -63,6 +63,21 @@ class Schema
     }
 
     /**
+     * Returns a hash in the form Class[key=val]
+     */
+    public function hash($object, $keys)
+    {
+        $keyValues = array_map(
+            function ($k) use ($object) {
+                return sprintf('%s=%s', $k, $object->$k);
+            },
+            $keys
+        );
+
+        return sprintf('%s[%s]', $this->_class, implode(',', $keyValues));
+    }
+
+    /**
      * Returns an array of Properties that form the primary keys
      * @return array
      */
@@ -224,15 +239,13 @@ class Schema
      */
     public function getter($attr)
     {
-        if(isset($this->_getters[$attr]))
-
+        if (isset($this->_getters[$attr])) {
             return $this->_getters[$attr];
-
-        else if(isset($this->_props[$attr]))
+        } elseif (isset($this->_props[$attr])) {
             return $this->_props[$attr]->getter($attr);
-
-        else if(isset($this->_rels[$attr]))
+        } elseif (isset($this->_rels[$attr])) {
             return $this->_rels[$attr]->getter($attr);
+        }
 
         throw new Exception("No getter available for $attr");
     }
@@ -243,15 +256,13 @@ class Schema
      */
     public function setter($attr)
     {
-        if(isset($this->_setters[$attr]))
-
+        if (isset($this->_setters[$attr])) {
             return $this->_setters[$attr];
-
-        else if(isset($this->_props[$attr]))
+        } elseif (isset($this->_props[$attr])) {
             return $this->_props[$attr]->setter($attr);
-
-        else if(isset($this->_rels[$attr]))
+        } elseif (isset($this->_rels[$attr])) {
             return $this->_rels[$attr]->setter($attr);
+        }
 
         throw new Exception("No setter available for $attr");
     }
@@ -261,15 +272,13 @@ class Schema
     */
     public function hasAttribute($attr)
     {
-        if(isset($this->_setters[$attr]))
-
+        if (isset($this->_setters[$attr])) {
             return true;
-
-        else if(isset($this->_props[$attr]))
+        } elseif (isset($this->_props[$attr])) {
             return true;
-
-        else if(isset($this->_rels[$attr]))
+        } elseif (isset($this->_rels[$attr])) {
             return true;
+        }
 
         return false;
     }
