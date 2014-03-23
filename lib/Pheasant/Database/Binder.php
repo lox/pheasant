@@ -14,7 +14,7 @@ class Binder
     public function bind($sql, array $params=array())
     {
         return $this->_bindInto('\?', $sql, $params, function($binder, $param) use ($sql) {
-            return $binder->quote($binder->escape($param));
+            return $binder->sqlValue($param);
         });
     }
 
@@ -30,7 +30,7 @@ class Binder
     {
         return $this->_bindInto('(?:`\w+`|\w+)\s*(?:!=|=|<>)\s*\?|\?', $sql, $params, function($binder, $param, $token) use ($sql) {
             if ($token == '?') {
-                return $binder->quote($param);
+                return $binder->sqlValue($param);
             } else {
                 if(!preg_match("/^(.+?)(\s*(?:!=|=|<>)\s*)(.+?)$/", $token, $m))
                     throw new \InvalidArgumentException("Failed to parse magic token $token");
@@ -39,19 +39,17 @@ class Binder
                 $op = trim($m[2]);
                 $rhs = $m[3];
 
-                if(($op == '!=' || $op == '<>') && is_array($param))
-
+                if(($op == '!=' || $op == '<>') && is_array($param)){
                     return $lhs . ' NOT IN ' . $binder->reduce($param);
-
-                if($op == '=' && is_array($param))
-
+                }
+                if($op == '=' && is_array($param)) {
                     return $lhs . ' IN ' . $binder->reduce($param);
-
-                if(is_null($param))
-
+                }
+                if(is_null($param)) {
                     return $lhs . ' IS'.($op == '=' ? '' : ' NOT').' NULL';
+                }
 
-                return $lhs . $m[2] . $binder->quote($binder->escape($param));
+                return $lhs . $m[2] . $binder->sqlValue($param);
             }
         });
     }
@@ -72,13 +70,32 @@ class Binder
      */
     public function quote($string)
     {
-        if(is_null($string))
-
+        if(is_null($string)) {
             return 'NULL';
-        else if(is_bool($string))
+        }
+        else if(is_bool($string)) {
             return $string === true ? 1 : "''";
-        else
+        }
+        else {
             return sprintf("'%s'", $string);
+        }
+    }
+
+    /**
+     * Intelligently quotes/escapes based on the provided type. If an object
+     * is passed with a toSql() method, that is used, otherwise the php type
+     * is used to infer what needs escaping.
+     * @return string
+     */
+    public function sqlValue($mixed)
+    {
+        if(method_exists($mixed, 'toSql')) {
+            return $mixed->toSql($this);
+        } else if(is_object($mixed)) {
+            throw new \InvalidArgumentException("Missing toSql() method on ".get_class($mixed));
+        }
+
+        return $this->quote($this->escape($mixed));
     }
 
     /**
@@ -89,8 +106,9 @@ class Binder
     {
         $tokens = array();
 
-        foreach($array as $a)
+        foreach($array as $a){
             $tokens[] = $this->quote($this->escape($a));
+        }
 
         return '('.implode(',', $tokens).')';
     }

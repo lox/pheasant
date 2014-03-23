@@ -2,6 +2,8 @@
 
 namespace Pheasant\Types;
 
+use \Pheasant\Database\TypedValue;
+
 /**
  * A date and time type that persists to a unix timestamp
  */
@@ -28,6 +30,6 @@ class UnixTimestamp extends Base
      */
     public function marshal($value)
     {
-        return $value->getTimestamp();
+        return new TypedValue($value->getTimestamp());
     }
 }

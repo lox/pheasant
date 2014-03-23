@@ -2,6 +2,8 @@
 
 namespace Pheasant\Types;
 
+use \Pheasant\Database\TypedValue;
+
 /**
  * A basic string type
  */
@@ -49,6 +51,6 @@ class String extends Base
                 )
             );
         }
-        return $value;
+        return new TypedValue((string) $value);
     }
 }

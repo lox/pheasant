@@ -2,6 +2,8 @@
 
 namespace Pheasant\Types;
 
+use \Pheasant\Database\TypedValue;
+
 /**
  * A basic integer type
  */
@@ -34,5 +36,13 @@ class Integer extends Base
     public function unmarshal($value)
     {
         return (int) $value;
+    }
+
+    /* (non-phpdoc)
+     * @see \Pheasant\Type::marshal
+     */
+    public function marshal($value)
+    {
+        return new TypedValue((int) $value);
     }
 }
