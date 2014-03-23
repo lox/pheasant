@@ -140,6 +140,6 @@ class QueryIterator implements \SeekableIterator, \Countable
     {
         $callback = $this->_hydrator;
 
-        return isset($this->_hydrator) ? $callback($row) : $row;
+        return isset($this->_hydrator) ? call_user_func($callback, $row) : $row;
     }
 }
