@@ -17,8 +17,11 @@ class TypedValue
 
     public function toSql($binder)
     {
-        if(is_int($this->value) || is_float($this->value)) {
+        if(is_int($this->value)) {
             return $this->value;
+        } else if(is_float($this->value)) {
+            // FIXME: locale hack https://github.com/lox/pheasant/pull/103
+            return strtr($this->value, "',",'..');
         }
 
         // default to quoted strings

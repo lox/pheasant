@@ -91,8 +91,6 @@ class Binder
     {
         if(method_exists($mixed, 'toSql')) {
             return $mixed->toSql($this);
-        } else if(is_object($mixed)) {
-            throw new \InvalidArgumentException("Missing toSql() method on ".get_class($mixed));
         }
 
         return $this->quote($this->escape($mixed));
