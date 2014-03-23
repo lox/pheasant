@@ -21,7 +21,7 @@ class HasMany extends Relationship
     /* (non-phpdoc)
      * @see Relationship::get()
      */
-    public function get($object, $key)
+    public function get($object, $key, $cache=null)
     {
         $query = $this->query(
             "{$this->foreign}=?", $object->get($this->local));

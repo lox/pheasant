@@ -9,14 +9,23 @@ namespace Pheasant\Relationships;
  */
 class BelongsTo extends HasOne
 {
+    private $_property;
+
     /* (non-phpdoc)
      * @see Relationship::get()
      */
-    public function get($object, $key)
+    public function get($object, $key, $cache=null)
     {
-        if(($localValue = $object->{$this->local}) === null)
+        if ($cache) {
+            $schema = \Pheasant::instance()->schema($this->class);
+            if ($cached = $cache->get($schema->hash($object, array($this->local)))) {
+                return $schema->hydrate($cached);
+            }
+        }
 
+        if (($localValue = $object->{$this->local}) === null) {
             return null;
+        }
 
         return $this->hydrate($this->query("{$this->foreign}=?", $localValue)
             ->execute()->row());
