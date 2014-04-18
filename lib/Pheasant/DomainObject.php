@@ -414,7 +414,7 @@ class DomainObject implements \ArrayAccess
      */
     public function set($prop, $value)
     {
-        if (!isset($this->_data[$prop]) || $this->_data[$prop] != $value) {
+        if (!isset($this->_data[$prop]) || $this->_data[$prop] !== $value) {
             $this->_data[$prop] = $value;
             $this->_changed[] = $prop;
         }
