@@ -73,22 +73,22 @@ In the absence of an explicit definition, the tablename is inferred from the cla
       }
     }
 
-Properties are mapped to the same named column in the database. See :doc:`mapping/types` for more
-about what types are available and their parameters.
+Properties are mapped to the same named column in the database. See :doc:`mapping/types` for more about what types are available and their parameters.
 
 Creating Tables
 ---------------
 
-Pheasant tends to stay out of the way when it comes to creating and altering tables, but it does provide
-a minimal helper for the creation of tables:
-
+Pheasant tends to stay out of the way when it comes to creating and altering tables, but it does provide a minimal helper for the creation of tables:
 
 .. code-block:: php
 
     <?php
 
     $migrator = new \Pheasant\Migrate\Migrator();
-    $migrator->migrate('post', Post::schema());
+    $migrator->create('post', Post::schema());
+
+Alternately, DomainObjects provide a tableName() method that returns the table name as a string.
+
 
 Saving and Updating
 -------------------
