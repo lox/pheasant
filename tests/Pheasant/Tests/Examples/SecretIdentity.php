@@ -12,7 +12,7 @@ class SecretIdentity extends DomainObject
     public function properties()
     {
         return array(
-            'identityid' => new Types\Sequence(),
+            'id' => new Types\Sequence(),
             'realname' => new Types\String(),
             );
     }
@@ -20,7 +20,7 @@ class SecretIdentity extends DomainObject
     public function relationships()
     {
         return array(
-            'Hero' => Hero::hasOne('identityid')
+            'Hero' => Hero::hasOne('id', 'identityid')
             );
     }
 }

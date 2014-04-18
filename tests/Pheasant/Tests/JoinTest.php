@@ -6,7 +6,7 @@ use \Pheasant\Tests\Examples\Hero;
 use \Pheasant\Tests\Examples\Power;
 use \Pheasant\Tests\Examples\SecretIdentity;
 
-class JoinTestCase extends \Pheasant\Tests\MysqlTestCase
+class JoinTest extends \Pheasant\Tests\MysqlTestCase
 {
     public function setUp()
     {
@@ -64,7 +64,7 @@ class JoinTestCase extends \Pheasant\Tests\MysqlTestCase
     {
         $collection = Hero::all()
             ->join(array('Powers', 'SecretIdentity'))
-            ->groupBy('Hero.heroid');
+            ->groupBy('Hero.id');
         $objects = iterator_to_array($collection);
 
         $this->assertCount(3, $collection);

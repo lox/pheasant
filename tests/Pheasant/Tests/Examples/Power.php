@@ -12,7 +12,7 @@ class Power extends DomainObject
     public function properties()
     {
         return array(
-            'powerid' => new Types\Sequence(),
+            'id' => new Types\Sequence(),
             'description' => new Types\String(),
             'heroid' => new Types\Integer()
             );
@@ -21,7 +21,7 @@ class Power extends DomainObject
     public function relationships()
     {
         return array(
-            'Hero' => Hero::belongsTo('heroid')
+            'Hero' => Hero::belongsTo('heroid','id')
             );
     }
 }
