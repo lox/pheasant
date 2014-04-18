@@ -44,7 +44,7 @@ $post->save();
 echo $post->title; // returns 'My Post'
 
 // look up via magic finders
-$post = Post::findOneByTitle('My Post');
+$post = Post::findByTitle('My Post')->one();
 
 {% endhighlight %}
 
