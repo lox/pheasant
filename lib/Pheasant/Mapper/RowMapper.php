@@ -115,7 +115,7 @@ class RowMapper extends AbstractMapper implements Finder
      */
     public function query(Criteria $criteria=null, $alias=null)
     {
-        $query = new Query();
+        $query = new Query($this->_connection);
 
         if($alias) {
             $query->from($this->_tableName." AS ".$alias);
