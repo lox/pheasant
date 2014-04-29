@@ -1,3 +1,8 @@
+Changes between Pheasant 1.2.0 and 1.2.1
+========================================
+
+  - Fixed a regression whereby `Collection::order()` was no longer chainable.
+
 Changes between Pheasant 1.1.2 and 1.2.0
 ========================================
 
@@ -5,7 +10,7 @@ Changes between Pheasant 1.1.2 and 1.2.0
 
 ```php
 <?php
-  
+
   $sum = Llama::all()->sum('age'); // return the SUM of all llama ages
 ```
 
