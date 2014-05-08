@@ -19,6 +19,13 @@ class IncludesTest extends \Pheasant\Tests\MysqlTestCase
             ->create('secretidentity', SecretIdentity::schema())
             ;
 
+        $this->pheasant
+            ->connection()
+            ->execute(
+                'INSERT INTO sequences (name, id) VALUES (?, ?)',
+                array('SECRETIDENTITY_ID_SEQ', 100)
+            );
+
         $spiderman = Hero::createHelper('Spider Man', 'Peter Parker', array(
             'Super-human Strength', 'Spider Senses'
         ));
