@@ -5,11 +5,21 @@ use \Pheasant\Database\Mysqli\Transaction;
 
 class TransactionTest extends \Pheasant\Tests\MysqlTestCase
 {
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->queries = array();
+        $test = $this;
+        $this->connection()->filterChain()->onQuery(function($sql) use($test) {
+            $test->queries []= $sql;
+            return $sql;
+        });
+    }
+
     public function testBasicSuccessfulTransaction()
     {
-        $connection = \Mockery::mock('\Pheasant\Database\Mysqli\Connection');
-        $connection->shouldReceive('execute')->with('BEGIN')->once();
-        $connection->shouldReceive('execute')->with('COMMIT')->once();
+        $connection = $this->connection();
 
         $transaction = new Transaction($connection);
         $transaction->callback(function(){
@@ -17,16 +27,16 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
         });
 
         $transaction->execute();
+        $this->assertEquals(count($this->queries), 2);
+        $this->assertEquals($this->queries[0], 'BEGIN');
+        $this->assertEquals($this->queries[1], 'COMMIT');
         $this->assertEquals(count($transaction->results), 1);
         $this->assertEquals($transaction->results[0], 'blargh');
     }
 
     public function testExceptionsCauseRollback()
     {
-        $connection = \Mockery::mock('\Pheasant\Database\Mysqli\Connection');
-        $connection->shouldReceive('execute')->with('BEGIN')->once();
-        $connection->shouldReceive('execute')->with('ROLLBACK')->once();
-
+        $connection = $this->connection();
         $transaction = new Transaction($connection);
         $transaction->callback(function(){
             throw new \Exception('Eeeek!');
@@ -34,29 +44,33 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
 
         $this->setExpectedException('\Exception');
         $transaction->execute();
+
+        $this->assertEquals($this->queries[0], 'BEGIN');
+        $this->assertEquals($this->queries[1], 'ROLLBACK');
     }
 
     public function testCallbacksWithConnectionCalls()
     {
-        $sql = "SELECT * FROM table";
-        $connection = \Mockery::mock('\Pheasant\Database\Mysqli\Connection');
-        $connection->shouldReceive('execute')->with('BEGIN')->once();
-        $connection->shouldReceive('execute')->with($sql)->once();
-        $connection->shouldReceive('execute')->with('COMMIT')->once();
+        $sql = "SELECT * FROM 'table'";
+        $connection = $this->connection();
 
         $transaction = new Transaction($connection);
         $transaction->callback(function() use ($connection, $sql) {
             $connection->execute($sql);
         });
 
+        $this->setExpectedException('\Exception');
         $transaction->execute();
+
+        $this->assertEquals(count($this->queries), 3);
+        $this->assertEquals($this->queries[0], 'BEGIN');
+        $this->assertEquals($this->queries[1], $sql);
+        $this->assertEquals($this->queries[2], 'COMMIT');
     }
 
     public function testCallbacksWithParams()
     {
-        $connection = \Mockery::mock('\Pheasant\Database\Mysqli\Connection');
-        $connection->shouldReceive('execute')->with('BEGIN')->once();
-        $connection->shouldReceive('execute')->with('COMMIT')->once();
+        $connection = $this->connection();
 
         $transaction = new Transaction($connection);
         $transaction->callback(function($param) {
@@ -66,13 +80,14 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
         $transaction->execute();
         $this->assertEquals(count($transaction->results), 1);
         $this->assertEquals($transaction->results[0], 'blargh');
+
+        $this->assertEquals($this->queries[0], 'BEGIN');
+        $this->assertEquals($this->queries[1], 'COMMIT');
     }
 
     public function testDeferEventsFireOnCommit()
     {
-        $connection = \Mockery::mock('\Pheasant\Database\Mysqli\Connection');
-        $connection->shouldReceive('execute')->with('BEGIN')->once();
-        $connection->shouldReceive('execute')->with('COMMIT')->once();
+        $connection = $this->connection();
 
         $events = \Mockery::mock();
         $events->shouldReceive('cork')->once();
@@ -85,13 +100,13 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
         });
 
         $transaction->execute();
+        $this->assertEquals($this->queries[0], 'BEGIN');
+        $this->assertEquals($this->queries[1], 'COMMIT');
     }
 
     public function testDeferEventsFireOnRollback()
     {
-        $connection = \Mockery::mock('\Pheasant\Database\Mysqli\Connection');
-        $connection->shouldReceive('execute')->with('BEGIN')->once();
-        $connection->shouldReceive('execute')->with('ROLLBACK')->once();
+        $connection = $this->connection();
 
         $events = \Mockery::mock();
         $events->shouldReceive('cork')->once()->andReturn($events);
@@ -106,5 +121,8 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
 
         $this->setExpectedException('\Exception');
         $transaction->execute();
+
+        $this->assertEquals($this->queries[0], 'BEGIN');
+        $this->assertEquals($this->queries[1], 'ROLLBACK');
     }
 }
