@@ -27,9 +27,11 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
         });
 
         $transaction->execute();
+
         $this->assertEquals(count($this->queries), 2);
         $this->assertEquals($this->queries[0], 'BEGIN');
         $this->assertEquals($this->queries[1], 'COMMIT');
+
         $this->assertEquals(count($transaction->results), 1);
         $this->assertEquals($transaction->results[0], 'blargh');
     }
@@ -45,6 +47,7 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
         $this->setExpectedException('\Exception');
         $transaction->execute();
 
+        $this->assertEquals(count($this->queries), 2);
         $this->assertEquals($this->queries[0], 'BEGIN');
         $this->assertEquals($this->queries[1], 'ROLLBACK');
     }
@@ -81,6 +84,7 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertEquals(count($transaction->results), 1);
         $this->assertEquals($transaction->results[0], 'blargh');
 
+        $this->assertEquals(count($this->queries), 2);
         $this->assertEquals($this->queries[0], 'BEGIN');
         $this->assertEquals($this->queries[1], 'COMMIT');
     }
@@ -100,6 +104,7 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
         });
 
         $transaction->execute();
+        $this->assertEquals(count($this->queries), 2);
         $this->assertEquals($this->queries[0], 'BEGIN');
         $this->assertEquals($this->queries[1], 'COMMIT');
     }
@@ -122,6 +127,7 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
         $this->setExpectedException('\Exception');
         $transaction->execute();
 
+        $this->assertEquals(count($this->queries), 2);
         $this->assertEquals($this->queries[0], 'BEGIN');
         $this->assertEquals($this->queries[1], 'ROLLBACK');
     }
