@@ -28,12 +28,21 @@ class Transaction
         $this->results = array();
 
         try {
-            $this->_connection->execute('BEGIN');
+            $this->_connection->execute(
+                ($sp = $this->_connection->transactionStack()->descend()) === null
+                    ? 'BEGIN'
+                    : "SAVEPOINT {$sp}");
             $this->_events->trigger('startTransaction', $this->_connection);
-            $this->_connection->execute('COMMIT');
+            $this->_connection->execute(
+                ($sp = $this->_connection->transactionStack()->pop()) === null
+                    ? 'COMMIT'
+                    : "RELEASE SAVEPOINT {$sp}");
             $this->_events->trigger('commitTransaction', $this->_connection);
         } catch (\Exception $e) {
-            $this->_connection->execute('ROLLBACK');
+            $this->_connection->execute(
+                ($sp = $this->_connection->transactionStack()->pop()) === null
+                    ? 'ROLLBACK'
+                    : "ROLLBACK TO {$sp}");
             $this->_events->trigger('rollbackTransaction', $this->_connection);
             throw $e;
         }

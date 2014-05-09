@@ -5,6 +5,7 @@ namespace Pheasant\Database\Mysqli;
 use Pheasant\Database\Dsn;
 use Pheasant\Database\FilterChain;
 use Pheasant\Database\MysqlPlatform;
+use Pheasant\Database\Mysqli\TransactionStack;
 
 /**
  * A connection to a MySql database
@@ -19,6 +20,7 @@ class Connection
         $_sequencePool,
         $_strict,
         $_selectedDatabase,
+        $_transactionStack,
         $_debug=false
         ;
 
@@ -44,6 +46,7 @@ class Connection
             $this->_selectedDatabase = $this->_dsn->database;
 
         $this->_debug = getenv('PHEASANT_DEBUG');
+        $this->_transactionStack = new TransactionStack();
     }
 
     /**
@@ -247,5 +250,14 @@ class Connection
     public function selectedDatabase()
     {
         return $this->_selectedDatabase;
+    }
+
+    /**
+     * Returns the transaction stack
+     * @return TransactionStack
+     */
+    public function transactionStack()
+    {
+        return $this->_transactionStack;
     }
 }
