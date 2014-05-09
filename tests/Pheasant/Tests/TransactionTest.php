@@ -156,10 +156,12 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
         $transaction->deferEvents($events);
         $transaction->callback(function() use($connection){
             $t = new Transaction($connection);
-            $t->callback(function(){
-                throw new \Exception("Llamas :( :)");
-            });
-            $t->execute();
+            $t->callback(function() use($connection){
+                $t = new Transaction($connection);
+                $t->callback(function() use($connection){
+                    throw new \Exception("Llamas :( :)");
+                })->execute();
+            })->execute();
         });
 
         try {
@@ -169,10 +171,12 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
         }
 
         $this->assertInstanceOf('\Exception', $exception);
-        $this->assertEquals(count($this->queries), 4);
+        $this->assertEquals(count($this->queries), 6);
         $this->assertEquals($this->queries[0], 'BEGIN');
         $this->assertEquals($this->queries[1], 'SAVEPOINT savepoint_1');
-        $this->assertEquals($this->queries[2], 'ROLLBACK TO savepoint_1');
-        $this->assertEquals($this->queries[3], 'ROLLBACK');
+        $this->assertEquals($this->queries[2], 'SAVEPOINT savepoint_2');
+        $this->assertEquals($this->queries[3], 'ROLLBACK TO savepoint_2');
+        $this->assertEquals($this->queries[4], 'ROLLBACK TO savepoint_1');
+        $this->assertEquals($this->queries[5], 'ROLLBACK');
     }
 }
