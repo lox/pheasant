@@ -2,12 +2,18 @@
 
 namespace Pheasant\Tests\Transaction;
 use \Pheasant\Database\Mysqli\Transaction;
+use \Pheasant\Tests\Examples\Animal;
 
 class TransactionTest extends \Pheasant\Tests\MysqlTestCase
 {
     public function setUp()
     {
         parent::setUp();
+
+        $migrator = new \Pheasant\Migrate\Migrator();
+        $migrator
+            ->create('animal', Animal::schema())
+            ;
 
         $this->queries = array();
         $test = $this;
@@ -54,7 +60,7 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
 
     public function testCallbacksWithConnectionCalls()
     {
-        $sql = "SELECT * FROM 'table'";
+        $sql = "SELECT * FROM animal";
         $connection = $this->connection();
 
         $transaction = new Transaction($connection);
@@ -62,7 +68,6 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
             $connection->execute($sql);
         });
 
-        $this->setExpectedException('\Exception');
         $transaction->execute();
 
         $this->assertEquals(count($this->queries), 3);
@@ -81,6 +86,7 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
         }, 'blargh');
 
         $transaction->execute();
+
         $this->assertEquals(count($transaction->results), 1);
         $this->assertEquals($transaction->results[0], 'blargh');
 
@@ -104,6 +110,7 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
         });
 
         $transaction->execute();
+
         $this->assertEquals(count($this->queries), 2);
         $this->assertEquals($this->queries[0], 'BEGIN');
         $this->assertEquals($this->queries[1], 'COMMIT');
@@ -124,11 +131,48 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
             throw new \Exception("Llamas :( :)");
         });
 
-        $this->setExpectedException('\Exception');
-        $transaction->execute();
+        try {
+          $transaction->execute();
+        } catch(\Exception $e) {
+          $exception = $e;
+        }
 
+        $this->assertInstanceOf('\Exception', $exception);
         $this->assertEquals(count($this->queries), 2);
         $this->assertEquals($this->queries[0], 'BEGIN');
         $this->assertEquals($this->queries[1], 'ROLLBACK');
+    }
+
+    public function testNestedDeferEventsFireOnRollback()
+    {
+        $connection = $this->connection();
+
+        $events = \Mockery::mock();
+        $events->shouldReceive('cork')->once()->andReturn($events);
+        $events->shouldReceive('discard')->once()->andReturn($events);
+        $events->shouldReceive('uncork')->once()->andReturn($events);
+
+        $transaction = new Transaction($connection);
+        $transaction->deferEvents($events);
+        $transaction->callback(function() use($connection){
+            $t = new Transaction($connection);
+            $t->callback(function(){
+                throw new \Exception("Llamas :( :)");
+            });
+            $t->execute();
+        });
+
+        try {
+          $transaction->execute();
+        } catch(\Exception $e) {
+          $exception = $e;
+        }
+
+        $this->assertInstanceOf('\Exception', $exception);
+        $this->assertEquals(count($this->queries), 4);
+        $this->assertEquals($this->queries[0], 'BEGIN');
+        $this->assertEquals($this->queries[1], 'SAVEPOINT savepoint_1');
+        $this->assertEquals($this->queries[2], 'ROLLBACK TO savepoint_1');
+        $this->assertEquals($this->queries[3], 'ROLLBACK');
     }
 }
