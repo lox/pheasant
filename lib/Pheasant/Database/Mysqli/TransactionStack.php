@@ -8,26 +8,38 @@ namespace Pheasant\Database\Mysqli;
 class TransactionStack
 {
     private
-        $_transactionStack
+        $_transactionStack = array()
         ;
 
-    public function __construct(){
-        $this->_transactionStack = array();
-    }
-
-    public function count(){
+    /**
+     * Get the depth of the stack
+     * @return integer
+     */
+    public function depth()
+    {
         return count($this->_transactionStack);
     }
 
-    public function descend(){
+    /**
+     * Decend deeper into the transaction stack and return a unique
+     * transaction savepoint name
+     * @return string
+     */
+    public function descend()
+    {
         $this->_transactionStack[] = current($this->_transactionStack) === false
             ? null
-            : 'savepoint_'.count($this->_transactionStack);
+            : 'savepoint_'.$this->depth();
 
         return end($this->_transactionStack);
     }
 
-    public function pop(){
+    /**
+     * Pop off the last savepoint
+     * @return string
+     */
+    public function pop()
+    {
       return array_pop($this->_transactionStack);
     }
 }
