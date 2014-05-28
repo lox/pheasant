@@ -4,11 +4,10 @@ namespace Pheasant;
 
 class Identity implements \IteratorAggregate
 {
-    private $_class, $_properties, $_object;
+    private $_properties, $_object;
 
-    public function __construct($class, $properties, $object)
+    public function __construct($properties, $object)
     {
-        $this->_class = $class;
         $this->_properties = $properties;
         $this->_object = $object;
     }
@@ -49,6 +48,6 @@ class Identity implements \IteratorAggregate
             array_keys($array)
         );
 
-        return sprintf('%s[%s]', $this->_class, implode(',', $keyValues));
+        return sprintf('[%s]', implode(',', $keyValues));
     }
 }

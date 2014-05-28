@@ -25,18 +25,11 @@ class HasOne extends Relationship
     /* (non-phpdoc)
      * @see Relationship::get()
      */
-    public function get($object, $key, $cache=null)
+    public function get($object, $key)
     {
-        if ($cache) {
-            $schema = \Pheasant::instance()->schema($this->class);
-            if ($cached = $cache->get($schema->hash($object, array($this->local)))) {
-                return $schema->hydrate($cached)->useCache($cache);
-            }
-        }
+        if(($localValue = $object->{$this->local}) === null)
 
-        if (($localValue = $object->{$this->local}) === null) {
             return null;
-        }
 
         $result = $this
             ->query("{$this->foreign}=?", $localValue)

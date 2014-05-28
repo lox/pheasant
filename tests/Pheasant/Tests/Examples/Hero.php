@@ -25,24 +25,4 @@ class Hero extends DomainObject
             'SecretIdentity' => SecretIdentity::belongsTo('identityid'),
             );
     }
-
-    public static function createHelper($alias, $identity, $powers=array())
-    {
-        $hero = new Hero(array('alias'=>$alias));
-        $hero->save();
-
-        $identity = new SecretIdentity(array('realname'=>$identity));
-        $hero->SecretIdentity = $identity;
-        $identity->save();
-
-        foreach ($powers as $power) {
-            $power = new Power(array('description'=>$power));
-            $hero->Powers []= $power;
-            $power->save();
-        }
-
-        $hero->save();
-        return $hero;
-    }
-
 }

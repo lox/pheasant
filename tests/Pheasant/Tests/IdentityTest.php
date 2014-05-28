@@ -19,13 +19,4 @@ class IdentityTest extends \Pheasant\Tests\MysqlTestCase
         $animal2 = new Animal(array('id' => 2, 'type' => 'llama'));
         $this->assertFalse($animal1->identity()->equals($animal2->identity()));
     }
-
-    public function testIdentityAsString()
-    {
-        $animal = new Animal(array('id' => 1, 'type' => 'llama'));
-        $this->assertEquals(
-            "Pheasant\Tests\Examples\Animal[id=1]",
-            $animal->identity()->__toString()
-            );
-    }
 }

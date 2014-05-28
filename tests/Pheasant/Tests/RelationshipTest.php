@@ -80,13 +80,13 @@ class RelationshipTestCase extends \Pheasant\Tests\MysqlTestCase
 
     public function testFilteringCollectionsReturnedByRelationships()
     {
-        $spiderman = Hero::createHelper('Spider Man', 'Peter Parker', array(
+        $spiderman = $this->_createHero('Spider Man', 'Peter Parker', array(
             'Super-human Strength', 'Spider Senses'
         ));
-        $superman = Hero::createHelper('Super Man', 'Clark Kent', array(
+        $superman = $this->_createHero('Super Man', 'Clark Kent', array(
             'Super-human Strength', 'Invulnerability'
         ));
-        $batman = Hero::createHelper('Batman', 'Bruce Wayne', array(
+        $batman = $this->_createHero('Batman', 'Bruce Wayne', array(
             'Richness', 'Super-human Intellect'
         ));
 
@@ -102,30 +102,21 @@ class RelationshipTestCase extends \Pheasant\Tests\MysqlTestCase
         $this->assertNull($hero->SecretIdentity);
     }
 
-    public function testIncludes()
+    private function _createHero($alias, $identity, $powers=array())
     {
-        $spiderman = Hero::createHelper('Spider Man', 'Peter Parker', array(
-            'Super-human Strength', 'Spider Senses'
-        ));
-        $superman = Hero::createHelper('Super Man', 'Clark Kent', array(
-            'Super-human Strength', 'Invulnerability'
-        ));
-        $batman = Hero::createHelper('Batman', 'Bruce Wayne', array(
-            'Richness', 'Super-human Intellect'
-        ));
+        $hero = new Hero(array('alias'=>$alias));
+        $hero->save();
 
-        $queries = 0;
+        $identity = new SecretIdentity(array('realname'=>$identity));
+        $hero->SecretIdentity = $identity;
+        $identity->save();
 
-        $this->connection()->filterChain()->onQuery(function ($sql) use (&$queries) {
-            ++$queries;
-            return $sql;
-        });
-
-        foreach (Hero::all()->includes(array('SecretIdentity')) as $hero) {
-            $this->assertNotNull($hero->SecretIdentity);
+        foreach ($powers as $power) {
+                $power = new Power(array('description'=>$power));
+                $hero->Powers []= $power;
+                $power->save();
         }
 
-        $this->assertEquals($queries, 3);
+        return $hero;
     }
-
 }
