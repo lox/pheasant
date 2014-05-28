@@ -6,7 +6,7 @@ use \Pheasant\Tests\Examples\Hero;
 use \Pheasant\Tests\Examples\Power;
 use \Pheasant\Tests\Examples\SecretIdentity;
 
-class RelationshipTest extends \Pheasant\Tests\MysqlTestCase
+class RelationshipTestCase extends \Pheasant\Tests\MysqlTestCase
 {
     public function setUp()
     {
@@ -28,7 +28,7 @@ class RelationshipTest extends \Pheasant\Tests\MysqlTestCase
 
         // save via property access
         $power = new Power(array('description'=>'Spider Senses'));
-        $power->heroid = $hero->id;
+        $power->heroid = $hero->heroid;
         $power->save();
         $this->assertEquals(count($hero->Powers), 1);
         $this->assertTrue($hero->Powers[0]->equals($power));
@@ -58,7 +58,7 @@ class RelationshipTest extends \Pheasant\Tests\MysqlTestCase
         $identity->Hero = $hero;
         $identity->save();
 
-        $this->assertEquals($hero->identityid, $identity->id);
+        $this->assertEquals($hero->identityid, $identity->identityid);
         $this->assertTrue($hero->SecretIdentity->equals($identity));
         $this->assertTrue($identity->Hero->equals($hero));
     }
@@ -69,12 +69,12 @@ class RelationshipTest extends \Pheasant\Tests\MysqlTestCase
         $hero = new Hero(array('alias'=>'Spider Man'));
 
         // set the identityid before it's been saved, still null
-        $hero->identityid = $identity->id;
+        $hero->identityid = $identity->identityid;
 
         $identity->save();
         $hero->save();
 
-        $this->assertEquals($identity->id, 1);
+        $this->assertEquals($identity->identityid, 1);
         $this->assertEquals($hero->identityid, 1);
     }
 
@@ -101,4 +101,31 @@ class RelationshipTest extends \Pheasant\Tests\MysqlTestCase
 
         $this->assertNull($hero->SecretIdentity);
     }
+
+    public function testIncludes()
+    {
+        $spiderman = Hero::createHelper('Spider Man', 'Peter Parker', array(
+            'Super-human Strength', 'Spider Senses'
+        ));
+        $superman = Hero::createHelper('Super Man', 'Clark Kent', array(
+            'Super-human Strength', 'Invulnerability'
+        ));
+        $batman = Hero::createHelper('Batman', 'Bruce Wayne', array(
+            'Richness', 'Super-human Intellect'
+        ));
+
+        $queries = 0;
+
+        $this->connection()->filterChain()->onQuery(function ($sql) use (&$queries) {
+            ++$queries;
+            return $sql;
+        });
+
+        foreach (Hero::all()->includes(array('SecretIdentity')) as $hero) {
+            $this->assertNotNull($hero->SecretIdentity);
+        }
+
+        $this->assertEquals($queries, 3);
+    }
+
 }

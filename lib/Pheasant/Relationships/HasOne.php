@@ -6,12 +6,8 @@ use \Pheasant\PropertyReference;
 use \Pheasant\Relationship;
 
 /**
- * A HasOne relationship represents a 1->1 relationship. The local object owns
- * the primary key, the foreign object has the foreign key.
- *
- * An example of this type of relationship would be a Hero HasOne SecretIdentity.
- * Hero owns the primary key of heroid, and SecretIdentity has a foreign key
- * of heroid.
+ * A HasOne relationship represents a 1->1 relationship. The foreign domain object
+ * is responsible for maintaining a key referencing a local attribute.
  */
 class HasOne extends Relationship
 {
@@ -63,11 +59,11 @@ class HasOne extends Relationship
      */
     public function set($object, $key, $value)
     {
-        $newValue = $object->{$this->local};
+        $newValue = $object->{$this->foreign};
 
         if($newValue instanceof PropertyReference)
             $object->saveAfter($value);
 
-        $value->set($this->foreign, $newValue);
+        $value->set($this->local, $newValue);
     }
 }

@@ -12,7 +12,7 @@ class Hero extends DomainObject
     public function properties()
     {
         return array(
-            'id' => new Types\Sequence(),
+            'heroid' => new Types\Sequence(),
             'alias' => new Types\String(),
             'identityid' => new Types\Integer(),
             );
@@ -21,8 +21,8 @@ class Hero extends DomainObject
     public function relationships()
     {
         return array(
-            'Powers' => Power::hasMany('id','heroid'),
-            'SecretIdentity' => SecretIdentity::belongsTo('identityid','id'),
+            'Powers' => Power::hasMany('heroid'),
+            'SecretIdentity' => SecretIdentity::belongsTo('identityid'),
             );
     }
 
@@ -42,7 +42,6 @@ class Hero extends DomainObject
         }
 
         $hero->save();
-
         return $hero;
     }
 
