@@ -18,7 +18,6 @@ class Query implements \IteratorAggregate, \Countable
     private $_where;
     private $_group;
     private $_order=array();
-    private $_distinct=false;
 
     // resultset
     private $_connection;
@@ -39,17 +38,6 @@ class Query implements \IteratorAggregate, \Countable
     public function select($column)
     {
         $this->_select = $this->_arguments(func_get_args());
-
-        return $this;
-    }
-
-    /**
-     * Whether to prefix the SELECT clause with DISTINCT
-     * @chainable
-     */
-    public function distinct($value=true)
-    {
-        $this->_distinct = $value;
 
         return $this;
     }
@@ -121,27 +109,27 @@ class Query implements \IteratorAggregate, \Countable
      * Adds an INNER JOIN clause, either with a {@link Query} object or raw sql
      * @chainable
      */
-    public function innerJoin($mixed, $criteria, $alias='')
+    public function innerJoin($mixed, $criteria, $derived='derived')
     {
-        return $this->_join('INNER JOIN', $mixed, $criteria, $alias);
+        return $this->_join('INNER JOIN', $mixed, $criteria, $derived);
     }
 
     /**
      * Adds a LEFT JOIN clause, either with a {@link Query} object or raw sql
      * @chainable
      */
-    public function leftJoin($mixed, $criteria, $alias='')
+    public function leftJoin($mixed, $criteria, $derived='derived')
     {
-        return $this->_join('LEFT JOIN', $mixed, $criteria, $alias);
+        return $this->_join('LEFT JOIN', $mixed, $criteria, $derived);
     }
 
     /**
      * Adds a RIGHT JOIN clause, either with a {@link Query} object or raw sql
      * @chainable
      */
-    public function rightJoin($mixed, $criteria, $alias='')
+    public function rightJoin($mixed, $criteria, $derived='derived')
     {
-        return $this->_join('RIGHT JOIN', $mixed, $criteria, $alias);
+        return $this->_join('RIGHT JOIN', $mixed, $criteria, $derived);
     }
 
     /**
@@ -197,8 +185,7 @@ class Query implements \IteratorAggregate, \Countable
     public function toSql()
     {
         return implode(' ', array_filter(array(
-            $this->_clause(($this->_distinct
-                ? 'SELECT DISTINCT' : 'SELECT'), $this->_select),
+            $this->_clause('SELECT', $this->_select),
             $this->_clause('FROM', $this->_from),
             implode(' ', $this->_joins),
             $this->_clause('WHERE', $this->_where),
@@ -245,15 +232,12 @@ class Query implements \IteratorAggregate, \Countable
     // -------------------------------------------
     // private helper methods
 
-    private function _join($type, $mixed, $criteria, $alias='')
+    private function _join($type, $mixed, $criteria, $derived='derived')
     {
-        if (is_object($mixed)) {
-            $this->_joins []= sprintf('%s (%s) %s %s', $type, $mixed, $alias ?: 'derived', $criteria);
-        } elseif ($alias) {
-            $this->_joins []= sprintf('%s `%s` AS %s %s', $type, $mixed, $alias, $criteria);
-        } else {
-            $this->_joins []= sprintf('%s `%s` %s', $type, $mixed, $criteria);
-        }
+        if(is_object($mixed))
+            $mixed = sprintf('(%s) %s', $mixed, $derived);
+
+        $this->_joins []= sprintf('%s %s %s', $type, $mixed, $criteria);
 
         return $this;
     }
@@ -285,7 +269,7 @@ class Query implements \IteratorAggregate, \Countable
     {
         if (isset($this->_resultset)) {
             return $this->_resultset->count();
-        } elseif (isset($this->_limit) || isset($this->_group)) {
+        } elseif (isset($this->_limit)) {
             return $this->execute()->count();
         } else {
             $query = clone $this;

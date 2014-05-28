@@ -225,18 +225,4 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
         $llama = Animal::create(array('id' => 123));
         $this->assertEquals('Pheasant\Tests\Examples\Animal[id=123]', (string) $llama);
     }
-
-    public function testOverridenProperties()
-    {
-        $counter = 0;
-        $llama = Animal::create(array('id' => 123));
-        $llama->override('type', function() use(&$counter) {
-            $counter++;
-            return 'llama'.$counter;
-        });
-
-        $this->assertEquals('llama1', $llama->type);
-        $this->assertEquals('llama2', $llama->type);
-        $this->assertEquals('llama3', $llama->type);
-    }
 }

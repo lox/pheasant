@@ -12,7 +12,6 @@ class DomainObject implements \ArrayAccess
     private $_data = array();
     private $_changed = array();
     private $_saved = false;
-    private $_overriden = array();
     private $_events;
 
     /**
@@ -223,7 +222,7 @@ class DomainObject implements \ArrayAccess
         $lock = new Locking\PessimisticLock($this);
         $locked = $lock->acquire();
 
-        if (is_callable($onChanged) && !$locked->equals($this)) {
+        if(is_callable($onChanged) && !$locked->equals($this)) {
             call_user_func($onChanged, $this, $locked);
         }
 
@@ -331,20 +330,6 @@ class DomainObject implements \ArrayAccess
     }
 
     // ----------------------------------------
-    // cache functions
-
-    /**
-     * Defines a closure that is called when the property is accessed.
-     * The closure is passed the property and the domain object.
-     * @chainable
-     */
-    public function override($property, $closure)
-    {
-        $this->_overriden[$property] = $closure;
-        return $this;
-    }
-
-    // ----------------------------------------
     // static helpers
 
     /**
@@ -429,7 +414,7 @@ class DomainObject implements \ArrayAccess
      */
     public function set($prop, $value)
     {
-        if (!isset($this->_data[$prop]) || $this->_data[$prop] !== $value) {
+        if (!isset($this->_data[$prop]) || $this->_data[$prop] != $value) {
             $this->_data[$prop] = $value;
             $this->_changed[] = $prop;
         }
@@ -506,10 +491,6 @@ class DomainObject implements \ArrayAccess
      */
     public function __get($key)
     {
-        if(isset($this->_overriden[$key])) {
-            return call_user_func($this->_overriden[$key], $key, $this);
-        }
-
         return call_user_func($this->schema()->getter($key), $this);
     }
 
@@ -534,7 +515,7 @@ class DomainObject implements \ArrayAccess
      */
     public function __toString()
     {
-        return (string) $this->identity();
+        return $this->className() . (string) $this->identity();
     }
 
     // ----------------------------------------

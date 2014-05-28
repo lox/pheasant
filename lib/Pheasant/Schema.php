@@ -43,38 +43,12 @@ class Schema
     }
 
     /**
-     * A short alias for the object, used in queries
-     * @return string
-     */
-    public function alias()
-    {
-        $fragments = explode("\\", str_replace('_', '\\', $this->_class));
-
-        return end($fragments);
-    }
-
-    /**
      * Returns an identity for a domain object
      * @return Identity
      */
     public function identity($object)
     {
-        return new Identity(get_class($object), $this->primary(), $object);
-    }
-
-    /**
-     * Returns a hash in the form Class[key=val]
-     */
-    public function hash($object, $keys)
-    {
-        $keyValues = array_map(
-            function ($k) use ($object) {
-                return sprintf('%s=%s', $k, $object->$k);
-            },
-            $keys
-        );
-
-        return sprintf('%s[%s]', $this->_class, implode(',', $keyValues));
+        return new Identity($this->primary(), $object);
     }
 
     /**
@@ -123,18 +97,6 @@ class Schema
     public function relationships()
     {
         return $this->_rels;
-    }
-
-    /**
-     * Returns a particular Relationship
-     * @return Relationship
-     */
-    public function relationship($name)
-    {
-        if(!isset($this->_rels[$name]))
-            throw new \InvalidArgumentException("Unknown relationship $name");
-
-        return $this->_rels[$name];
     }
 
     /**
@@ -239,13 +201,15 @@ class Schema
      */
     public function getter($attr)
     {
-        if (isset($this->_getters[$attr])) {
+        if(isset($this->_getters[$attr]))
+
             return $this->_getters[$attr];
-        } elseif (isset($this->_props[$attr])) {
+
+        else if(isset($this->_props[$attr]))
             return $this->_props[$attr]->getter($attr);
-        } elseif (isset($this->_rels[$attr])) {
+
+        else if(isset($this->_rels[$attr]))
             return $this->_rels[$attr]->getter($attr);
-        }
 
         throw new Exception("No getter available for $attr");
     }
@@ -256,13 +220,15 @@ class Schema
      */
     public function setter($attr)
     {
-        if (isset($this->_setters[$attr])) {
+        if(isset($this->_setters[$attr]))
+
             return $this->_setters[$attr];
-        } elseif (isset($this->_props[$attr])) {
+
+        else if(isset($this->_props[$attr]))
             return $this->_props[$attr]->setter($attr);
-        } elseif (isset($this->_rels[$attr])) {
+
+        else if(isset($this->_rels[$attr]))
             return $this->_rels[$attr]->setter($attr);
-        }
 
         throw new Exception("No setter available for $attr");
     }
@@ -272,13 +238,15 @@ class Schema
     */
     public function hasAttribute($attr)
     {
-        if (isset($this->_setters[$attr])) {
+        if(isset($this->_setters[$attr]))
+
             return true;
-        } elseif (isset($this->_props[$attr])) {
+
+        else if(isset($this->_props[$attr]))
             return true;
-        } elseif (isset($this->_rels[$attr])) {
+
+        else if(isset($this->_rels[$attr]))
             return true;
-        }
 
         return false;
     }

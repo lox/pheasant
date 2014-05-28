@@ -49,7 +49,7 @@ class QueryTest extends \Pheasant\Tests\MysqlTestCase
             ;
 
         $this->assertEquals(
-            "SELECT * FROM user INNER JOIN `mytable` using(tableid) WHERE (userid='55')",
+            "SELECT * FROM user INNER JOIN mytable using(tableid) WHERE (userid='55')",
             $query->toSql()
             );
     }
@@ -162,20 +162,6 @@ class QueryTest extends \Pheasant\Tests\MysqlTestCase
 
         $this->assertEquals(
             'SELECT userid FROM user LOCK IN SHARE MODE',
-            $query->toSql());
-    }
-
-    public function testDistinctColumn()
-    {
-        $query = new Query();
-        $query
-            ->distinct()
-            ->select('userid')
-            ->from('user')
-            ;
-
-        $this->assertEquals(
-            'SELECT DISTINCT userid FROM user',
             $query->toSql());
     }
 }

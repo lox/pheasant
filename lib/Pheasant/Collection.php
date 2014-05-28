@@ -7,15 +7,12 @@ use \Pheasant\Query\QueryIterator;
 
 class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 {
-    private
-        $_query,
-        $_iterator,
-        $_add=false,
-        $_readonly=false,
-        $_schema,
-        $_count,
-        $_includes=array()
-        ;
+    private $_query;
+    private $_iterator;
+    private $_add=false;
+    private $_readonly=false;
+    private $_schema;
+    private $_count;
 
     /**
      * @param $class string the classname to hydrate
@@ -27,24 +24,9 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         $this->_query = $query;
         $this->_add = $add;
         $this->_schema = $schema = $class::schema();
-        $this->_iterator = new QueryIterator($this->_query, array($this,'hydrate'));
-    }
-
-    /**
-     * Hydrates a row to a DomainObject
-     */
-    public function hydrate($row)
-    {
-        $hydrated = $this->_schema->hydrate($row);
-
-        // apply any eager-loaded includes
-        foreach($this->_includes as $prop=>$includer) {
-            $hydrated->override($prop, function($prop, $obj) use($includer) {
-                return $includer->get($obj, $prop);
-            });
-        }
-
-        return $hydrated;
+        $this->_iterator = new QueryIterator($query, function($row) use ($schema) {
+            return $schema->hydrate($row);
+        });
     }
 
     /**
@@ -135,7 +117,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     /**
      * Counts the number or results in the query
      */
-    public function count()
+    public function count($distinct=null)
     {
         if(!isset($this->_count))
             $this->_count = $this->_iterator->count();
@@ -253,66 +235,6 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
             throw new Exception("Collection is read-only during iteration");
 
         return $this->_query;
-    }
-
-    /**
-     * Return only unique combinations of the domain object in the collection, e.g such
-     * as when you want only the unique objects that are the result of a join on
-     * conditions. Only columns from the primary object will be in the result.
-     * @chainable
-     */
-    public function unique()
-    {
-        $this->_queryForWrite()
-            ->distinct()
-            ->select($this->_schema->alias().".*")
-            ;
-
-        return $this;
-    }
-
-    /**
-     * Join other related objects into a collection for the purpose of filtering. Relationships
-     * is either a flat array of relationships (as defined in the object's schema) or a nested array
-     * @chainable
-     */
-    public function join($rels, $joinType='inner')
-    {
-        $schemaAlias = $this->_schema->alias();
-
-        foreach (Relationship::normalizeMap($rels) as $alias=>$nested) {
-            Relationship::addJoin($this->_queryForWrite(),
-                $schemaAlias, $this->_schema, $alias, $nested, $joinType);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Groups domain objects particular columns, either a single column an array. This
-     * method is additive, it won't replace previous groupBy's
-     * @chainable
-     */
-    public function groupBy($columns)
-    {
-        $this->_queryForWrite()->groupBy(implode(',', (array) $columns));
-
-        return $this;
-    }
-
-    /**
-     * Eager load relationships to avoid the N+1 problem
-     * @chainable
-     */
-    public function includes($rels)
-    {
-        foreach (Relationship::normalizeMap($rels) as $alias=>$nested) {
-            $this->_includes[$alias] = new Relationships\Includer(
-                $this->_query, $this->_schema->relationship($alias)
-            );
-        }
-
-        return $this;
     }
 
     // ----------------------------------
