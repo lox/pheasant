@@ -1,3 +1,9 @@
+Changes between Pheasant 1.2.1 and 1.3.0
+========================================
+
+  - Connections can be overridden on a per-class basis c05883d
+  - Fixed decimal marshalling in specific locales (#103) bcc3dbf
+
 Changes between Pheasant 1.2.0 and 1.2.1
 ========================================
 
