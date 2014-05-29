@@ -134,7 +134,7 @@ class RowMapper extends AbstractMapper implements Finder
      */
     public function find($class, Criteria $criteria=null)
     {
-        return new Collection($class, 
+        return new Collection($class,
             $this->query($criteria, $this->_pheasant->schema($class)->alias()));
     }
 

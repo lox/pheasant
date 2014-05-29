@@ -1,3 +1,13 @@
+Changes between Pheasant 1.2.1 and 1.3.0
+========================================
+
+  - Documentation fixes (#58) c53a4a6
+  - Fixed decimal marshalling in specific locales (#103) e0f78a1
+  - Connections can be overridden on a per-class basis (#104) c05883d
+  - Distinguish NULL from empty string (#106) 790dcd1
+  - Connection respects PHEASANT_DEBUG env 303fe4c
+  - SQL binding improvements e0f78a1
+
 Changes between Pheasant 1.2.0 and 1.2.1
 ========================================
 
