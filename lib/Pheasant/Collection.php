@@ -28,6 +28,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         $this->_add = $add;
         $this->_schema = $schema = $class::schema();
         $this->_iterator = new QueryIterator($this->_query, array($this,'hydrate'));
+        $this->_scopes = $class::scopes();
     }
 
     /**
@@ -313,6 +314,16 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         }
 
         return $this;
+    }
+
+    /**
+     * Magic Method, used for scopes
+     */
+    public function __get($key)
+    {
+        if(isset($this->_scopes[$key])) {
+            return call_user_func($this->_scopes[$key], $this);
+        }
     }
 
     // ----------------------------------
