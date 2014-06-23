@@ -20,4 +20,11 @@ class Animal extends DomainObject
                 'name' => new Types\String(255),
             ));
     }
+
+    public static function scopes()
+    {
+        return array(
+            'frogs' => function($chain){ return $chain->filter('type = ?', 'frog'); },
+        );
+    }
 }
