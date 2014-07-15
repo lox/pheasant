@@ -290,7 +290,7 @@ class Query implements \IteratorAggregate, \Countable
         } else {
             $query = clone $this;
 
-            return $query->select("count(*) count")->execute()->scalar();
+            return (int)$query->select("count(*) count")->execute()->scalar();
         }
     }
 }

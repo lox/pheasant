@@ -178,4 +178,15 @@ class QueryTest extends \Pheasant\Tests\MysqlTestCase
             'SELECT DISTINCT userid FROM user',
             $query->toSql());
     }
+
+    public function testCount()
+    {
+        $query = new Query();
+        $query
+            ->select('firstname')
+            ->from('user')
+            ->where('lastname=?','Castle')
+            ;
+        $this->assertSame(1, $query->count());
+    }
 }
