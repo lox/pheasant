@@ -60,7 +60,7 @@ $post = Post::findByTitle('My Post')->one();
       <p>Small codebase, light abstractions that keep you close to the database you're developing for. Pheasant
       attempts to make what it's going to do as obvious as possible.</p>
 
-      <h4>Memory Effecient</h4>
+      <h4>Memory Efficient</h4>
       <p>Designed for use with big database tables. Pheasant is routinely tested to measure performance and
       memory usage against other PHP ORM's.</p>
     </div>
