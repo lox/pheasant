@@ -10,6 +10,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     private
         $_query,
         $_iterator,
+        $_scopes,
         $_add=false,
         $_readonly=false,
         $_schema,
@@ -319,10 +320,11 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     /**
      * Magic Method, used for scopes
      */
-    public function __get($key)
+    public function __call($name, $args)
     {
-        if(isset($this->_scopes[$key])) {
-            return call_user_func($this->_scopes[$key], $this);
+        if(isset($this->_scopes[$name])) {
+            array_unshift($args, $this);
+            return call_user_func_array($this->_scopes[$name], $args);
         }
     }
 

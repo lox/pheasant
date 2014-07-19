@@ -25,6 +25,7 @@ class Animal extends DomainObject
     {
         return array(
             'frogs' => function($chain){ return $chain->filter('type = ?', 'frog'); },
+            'by_type' => function($chain, $type){ return $chain->filter('type = ?', $type); },
         );
     }
 }

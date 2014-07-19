@@ -26,17 +26,25 @@ class CollectionScopeTest extends \Pheasant\Tests\MysqlTestCase
 
     public function testSimpleScope()
     {
-        $frogs = Animal::all()->frogs;
+        $frogs = Animal::all()->frogs();
         $this->assertEquals(2, $frogs->count());
     }
 
     public function testMultipleFilterCalls(){
-        $frogs = Animal::all()->filter('id = ?', Animal::all()->last()->id)->frogs;
+        $frogs = Animal::all()->filter('id = ?', Animal::all()->last()->id)->frogs();
         $this->assertEquals($frogs->one()->name, Animal::all()->last()->name);
     }
 
+    public function testPassingArgsToScope(){
+        $frogs_by_type = Animal::all()->filter('id = ?', Animal::all()->last()->id)->by_type('frog');
+        $frogs = Animal::all()->filter('id = ?', Animal::all()->last()->id)->frogs();
+
+        $this->assertEquals($frogs->one()->name, $frogs_by_type->one()->name);
+    }
+
+
     public function testNonExistantProperty()
     {
-        $this->assertEquals(Animal::all()->llamas, null);
+        $this->assertEquals(Animal::all()->llamas(), null);
     }
 }
