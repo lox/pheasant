@@ -21,6 +21,7 @@ class Connection
         $_strict,
         $_selectedDatabase,
         $_transactionStack,
+        $_events,
         $_debug=false
         ;
 
@@ -45,8 +46,40 @@ class Connection
         if(!empty($this->_dsn->database))
             $this->_selectedDatabase = $this->_dsn->database;
 
+        $this->_events = new \Pheasant\Events();
+
         $this->_debug = getenv('PHEASANT_DEBUG');
+
+        // Setup a transaction stack
         $this->_transactionStack = new TransactionStack();
+
+        // Keep a copy of ourselves around
+        $self = $this;
+
+        // The beforeStartTransaction event is where we will BEGIN or SAVEPOINT
+        $this->_events->register('beforeStartTransaction', function() use($self) {
+          // if `descend` returns null, there is nothing on the stack
+          // so we should BEGIN a transaction instead of a numbered SAVEPOINT.
+          $savepoint = $self->transactionStack()->descend();
+          $self->execute($savepoint === null ? "BEGIN" : "SAVEPOINT {$savepoint}");
+        });
+
+        // The afterStartTransaction replaces commitTransaction, and is where
+        // we will COMMIT or RELEASE
+        $this->_events->register('afterStartTransaction', function() use($self) {
+          // if `pop` returns null, then the stack is now empty
+          // so we should COMMIT instead of RELEASE.
+          $savepoint = $self->transactionStack()->pop();
+          $self->execute($savepoint === null ? "COMMIT" : "RELEASE SAVEPOINT {$savepoint}");
+        });
+
+        // The rollbackTransaction event is fired when we need to ROLLBACK
+        $this->_events->register('rollbackTransaction', function() use($self) {
+          // if `pop` returns null, then the stack is now empty
+          // so we should ROLLBACK instead of ROLLBACK_TO.
+          $savepoint = $self->transactionStack()->pop();
+          $self->execute($savepoint === null ? "ROLLBACK" : "ROLLBACK TO {$savepoint}");
+        });
     }
 
     /**
@@ -250,6 +283,15 @@ class Connection
     public function selectedDatabase()
     {
         return $this->_selectedDatabase;
+    }
+
+    /**
+     * Returns the Event object
+     * @return Event
+     */
+    public function events()
+    {
+        return $this->_events;
     }
 
     /**

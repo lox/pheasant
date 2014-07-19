@@ -20,7 +20,7 @@ class Transaction
     public function __construct($connection=null)
     {
         $this->_connection = $connection ?: \Pheasant::instance()->connection();
-        $this->_events = new \Pheasant\Events();
+        $this->_events = new \Pheasant\Events(array(), $this->_connection->events());
     }
 
     public function execute()
@@ -28,21 +28,11 @@ class Transaction
         $this->results = array();
 
         try {
-            $this->_connection->execute(
-                ($sp = $this->_connection->transactionStack()->descend()) === null
-                    ? 'BEGIN'
-                    : "SAVEPOINT {$sp}");
-            $this->_events->trigger('startTransaction', $this->_connection);
-            $this->_connection->execute(
-                ($sp = $this->_connection->transactionStack()->pop()) === null
-                    ? 'COMMIT'
-                    : "RELEASE SAVEPOINT {$sp}");
-            $this->_events->trigger('commitTransaction', $this->_connection);
+            $this->_events->wrap('StartTransaction', $this, function($self) {
+              $self->events()->trigger('startTransaction', $self->connection());
+              $self->events()->trigger('commitTransaction', $self->connection());
+            });
         } catch (\Exception $e) {
-            $this->_connection->execute(
-                ($sp = $this->_connection->transactionStack()->pop()) === null
-                    ? 'ROLLBACK'
-                    : "ROLLBACK TO {$sp}");
             $this->_events->trigger('rollbackTransaction', $this->_connection);
             throw $e;
         }
@@ -77,16 +67,25 @@ class Transaction
     }
 
     /**
+     * Get the connection object
+     * @return Connection
+     */
+    public function connection()
+    {
+        return $this->_connection;
+    }
+
+    /**
      * Links another Events object such that events in it are corked until either commit/rollback and then uncorked
      * @chainable
      */
     public function deferEvents($events)
     {
         $this->_events
-            ->register('startTransaction', function() use ($events) {
+            ->register('beforeStartTransaction', function() use ($events) {
                 $events->cork();
             })
-            ->register('commitTransaction', function() use ($events) {
+            ->register('afterStartTransaction', function() use ($events) {
                 $events->uncork();
             })
             ->register('rollbackTransaction', function() use ($events) {
