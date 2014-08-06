@@ -326,6 +326,8 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
             array_unshift($args, $this);
             return call_user_func_array($this->_scopes[$name], $args);
         }
+
+        throw new \BadMethodCallException("The method '$name' does not exist");
     }
 
     // ----------------------------------
