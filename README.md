@@ -117,7 +117,7 @@ Collection Scoping
 ------------------------------------
 Scoping allows you to specify commonly-used queries which can be referenced as method calls on Collection objects. All scope methods will return a Pheasant::Collection object which will allow for further methods (such as other scopes) to be called on it.
 
-To define a simple scope, we first define a `scopes` method in our `DomainObject`, that an associative array in `"methodName" => $closure` form.
+To define a simple scope, we first define a `scopes` method in our `DomainObject` that returns an associative array in `"methodName" => $closure` form.
 
 ```php
 use \Pheasant;
