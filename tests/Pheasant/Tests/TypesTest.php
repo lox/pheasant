@@ -65,6 +65,26 @@ class TypesTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertMysqlColumnSql('`test` char(4)', $type);
     }
 
+
+    public function testString()
+    {
+        $type = new Types\String(255);
+        $this->assertMysqlColumnSql('`test` varchar(255)', $type);
+
+        $type = new Types\String(65000);
+        $this->assertMysqlColumnSql('`test` text', $type);
+
+        $type = new Types\String(10000000);
+        $this->assertMysqlColumnSql('`test` mediumtext', $type);
+
+        $type = new Types\String(100000000);
+        $this->assertMysqlColumnSql('`test` longtext', $type);
+
+
+        $type = new Types\String(65000, 'required');
+        $this->assertMysqlColumnSql('`test` text not null', $type);
+    }
+
     public function testBoolean()
     {
         $type = new Types\Boolean();
