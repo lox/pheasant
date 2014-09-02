@@ -352,9 +352,12 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 
     public function offsetExists($offset)
     {
-        $this->_iterator->seek($offset);
-
-        return $this->_iterator->valid();
+        try {
+            $this->_iterator->seek($offset);
+            return $this->_iterator->valid();
+        } catch (\OutOfBoundsException $e) {
+            return false;
+        }
     }
 
     public function offsetUnset($offset)

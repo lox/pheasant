@@ -110,6 +110,12 @@ class CollectionTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertEquals('Red Frog', $frog->name);
     }
 
+    public function testLastOnEmptyCollection()
+    {
+        $this->setExpectedException('Pheasant\ConstraintException');
+        Animal::find('name=?', 'Dodo')->last();
+    }
+
     public function testIteratingAndSaving()
     {
         $animals = Animal::all()->filter('type="frog"');
