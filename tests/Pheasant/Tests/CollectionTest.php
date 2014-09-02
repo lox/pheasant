@@ -110,6 +110,12 @@ class CollectionTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertEquals('Red Frog', $frog->name);
     }
 
+    public function testFirstOnEmptyCollection()
+    {
+        $this->setExpectedException('Pheasant\NotFoundException');
+        Animal::find('name=?', 'Dodo')->first();
+    }
+
     public function testLastOnEmptyCollection()
     {
         $this->setExpectedException('Pheasant\NotFoundException');
