@@ -112,7 +112,7 @@ class CollectionTest extends \Pheasant\Tests\MysqlTestCase
 
     public function testLastOnEmptyCollection()
     {
-        $this->setExpectedException('Pheasant\ConstraintException');
+        $this->setExpectedException('Pheasant\NotFoundException');
         Animal::find('name=?', 'Dodo')->last();
     }
 
