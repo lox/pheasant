@@ -71,7 +71,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         $last = $this->count()-1;
 
         if(!$this->offsetExists($last))
-            throw new ConstraintException("No last element exist");
+            throw new NotFoundException("No last element exist");
 
         return $this->offsetGet($last);
     }
@@ -79,7 +79,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     public function first()
     {
         if(!$this->offsetExists(0))
-            throw new ConstraintException("No first element exist");
+            throw new NotFoundException("No first element exist");
 
         return $this->offsetGet(0);
     }
@@ -352,9 +352,12 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
 
     public function offsetExists($offset)
     {
-        $this->_iterator->seek($offset);
-
-        return $this->_iterator->valid();
+        try {
+            $this->_iterator->seek($offset);
+            return $this->_iterator->valid();
+        } catch (\OutOfBoundsException $e) {
+            return false;
+        }
     }
 
     public function offsetUnset($offset)

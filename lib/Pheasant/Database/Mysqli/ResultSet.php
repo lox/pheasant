@@ -33,9 +33,9 @@ class ResultSet implements \IteratorAggregate, \ArrayAccess, \Countable
      */
     public function getIterator()
     {
-        if(	$this->_result === false)
-
-            return new \EmptyIterator(array());;
+        if ($this->_result === false) {
+            return new \EmptyIterator();
+        }
 
         if (!isset($this->_iterator)) {
             $this->_iterator = new ResultIterator($this->_result);

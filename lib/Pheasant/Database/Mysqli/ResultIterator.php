@@ -84,6 +84,10 @@ class ResultIterator implements \SeekableIterator, \Countable
      */
     public function seek($position)
     {
+        if ($position < 0) {
+            throw new \OutOfBoundsException("Unable to seek to negative offset $position");
+        }
+
         if ($this->_position !== $position) {
             if(($count = $this->_result->num_rows) && ($position > ($count-1)))
                 throw new \OutOfBoundsException("Unable to seek to offset $position");
