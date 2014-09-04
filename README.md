@@ -132,6 +132,10 @@ Class User extends DomainObject
     );
   }
 }
+
+// Scopes may be used by invoking them like methods
+User::all()->active()
+//=> Returns all active users
 ```
 
 Events
