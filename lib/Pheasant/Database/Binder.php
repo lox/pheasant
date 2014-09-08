@@ -89,7 +89,7 @@ class Binder
      */
     public function sqlValue($mixed)
     {
-        if(method_exists($mixed, 'toSql')) {
+        if(is_object($mixed) && method_exists($mixed, 'toSql')) {
             return $mixed->toSql($this);
         }
 
