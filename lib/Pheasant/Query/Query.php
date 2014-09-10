@@ -123,7 +123,7 @@ class Query implements \IteratorAggregate, \Countable
      */
     public function innerJoin($mixed, $criteria, $alias='')
     {
-        if(strpos($mixed, " ") !== false) {
+        if(is_string($mixed) && strpos($mixed, " ") !== false) {
             throw new \InvalidArgumentException(
                 "Invalid table name '$mixed'. Possibly use alias parameter instead?");
         }
@@ -137,7 +137,7 @@ class Query implements \IteratorAggregate, \Countable
      */
     public function leftJoin($mixed, $criteria, $alias='')
     {
-        if(strpos($mixed, " ") !== false) {
+        if(is_string($mixed) && strpos($mixed, " ") !== false) {
             throw new \InvalidArgumentException(
                 "Invalid table name '$mixed'. Possibly use alias parameter instead?");
         }
@@ -151,7 +151,7 @@ class Query implements \IteratorAggregate, \Countable
      */
     public function rightJoin($mixed, $criteria, $alias='')
     {
-        if(strpos($mixed, " ") !== false) {
+        if(is_string($mixed) && strpos($mixed, " ") !== false) {
             throw new \InvalidArgumentException(
                 "Invalid table name '$mixed'. Possibly use alias parameter instead?");
         }

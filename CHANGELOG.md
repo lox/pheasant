@@ -1,3 +1,9 @@
+
+Changes between Pheasant 1.3.0 and 1.3.1
+========================================
+
+- Bug fixes
+
 Changes between Pheasant 1.2.1 and 1.3.0
 ========================================
 
