@@ -30,10 +30,6 @@ class Connection
         $timer=0
         ;
 
-    private static
-        $transactionEventName = 'transaction'
-        ;
-
     /**
      * Constructor
      * @param string a database uri
@@ -76,7 +72,7 @@ class Connection
 
             // If the savepoint is null, then we are committing the
             // transaction, and should fire the appropriate events.
-            $callback_name = $savepoint === null ? 'Commit' : 'Savepoint';
+            $callback_name = $savepoint === null ? 'Commit' : 'SavePoint';
             $self->events()->wrap($callback_name, $self, function($self) use($savepoint) {
                 $self->execute($savepoint === null ? "COMMIT" : "RELEASE SAVEPOINT {$savepoint}");
             });

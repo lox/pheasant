@@ -29,7 +29,7 @@ class Transaction
 
         try {
             $this->_events->wrap('Transaction', $this, function($self) {
-              $self->events()->trigger('Transaction', $self->connection());
+              $self->events()->trigger('transaction', $self->connection());
             });
         } catch (\Exception $e) {
             $this->_events->trigger('rollback', $this->_connection);
@@ -49,7 +49,7 @@ class Transaction
         $args = array_slice(func_get_args(),1);
 
         // use an event handler to dispatch to the callback
-        $this->_events->register('Transaction', function($event, $connection) use ($t, $callback, $args) {
+        $this->_events->register('transaction', function($event, $connection) use ($t, $callback, $args) {
             $t->results []= call_user_func_array($callback, $args);
         });
 
@@ -81,16 +81,19 @@ class Transaction
     public function deferEvents($events)
     {
         $this->_events
-            ->register('beforeStartTransaction', function() use ($events) {
+            ->registerOne('beforeTransaction', function() use ($events) {
                 $events->cork();
             })
-            ->register('afterStartTransaction', function() use ($events) {
-                $events->uncork();
-            })
-            ->register('rollbackTransaction', function() use ($events) {
+            ->registerOne('rollback', function() use ($events) {
                 $events->discard()->uncork();
             })
             ;
+
+        $this->connection()->events()->registerOne('afterCommit', function() use ($events) {
+                $events->uncork();
+            });
+
+        return $this;
     }
     /**
      * Creates a transaction and optionally execute a transaction
