@@ -28,12 +28,11 @@ class Transaction
         $this->results = array();
 
         try {
-            $this->_events->wrap('StartTransaction', $this, function($self) {
-              $self->events()->trigger('startTransaction', $self->connection());
-              $self->events()->trigger('commitTransaction', $self->connection());
+            $this->_events->wrap('Transaction', $this, function($self) {
+              $self->events()->trigger('Transaction', $self->connection());
             });
         } catch (\Exception $e) {
-            $this->_events->trigger('rollbackTransaction', $this->_connection);
+            $this->_events->trigger('rollback', $this->_connection);
             throw $e;
         }
 
@@ -50,7 +49,7 @@ class Transaction
         $args = array_slice(func_get_args(),1);
 
         // use an event handler to dispatch to the callback
-        $this->_events->register('startTransaction', function($event, $connection) use ($t, $callback, $args) {
+        $this->_events->register('Transaction', function($event, $connection) use ($t, $callback, $args) {
             $t->results []= call_user_func_array($callback, $args);
         });
 

@@ -5,10 +5,10 @@ namespace Pheasant\Database\Mysqli;
 /**
  * A Transaction Stack that keeps track of open savepoints
  */
-class TransactionStack
+class SavePointStack
 {
     private
-        $_transactionStack = array()
+        $_savePointStack = array()
         ;
 
     /**
@@ -17,7 +17,7 @@ class TransactionStack
      */
     public function depth()
     {
-        return count($this->_transactionStack);
+        return count($this->_savePointStack);
     }
 
     /**
@@ -27,11 +27,11 @@ class TransactionStack
      */
     public function descend()
     {
-        $this->_transactionStack[] = current($this->_transactionStack) === false
+        $this->_savePointStack[] = current($this->_savePointStack) === false
             ? null
             : 'savepoint_'.$this->depth();
 
-        return end($this->_transactionStack);
+        return end($this->_savePointStack);
     }
 
     /**
@@ -40,6 +40,6 @@ class TransactionStack
      */
     public function pop()
     {
-      return array_pop($this->_transactionStack);
+      return array_pop($this->_savePointStack);
     }
 }

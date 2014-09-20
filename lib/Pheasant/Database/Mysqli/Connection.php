@@ -5,7 +5,7 @@ namespace Pheasant\Database\Mysqli;
 use Pheasant\Database\Dsn;
 use Pheasant\Database\FilterChain;
 use Pheasant\Database\MysqlPlatform;
-use Pheasant\Database\Mysqli\TransactionStack;
+use Pheasant\Database\Mysqli\SavePointStack;
 
 /**
  * A connection to a MySql database
@@ -20,7 +20,7 @@ class Connection
         $_sequencePool,
         $_strict,
         $_selectedDatabase,
-        $_transactionStack,
+        $_savePointStack,
         $_events,
         $_debug=false
         ;
@@ -28,6 +28,10 @@ class Connection
     public static
         $counter=0,
         $timer=0
+        ;
+
+    private static
+        $transactionEventName = 'transaction'
         ;
 
     /**
@@ -47,38 +51,43 @@ class Connection
             $this->_selectedDatabase = $this->_dsn->database;
 
         $this->_events = new \Pheasant\Events();
-
         $this->_debug = getenv('PHEASANT_DEBUG');
 
         // Setup a transaction stack
-        $this->_transactionStack = new TransactionStack();
+        $this->_savePointStack = new SavePointStack();
 
         // Keep a copy of ourselves around
         $self = $this;
 
-        // The beforeStartTransaction event is where we will BEGIN or SAVEPOINT
-        $this->_events->register('beforeStartTransaction', function() use($self) {
-          // if `descend` returns null, there is nothing on the stack
-          // so we should BEGIN a transaction instead of a numbered SAVEPOINT.
-          $savepoint = $self->transactionStack()->descend();
-          $self->execute($savepoint === null ? "BEGIN" : "SAVEPOINT {$savepoint}");
+        // The beforeTransaction event is where we will BEGIN or SAVEPOINT
+        $this->_events->register('beforeTransaction', function() use($self) {
+            // if `descend` returns null, there is nothing on the stack
+            // so we should BEGIN a transaction instead of a numbered SAVEPOINT.
+            $savepoint = $self->savePointStack()->descend();
+            $self->execute($savepoint === null ? "BEGIN" : "SAVEPOINT {$savepoint}");
         });
 
-        // The afterStartTransaction replaces commitTransaction, and is where
+        // The afterTransaction replaces commitTransaction, and is where
         // we will COMMIT or RELEASE
-        $this->_events->register('afterStartTransaction', function() use($self) {
-          // if `pop` returns null, then the stack is now empty
-          // so we should COMMIT instead of RELEASE.
-          $savepoint = $self->transactionStack()->pop();
-          $self->execute($savepoint === null ? "COMMIT" : "RELEASE SAVEPOINT {$savepoint}");
+        $this->_events->register('afterTransaction', function() use($self) {
+            // if `pop` returns null, then the stack is now empty
+            // so we should COMMIT instead of RELEASE.
+            $savepoint = $self->savePointStack()->pop();
+
+            // If the savepoint is null, then we are committing the
+            // transaction, and should fire the appropriate events.
+            $callback_name = $savepoint === null ? 'Commit' : 'Savepoint';
+            $self->events()->wrap($callback_name, $self, function($self) use($savepoint) {
+                $self->execute($savepoint === null ? "COMMIT" : "RELEASE SAVEPOINT {$savepoint}");
+            });
         });
 
         // The rollbackTransaction event is fired when we need to ROLLBACK
-        $this->_events->register('rollbackTransaction', function() use($self) {
-          // if `pop` returns null, then the stack is now empty
-          // so we should ROLLBACK instead of ROLLBACK_TO.
-          $savepoint = $self->transactionStack()->pop();
-          $self->execute($savepoint === null ? "ROLLBACK" : "ROLLBACK TO {$savepoint}");
+        $this->_events->register('rollback', function() use($self) {
+            // if `pop` returns null, then the stack is now empty
+            // so we should ROLLBACK instead of ROLLBACK_TO.
+            $savepoint = $self->savePointStack()->pop();
+            $self->execute($savepoint === null ? "ROLLBACK" : "ROLLBACK TO {$savepoint}");
         });
     }
 
@@ -296,10 +305,10 @@ class Connection
 
     /**
      * Returns the transaction stack
-     * @return TransactionStack
+     * @return SavePointStack
      */
-    public function transactionStack()
+    public function savePointStack()
     {
-        return $this->_transactionStack;
+        return $this->_savePointStack;
     }
 }
