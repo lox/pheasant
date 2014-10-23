@@ -253,6 +253,14 @@ class DomainObject implements \ArrayAccess
     }
 
     /**
+     * Returns an array of scope functions
+     */
+    public static function scopes()
+    {
+        return array();
+    }
+
+    /**
      * Returns the mapper for the object
      * @return Mapper
      */

@@ -10,6 +10,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     private
         $_query,
         $_iterator,
+        $_scopes,
         $_add=false,
         $_readonly=false,
         $_schema,
@@ -28,6 +29,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         $this->_add = $add;
         $this->_schema = $schema = $class::schema();
         $this->_iterator = new QueryIterator($this->_query, array($this,'hydrate'));
+        $this->_scopes = $class::scopes();
     }
 
     /**
@@ -313,6 +315,19 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         }
 
         return $this;
+    }
+
+    /**
+     * Magic Method, used for scopes
+     */
+    public function __call($name, $args)
+    {
+        if(isset($this->_scopes[$name])) {
+            array_unshift($args, $this);
+            return call_user_func_array($this->_scopes[$name], $args);
+        }
+
+        throw new \BadMethodCallException("The method '$name' does not exist");
     }
 
     // ----------------------------------
