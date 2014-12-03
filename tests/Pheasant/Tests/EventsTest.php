@@ -197,4 +197,19 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
         $do->test = "blargh";
         $do->save();
     }
+
+    public function testRegisterOneEventBinding()
+    {
+        $fired = array();
+
+        $events = new Events();
+        $events->registerOne('fireOnceEvent', function() use(&$fired) {
+            $fired[] = 1;
+        });
+
+        $events->trigger('fireOnceEvent', new \stdClass());
+        $events->trigger('fireOnceEvent', new \stdClass());
+
+        $this->assertCount(1, $fired);
+    }
 }
