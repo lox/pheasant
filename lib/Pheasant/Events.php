@@ -10,6 +10,7 @@ class Events
 {
     private
         $_handlers = array(),
+        $_oneHandlers = array(),
         $_queue = array(),
         $_corked = false,
         $_upstream
@@ -77,8 +78,17 @@ class Events
     {
         $events = isset($this->_handlers[$event]) ? $this->_handlers[$event] : array();
 
+        if(isset($this->_oneHandlers[$event]))
+            $events = array_merge($events, $this->_oneHandlers[$event]);
+
+        if(isset($this->_oneHandlers['*']))
+            $events = array_merge($events, $this->_oneHandlers['*']);
+
         if(isset($this->_handlers['*']))
             $events = array_merge($events, $this->_handlers['*']);
+
+        // Clear the events that should only be run once
+        $this->_oneHandlers[$event] = array();
 
         return $events;
     }
@@ -93,6 +103,19 @@ class Events
 
         return $this;
     }
+
+    /**
+     * Registers a handler for an event that is immediately removed
+     * after it is executed.
+     * @chainable
+     */
+    public function registerOne($event, $callback)
+    {
+        $this->_oneHandlers[$event][] = $callback;
+
+        return $this;
+    }
+
 
     /**
      * Unregisters an event handler based on event, or all
