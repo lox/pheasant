@@ -215,7 +215,7 @@ class Query implements \IteratorAggregate, \Countable
             $this->_clause(($this->_distinct
                 ? 'SELECT DISTINCT' : 'SELECT'), $this->_select),
             $this->_clause('FROM', $this->_from),
-            implode(' ', $this->_joins),
+            implode(' ', array_values($this->_joins)),
             $this->_clause('WHERE', $this->_where),
             $this->_clause('GROUP BY', $this->_group),
             $this->_clause('ORDER BY', $this->_order),
@@ -263,11 +263,14 @@ class Query implements \IteratorAggregate, \Countable
     private function _join($type, $mixed, $criteria, $alias='')
     {
         if (is_object($mixed)) {
-            $this->_joins []= sprintf('%s (%s) %s %s', $type, $mixed, $alias ?: 'derived', $criteria);
+            $j = sprintf('%s (%s) %s %s', $type, $mixed, $alias ?: 'derived', $criteria);
+            $this->_joins [$j]= $j;
         } elseif ($alias) {
-            $this->_joins []= sprintf('%s `%s` AS %s %s', $type, $mixed, $alias, $criteria);
+            $j = sprintf('%s `%s` AS %s %s', $type, $mixed, $alias, $criteria);
+            $this->_joins [$j]= $j;
         } else {
-            $this->_joins []= sprintf('%s `%s` %s', $type, $mixed, $criteria);
+            $j = sprintf('%s `%s` %s', $type, $mixed, $criteria);
+            $this->_joins [$j]= $j;
         }
 
         return $this;
