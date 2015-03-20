@@ -69,7 +69,8 @@ class Schema
     {
         $keyValues = array_map(
             function ($k) use ($object) {
-                return sprintf('%s=%s', $k, $object->$k);
+                $a = is_array($k);
+                return sprintf('%s=%s',$a?$k[1]:$k, $object->{$a?$k[0]:$k});
             },
             $keys
         );
