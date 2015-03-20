@@ -19,7 +19,7 @@ class BelongsTo extends HasOne
         if ($cache) {
             $schema = \Pheasant::instance()->schema($this->class);
 
-            if ($cached = $cache->get($schema->hash($object, array($this->foreign)))) {
+            if ($cached = $cache->get($schema->hash($object, array(array($this->local, $this->foreign))))) {
                 return $schema->hydrate($cached);
             }
         }
