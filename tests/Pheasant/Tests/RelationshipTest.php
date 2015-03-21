@@ -94,11 +94,20 @@ class RelationshipTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertCount(1, $spiderman->Powers->filter('description LIKE ?', 'Super-human%')->toArray());
     }
 
-    public function testEmptyRelationships()
+    public function testEmptyRelationshipsWithAllowEmpty()
     {
         $hero = new Hero(array('alias'=>'Spider Man'));
         $hero->save();
 
         $this->assertNull($hero->SecretIdentity);
+    }
+    
+    public function testEmptyRelationshipsWithoutAllowEmpty()
+    {
+        $power = new Power(array('description'=>'Spider Senses'));
+        $power->save();
+        
+        $this->setExpectedException('\Pheasant\Exception');
+        $foo = $power->Hero;
     }
 }

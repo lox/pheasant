@@ -22,7 +22,7 @@ class Hero extends DomainObject
     {
         return array(
             'Powers' => Power::hasMany('id','heroid'),
-            'SecretIdentity' => SecretIdentity::belongsTo('identityid','id'),
+            'SecretIdentity' => SecretIdentity::belongsTo('identityid','id', true),
             );
     }
 
