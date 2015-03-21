@@ -39,7 +39,11 @@ class HasOne extends Relationship
         }
 
         if (($localValue = $object->{$this->local}) === null) {
-            return null;
+            if($this->_allowEmpty) {
+                return null;
+            } else {
+                throw new \Pheasant\Exception("Local value is null while not allowed");
+            }
         }
 
         $result = $this
