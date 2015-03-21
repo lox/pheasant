@@ -2,14 +2,27 @@
 
 namespace Pheasant\Relationships;
 
+use \Pheasant\Relationship;
+
 /**
  * A BelongsTo relationship represents the weak side of a 1->1 relationship. The
  * local entity has responsibility for the foreign key.
  *
  */
-class BelongsTo extends HasOne
+class BelongsTo extends Relationship
 {
     private $_property;
+    private $_allowEmpty;
+    
+    /**
+     * Constructor
+     *
+     */
+    public function __construct($class, $local, $foreign=null, $allowEmpty=false)
+    {
+        parent::__construct($class, $local, $foreign);
+        $this->_allowEmpty = $allowEmpty;
+    }
 
     /* (non-phpdoc)
      * @see Relationship::get()
@@ -25,11 +38,24 @@ class BelongsTo extends HasOne
         }
 
         if (($localValue = $object->{$this->local}) === null) {
-            return null;
+            if($this->_allowEmpty) {
+                return null;
+            } else {
+                throw new \Pheasant\Exception("Local value is null while not allowed");
+            }
         }
 
-        return $this->hydrate($this->query("{$this->foreign}=?", $localValue)
-            ->execute()->row());
+        $result = $this->query("{$this->foreign}=?", $localValue)->execute();
+
+        if(!count($result)) {
+            if($this->_allowEmpty) {
+                return null;
+            } else {
+                throw new \Pheasant\Exception("Failed to find a $key (via $this->foreign)");
+            }
+        }
+
+        return $this->hydrate($result->row());
     }
 
     /* (non-phpdoc)
