@@ -18,6 +18,6 @@ class ArrayCacheTest extends \Pheasant\Tests\MysqlTestCase
             throw new \InvalidArgumentException("Missing animal");
         });
 
-        $this->assertEquals($animal->toArray(), $row);
+        $this->assertEquals($animal, $row);
     }
 }

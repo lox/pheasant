@@ -15,13 +15,15 @@ class Includer
     private
         $_query,
         $_rel,
+        $_nested,
         $_cache
         ;
 
-    public function __construct($query, $rel)
+    public function __construct($query, $rel, $nested=array())
     {
         $this->_query = $query;
         $this->_rel = $rel;
+        $this->_nested = $nested;
     }
 
     public function loadCache()
@@ -35,7 +37,8 @@ class Includer
             ->finderFor($this->_rel->class)
             ->find($this->_rel->class, new Criteria(
                 $this->_rel->foreign.'=?', array($ids))
-            );
+            )
+            ->includes($this->_nested);
 
         foreach ($relatedObjects as $obj) {
             $this->_cache->add($obj);
