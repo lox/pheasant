@@ -121,9 +121,6 @@ See :doc:`finding` for more details.
     // by identifier
     $post = Post::byId(1);
 
-    // by a collection of properties
-    $post = Post::find(array('title'=>'The joys of llama farming'))->one();
-
     // using a magic finder method
     $posts = Post::findByTitleAndTimestamp('The joys of llama farming', '2013-01-01');
     $posts = Post::findByType(array('blog', 'article'));
