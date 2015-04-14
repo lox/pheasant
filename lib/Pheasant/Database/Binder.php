@@ -108,7 +108,7 @@ class Binder
             $tokens[] = $this->quote($this->escape($a));
         }
 
-        return '('.implode(',', $tokens).')';
+        return $tokens ? '('.implode(',', $tokens).')' : '(null)';
     }
 
     /**
