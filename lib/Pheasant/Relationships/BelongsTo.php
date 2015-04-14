@@ -13,7 +13,7 @@ class BelongsTo extends Relationship
 {
     private $_property;
     private $_allowEmpty;
-    
+
     /**
      * Constructor
      *
@@ -33,7 +33,7 @@ class BelongsTo extends Relationship
             $schema = \Pheasant::instance()->schema($this->class);
 
             if ($cached = $cache->get($schema->hash($object, array(array($this->local, $this->foreign))))) {
-                return $schema->hydrate($cached);
+                return $cached;
             }
         }
 
