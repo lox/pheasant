@@ -26,7 +26,7 @@ class ArrayCache implements \Pheasant\Cache
 
     public function add($object)
     {
-        $this->_cache[(string) $object->identity()] = $object->toArray();
+        $this->_cache[(string) $object->identity()] = $object;
     }
 
     public function clear()
