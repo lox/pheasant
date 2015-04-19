@@ -166,6 +166,19 @@ for variable interpolation:
     $posts = Post::find('type IN ?', array('blog', 'article'));
 
 
+Deleting
+-------
+
+To delete a DomainObject, just call `delete()`:
+
+.. code-block:: php
+
+    <?php
+
+    $post = Post::byId(1);
+    $post->delete();
+
+
 Relationships
 -------------
 
