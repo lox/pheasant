@@ -49,10 +49,12 @@ Defining Objects
 ----------------
 
 Anything mapped to the database is referred to as a `Domain Object` in Pheasant. The easiest way
-to define properties on a domain object is to simply extend `\Pheasant\DomainObject` and implement
+to define properties on a domain object is to simply extend `\\Pheasant\\DomainObject` and implement
 a `properties()` method.
 
 In the absence of an explicit definition, the tablename is inferred from the classname: `post`.
+
+See :doc:`domainobjects` for more details.
 
 .. code-block:: php
 
@@ -73,7 +75,8 @@ In the absence of an explicit definition, the tablename is inferred from the cla
       }
     }
 
-Properties are mapped to the same named column in the database. See :doc:`mapping/types` for more about what types are available and their parameters.
+Properties are mapped to the same named column in the database. See :doc:`types` for more about what types are available and their parameters.
+
 
 Creating Tables
 ---------------
@@ -106,13 +109,27 @@ Whilst Pheasant uses the data mapper pattern, for convenience domain objects hav
 
 Simple as that. Subsequent changes will update the record with whatever columns have been changed.
 
+
+Seeing changes in a DomainObject
+--------------------------------
+
+To see which properties on a DomainObject will be updated when you save, call `changes()`:
+
+.. code-block:: php
+
+    <?php
+
+    $post = Post::oneById(1234);
+    $post->title = "The joys of unicorn farming";
+
+    $changes = $post->changes();
+
+
 Finding
 -------
 
 The core of Pheasant's finder capability is based around `find()` and `one()`. Find returns a `Collection`, where
 one returns a single object.
-
-See :doc:`finding` for more details.
 
 .. code-block:: php
 
@@ -213,5 +230,39 @@ See :doc:`relationships` for more details.
     echo $post->title; // returns 'My Post'
     echo $post->Author->fullname; // returns 'Lachlan'
 
+    // finding objects without destroying performance (n+1 issue)
+    $posts = Post::all()->includes(array('Author'));
 
-Pheasant supports one-to-one, and one-to-many relationship types.
+    foreach($posts as $post) {
+        echo $post->Author->id; // does not hit the db again
+    }
+
+    Pheasant supports one-to-one, and one-to-many relationship types.
+
+
+Collection Scoping
+------------------
+Scoping allows you to specify commonly-used queries which can be referenced as method calls on Collection objects. All scope methods will return a Pheasant::Collection object which will allow for further methods (such as other scopes) to be called on it.
+
+To define a simple scope, we first define a `scopes` method in our `DomainObject` that returns an associative array in `"methodName" => $closure` form.
+
+.. code-block:: php
+
+    <?php
+    use \Pheasant;
+    Class User extends DomainObject
+    {
+      public function scopes()
+      {
+        return array(
+          'active' => function($collection){
+            $collection->filter('last_login_date >= ?', strtotime('30 days ago'));
+          },
+        );
+      }
+    }
+
+    // Scopes may be used by invoking them like methods
+    User::all()->active()
+    //=> Returns all active users
+

@@ -3,6 +3,42 @@ Domain Objects
 
 The domain object represents an object that can be persisted in Pheasant.
 
+
+Basic example
+-------------
+
+.. code-block:: php
+
+    <?php
+
+    use \Pheasant;
+    use \Pheasant\Types;
+
+    class Post extends DomainObject
+    {
+        public function properties()
+        {
+            return array(
+                'postid'    => new Types\Integer(11, 'primary auto_increment'),
+                'title'     => new Types\String(255, 'required'),
+                'type'      => new Types\String(128, 'default=blog'),
+                'timestamp' => new Types\DateTime(),
+                'authorid'  => new Types\Integer(11)
+            );
+        }
+    }
+
+
+Defining properties
+-------------------
+
+Each DomainObject should at least define a `properties()` method. In the `properties()` you set
+which columns you have in your database table, and what type they are. There are built-in types
+for the most used MySQL column types.
+
+See doc:`types` for more details.
+
+
 Initialization
 --------------
 
@@ -21,10 +57,10 @@ The initialization happens in `DomainObject::initialize`, for which the default 
 look for several template methods in the object.
 
 properties()
-    A map of column names to Type objects (see `mapping/types`)
+    A map of column names to Type objects (see `types`)
 
 relationships()
-    A map of keys to RelationType objects representing 1-n or 1-1 relationships  (see `mapping/relationships`)
+    A map of keys to RelationType objects representing 1-n or 1-1 relationships  (see `relationships`)
 
 tableName()
     The database table name to map to, defaults to the name of the class
@@ -105,10 +141,65 @@ Inheritance and extending domain objects isn't something that has any explicit s
 be possible to override the `properties` method and extend it.
 
 
+Defining events
+---------------
+
+Code can be triggered before and after create, update and delete operations.
+
+.. code-block:: php
+
+    <?php
+
+    use \Pheasant;
+    use \Pheasant\Events;
+    use \Pheasant\Types;
+
+    class Post extends DomainObject
+    {
+      public function properties()
+      {
+        return array(
+          'postid'      => new Types\Sequence(),
+          'title'       => new Types\String(255),
+          'timecreated' => new Types\Integer(11),
+          ));
+      }
+
+      public function beforeCreate($post)
+      {
+        $d->timecreated = time();
+      }
+    }
+
+Optionally, domain objects provide the following implicit hooks which can be overriden:
+
+- `afterCreate`
+- `beforeUpdate`, `afterUpdate`
 
 
+Transactions
+------------
+
+Transactions can be created globally:
+
+.. code-block:: php
+
+    <?php
 
 
+    \Pheasant::transaction(function() {
+      $post = new Post(array('title'=>'First Post!'));
+      $post->save();
+    });
 
+Or transactions can be invoked on an instance:
 
+.. code-block:: php
 
+    <?php
+
+    $post = new Post(array('title'=>'First Post!'));
+
+    $post->transaction(function($obj) {
+      $obj->save();
+    });
