@@ -31,7 +31,7 @@ class LockingTest extends \Pheasant\Tests\MysqlTestCase
         });
 
         $this->assertTrue(in_array(
-            "SELECT * FROM animal AS Animal WHERE ((`id`='1')) FOR UPDATE",
+            "SELECT * FROM animal AS `Animal` WHERE ((`id`='1')) FOR UPDATE",
             $this->queries
         ));
     }
