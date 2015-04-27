@@ -51,6 +51,15 @@ class BindingTest extends \Pheasant\Tests\MysqlTestCase
             );
     }
 
+    public function testEmptyArrayBinding()
+    {
+        $binder = new Binder();
+        $this->assertEquals(
+            $binder->magicBind('x=?', array(array())),
+            'x IN (null)'
+        );
+    }
+
     public function testInjectingStatements()
     {
         $binder = new Binder();
