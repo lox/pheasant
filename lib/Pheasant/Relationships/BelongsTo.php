@@ -51,7 +51,7 @@ class BelongsTo extends Relationship
             if($this->_allowEmpty) {
                 return null;
             } else {
-                throw new \Pheasant\Exception("Failed to find a $key (via $this->foreign)");
+                throw new \Pheasant\Exception("Failed to find a {$key} (via {$this->foreign}={$localValue})");
             }
         }
 
