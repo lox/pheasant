@@ -3,6 +3,7 @@
 namespace Pheasant\Tests;
 
 use \Pheasant\Tests\Examples\Animal;
+use \Pheasant\Tests\Examples\Order;
 use \Pheasant\Tests\Examples\AnotherAnimal;
 use \Pheasant\Tests\Examples\AnimalWithNameDefault;
 
@@ -16,6 +17,8 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
         $migrator
             ->destroy(Animal::schema())
             ->initialize(Animal::schema())
+            ->destroy(Order::schema())
+            ->initialize(Order::schema())
             ;
     }
 
@@ -238,5 +241,12 @@ class DomainObjectTest extends \Pheasant\Tests\MysqlTestCase
         $this->assertEquals('llama1', $llama->type);
         $this->assertEquals('llama2', $llama->type);
         $this->assertEquals('llama3', $llama->type);
+    }
+
+    public function testDomainObjectsWithReservedNames()
+    {
+        $order = Order::create(array('id' => 1));
+        $this->assertNotNull($order);
+        $this->assertEquals(1, Order::all()->count());
     }
 }
