@@ -3,7 +3,7 @@ Changes between Pheasant 1.3.1 and 1.3.2
 ========================================
 
   - Fixed an issue which caused queries to fail when using special table names. Now they are backticked (#147, #144) 
-	- In relationships, when throwing exceptions: be a bit more verbose and tell which localValue could not be found (#141)
+  - In relationships, when throwing exceptions: be a bit more verbose and tell which localValue could not be found (#141)
   - Remove executable bit on files (#140)
   - Fixed an issue which caused IN() queries to fail when empty (#134)
   - Fixed an issue which caused DomainObject methods not to be accessible when using includes (#133)
