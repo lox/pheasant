@@ -21,6 +21,10 @@ Installing
 
 Easiest way is to install via composer http://packagist.org/packages/lox/pheasant.
 
+```sh
+composer require lox/pheasant
+```
+
 Persisting Objects
 ---------------------------------
 
