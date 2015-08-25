@@ -65,10 +65,10 @@ In the absence of an explicit definition, the tablename is inferred from the cla
       public function properties()
       {
         return array(
-          'postid'    => new Types\Integer(11, 'primary auto_increment'),
-          'title'     => new Types\String(255, 'required'),
-          'type'      => new Types\String(128, 'default=blog'),
-          'timestamp' => new Types\DateTime(),
+          'postid'    => new Types\IntegerType(11, 'primary auto_increment'),
+          'title'     => new Types\StringType(255, 'required'),
+          'type'      => new Types\StringType(128, 'default=blog'),
+          'timestamp' => new Types\DateTimeType(),
         );
       }
     }
@@ -165,11 +165,11 @@ See :doc:`relationships` for more details.
         public function properties()
         {
             return array(
-                'postid'    => new Types\Integer(11, 'primary auto_increment'),
-                'title'     => new Types\String(255, 'required'),
-                'type'      => new Types\String(128, 'default=blog'),
-                'timestamp' => new Types\DateTime(),
-                'authorid'  => new Types\Integer(11)
+                'postid'    => new Types\IntegerType(11, 'primary auto_increment'),
+                'title'     => new Types\StringType(255, 'required'),
+                'type'      => new Types\StringType(128, 'default=blog'),
+                'timestamp' => new Types\DateTimeType(),
+                'authorid'  => new Types\IntegerType(11)
             );
         }
 
@@ -186,8 +186,8 @@ See :doc:`relationships` for more details.
         public function properties()
         {
             return array(
-                'authorid' => new Types\Integer(11, 'primary auto_increment'),
-                'fullname' => new Types\String(255, 'required')
+                'authorid' => new Types\IntegerType(11, 'primary auto_increment'),
+                'fullname' => new Types\StringType(255, 'required')
                 );
         }
 
