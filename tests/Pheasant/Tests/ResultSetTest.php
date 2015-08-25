@@ -11,10 +11,10 @@ class ResultSetTestCase extends \Pheasant\Tests\MysqlTestCase
         parent::setUp();
 
         $t = $this->table('user', array(
-            'userid'=>new Types\Integer(8, 'primary auto_increment'),
-            'name'=>new Types\String(),
-            'value'=>new Types\Integer(),
-            'active'=>new Types\Boolean(),
+            'userid'=>new Types\IntegerType(8, 'primary auto_increment'),
+            'name'=>new Types\StringType(),
+            'value'=>new Types\IntegerType(),
+            'active'=>new Types\BooleanType(),
         ));
 
         $t->insert(array('name'=>'Llama', 'active'=>false, 'value'=>24));

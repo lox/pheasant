@@ -37,7 +37,7 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 
         $this->initialize('Pheasant\DomainObject', function($builder) use ($callback) {
             $builder->properties(array(
-                'test' => new Types\String()
+                'test' => new Types\StringType()
                 ));
             $builder->events(array(
                 'afterCreate' => $callback,
@@ -59,7 +59,7 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 
         $this->initialize('Pheasant\DomainObject', function($builder) {
             $builder->properties(array(
-                'test' => new Types\String()
+                'test' => new Types\StringType()
                 ));
         });
 
@@ -86,7 +86,7 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 
         $this->initialize('Pheasant\Tests\Examples\EventTestObject', function($builder) {
             $builder->properties(array(
-                'test' => new Types\String()
+                'test' => new Types\StringType()
                 ));
         });
 
@@ -103,7 +103,7 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 
         $this->initialize('Pheasant\Tests\Examples\EventTestObject', function($builder) {
             $builder->properties(array(
-                'test' => new Types\String()
+                'test' => new Types\StringType()
                 ));
         });
 
@@ -129,7 +129,7 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 
         $this->initialize('Pheasant\Tests\Examples\EventTestObject', function($builder) {
             $builder->properties(array(
-                'test' => new Types\String()
+                'test' => new Types\StringType()
                 ));
         });
 
@@ -184,7 +184,7 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
 
         $this->initialize('Pheasant\Tests\Examples\EventTestObject', function($builder) {
             $builder->properties(array(
-                'test' => new Types\String()
+                'test' => new Types\StringType()
             ));
             $builder->events(array(
                 'afterCreate' => function($event, $obj) {

@@ -15,8 +15,8 @@ class AutoIncrementTest extends \Pheasant\Tests\MysqlTestCase
         // set up a domain object
         $this->initialize('Pheasant\DomainObject', function($builder) {
             $builder->properties(array(
-                'id' => new Types\Integer(null, 'primary auto_increment'),
-                'value' => new Types\String(),
+                'id' => new Types\IntegerType(null, 'primary auto_increment'),
+                'value' => new Types\StringType(),
             ));
         });
 
