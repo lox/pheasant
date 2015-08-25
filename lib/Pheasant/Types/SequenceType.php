@@ -2,7 +2,7 @@
 
 namespace Pheasant\Types;
 
-class Sequence extends Integer
+class SequenceType extends IntegerType
 {
     public $sequence;
 

@@ -2,17 +2,19 @@
 
 namespace Pheasant\Types;
 
+use \Pheasant\Database\TypedValue;
+
 /**
- * A date and time type
+ * A date and time type that persists to a unix timestamp
  */
-class DateTime extends Base
+class UnixTimestampType extends BaseType
 {
     /* (non-phpdoc)
      * @see \Pheasant\Type::columnSql
      */
     public function columnSql($column, $platform)
     {
-        return $platform->columnSql($column, 'datetime', $this->options());
+        return $platform->columnSql($column, 'int', $this->options());
     }
 
     /* (non-phpdoc)
@@ -20,7 +22,7 @@ class DateTime extends Base
      */
     public function unmarshal($value)
     {
-        return new \DateTime($value);
+        return new \DateTime('@'.$value);
     }
 
     /* (non-phpdoc)
@@ -28,6 +30,6 @@ class DateTime extends Base
      */
     public function marshal($value)
     {
-        return parent::marshal($value->format("c"));
+        return new TypedValue($value->getTimestamp());
     }
 }

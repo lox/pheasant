@@ -7,7 +7,7 @@ use \Pheasant\Database\TypedValue;
 /**
  * A basic string type
  */
-class String extends Base
+class StringType extends BaseType
 {
     private $_length;
 
