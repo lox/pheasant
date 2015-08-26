@@ -4,17 +4,18 @@ namespace Pheasant\Tests\Examples;
 
 use \Pheasant\DomainObject;
 use \Pheasant\Types;
-use \Pheasant\Types\Sequence;
-use \Pheasant\Types\String;
+use \Pheasant\Types\SequenceType;
+use \Pheasant\Types\StringType;
+use \Pheasant\Types\IntegerType;
 
 class Hero extends DomainObject
 {
     public function properties()
     {
         return array(
-            'id' => new Types\Sequence(),
-            'alias' => new Types\String(),
-            'identityid' => new Types\Integer(),
+            'id' => new Types\SequenceType(),
+            'alias' => new Types\StringType(),
+            'identityid' => new Types\IntegerType(),
             );
     }
 

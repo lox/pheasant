@@ -15,8 +15,8 @@ class AnotherAnimal extends DomainObject
     public function properties()
     {
         return array(
-            'id' => new Types\Integer(11, 'primary auto_increment'),
-            'type' => new Types\String(255, 'required default=llama'),
+            'id' => new Types\IntegerType(11, 'primary auto_increment'),
+            'type' => new Types\StringType(255, 'required default=llama'),
         );
     }
 }

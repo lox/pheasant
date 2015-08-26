@@ -5,8 +5,8 @@ namespace Pheasant\Tests\Examples;
 use \Pheasant\DomainObject;
 use \Pheasant\Types;
 use \Pheasant\Mapper\RowMapper;
-use \Pheasant\Types\Sequence;
-use \Pheasant\Types\String;
+use \Pheasant\Types\SequenceType;
+use \Pheasant\Types\StringType;
 
 class Person extends DomainObject
 {
@@ -17,8 +17,8 @@ class Person extends DomainObject
 
         $builder
             ->properties(array(
-                'personid' => new Sequence('personid'),
-                'name' => new String(),
+                'personid' => new SequenceType('personid'),
+                'name' => new StringType(),
             ));
     }
 }

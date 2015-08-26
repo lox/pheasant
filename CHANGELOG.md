@@ -1,3 +1,9 @@
+Changes between Pheasant 1.3.2 and 2.0.0
+========================================
+
+  - We've made Pheasant compatible with PHP7. Unfortunately, PHP7 introduces a couple of new reserved classnames
+    (including String). We've added a `Type` suffix to all the bundled types to resolve that. So `\Pheasant\Types\String`
+    is now `\Pheasant\Types\StringType`. (#148)
 
 Changes between Pheasant 1.3.1 and 1.3.2
 ========================================

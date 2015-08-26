@@ -15,9 +15,9 @@ class Post extends DomainObject
 
         $builder
             ->properties(array(
-                'postid' => new Types\Integer(11, 'primary auto_increment'),
-                'title' => new Types\String(255, 'required'),
-                'subtitle' => new Types\String(255),
+                'postid' => new Types\IntegerType(11, 'primary auto_increment'),
+                'title' => new Types\StringType(255, 'required'),
+                'subtitle' => new Types\StringType(255),
             ));
     }
 

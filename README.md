@@ -43,11 +43,11 @@ class Post extends DomainObject
   public function properties()
   {
     return array(
-      'postid'   => new Types\Sequence(),
-      'title'    => new Types\String(255, 'required'),
-      'subtitle' => new Types\String(255),
-      'status'   => new Types\Enum(array('closed','open')),
-      'authorid' => new Types\Integer(11),
+      'postid'   => new Types\SequenceType(),
+      'title'    => new Types\StringType(255, 'required'),
+      'subtitle' => new Types\StringType(255),
+      'status'   => new Types\EnumType(array('closed','open')),
+      'authorid' => new Types\IntegerType(11),
       );
   }
 
@@ -64,8 +64,8 @@ class Author extends DomainObject
   public function properties()
   {
     return array(
-      'authorid' => new Types\Sequence(),
-      'fullname' => new Types\String(255, 'required')
+      'authorid' => new Types\SequenceType(),
+      'fullname' => new Types\StringType(255, 'required')
     );
   }
 
@@ -159,9 +159,9 @@ class Post extends DomainObject
   public function properties()
   {
     return array(
-      'postid'      => new Types\Sequence(),
-      'title'       => new Types\String(255),
-      'timecreated' => new Types\Integer(11),
+      'postid'      => new Types\SequenceType(),
+      'title'       => new Types\StringType(255),
+      'timecreated' => new Types\IntegerType(11),
       ));
   }
 

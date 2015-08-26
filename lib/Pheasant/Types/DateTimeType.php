@@ -2,19 +2,17 @@
 
 namespace Pheasant\Types;
 
-use \Pheasant\Database\TypedValue;
-
 /**
- * A basic string type
+ * A date and time type
  */
-class Boolean extends Base
+class DateTimeType extends BaseType
 {
     /* (non-phpdoc)
      * @see \Pheasant\Type::columnSql
      */
     public function columnSql($column, $platform)
     {
-        return $platform->columnSql($column, "boolean", $this->options());
+        return $platform->columnSql($column, 'datetime', $this->options());
     }
 
     /* (non-phpdoc)
@@ -22,7 +20,7 @@ class Boolean extends Base
      */
     public function unmarshal($value)
     {
-        return (bool) $value;
+        return new \DateTime($value);
     }
 
     /* (non-phpdoc)
@@ -30,6 +28,6 @@ class Boolean extends Base
      */
     public function marshal($value)
     {
-        return new TypedValue((bool)$value);
+        return parent::marshal($value->format("c"));
     }
 }

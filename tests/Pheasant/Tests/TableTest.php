@@ -13,9 +13,9 @@ class TableTest extends \Pheasant\Tests\MysqlTestCase
         parent::setUp();
 
         $this->table = $this->table('user', array(
-            'userid'=>new Types\Integer(8, 'primary auto_increment'),
-            'firstname'=>new Types\String(),
-            'lastname'=>new Types\String(),
+            'userid'=>new Types\IntegerType(8, 'primary auto_increment'),
+            'firstname'=>new Types\StringType(),
+            'lastname'=>new Types\StringType(),
         ));
 
         $this->assertRowCount(0, 'select * from user');
