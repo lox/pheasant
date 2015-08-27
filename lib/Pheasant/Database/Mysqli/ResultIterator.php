@@ -92,8 +92,11 @@ class ResultIterator implements \SeekableIterator, \Countable
             if(($count = $this->_result->num_rows) && ($position > ($count-1)))
                 throw new \OutOfBoundsException("Unable to seek to offset $position");
 
-            $this->_result->data_seek($this->_position = $position);
-            $this->_currentRow = $this->_fetch();
+            if ($count) {
+                $this->_result->data_seek($this->_position = $position);
+                $this->_currentRow = $this->_fetch();
+            }
+
             $this->_position = $position;
         }
     }
