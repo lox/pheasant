@@ -5,7 +5,7 @@ namespace Pheasant\Types;
 /**
  * A basic character type
  */
-class Character extends Base
+class CharacterType extends BaseType
 {
     private $_length;
 

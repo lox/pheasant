@@ -265,7 +265,7 @@ class Query implements \IteratorAggregate, \Countable
         if (is_object($mixed)) {
             $this->_joins []= sprintf('%s (%s) %s %s', $type, $mixed, $alias ?: 'derived', $criteria);
         } elseif ($alias) {
-            $this->_joins []= sprintf('%s `%s` AS %s %s', $type, $mixed, $alias, $criteria);
+            $this->_joins []= sprintf('%s `%s` AS `%s` %s', $type, $mixed, $alias, $criteria);
         } else {
             $this->_joins []= sprintf('%s `%s` %s', $type, $mixed, $criteria);
         }

@@ -15,9 +15,9 @@ class AnimalWithNameDefault extends DomainObject
 
         $builder
             ->properties(array(
-                'id' => new Types\Integer(11, 'primary auto_increment'),
-                'type' => new Types\String(255, 'required default=llama'),
-                'name' => new Types\String(255, 'default=blargh'),
+                'id' => new Types\IntegerType(11, 'primary auto_increment'),
+                'type' => new Types\StringType(255, 'required default=llama'),
+                'name' => new Types\StringType(255, 'default=blargh'),
             ));
     }
 }

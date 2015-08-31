@@ -15,11 +15,11 @@ class DiffTest extends \Pheasant\Tests\MysqlTestCase
         // set up a domain object
         $this->initialize('Pheasant\DomainObject', function($builder, $pheasant) {
             $builder->properties(array(
-                'id' => new Types\Sequence(),
-                'type' => new Types\String(128),
-                'isllama' => new Types\Boolean(array('default'=>true)),
-                'timecreated' => new Types\DateTime(),
-                'unixtime' => new Types\UnixTimestamp(),
+                'id' => new Types\SequenceType(),
+                'type' => new Types\StringType(128),
+                'isllama' => new Types\BooleanType(array('default'=>true)),
+                'timecreated' => new Types\DateTimeType(),
+                'unixtime' => new Types\UnixTimestampType(),
             ));
 
             $pheasant->register(DomainObject::className(), new Mapper\RowMapper('llamas'));

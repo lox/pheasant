@@ -7,7 +7,7 @@ use \Pheasant\Options;
 /**
  * An abstract type base class
  */
-abstract class Base implements \Pheasant\Type
+abstract class BaseType implements \Pheasant\Type
 {
     private $_options;
 

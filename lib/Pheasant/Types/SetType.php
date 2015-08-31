@@ -2,22 +2,20 @@
 
 namespace Pheasant\Types;
 
-use \Pheasant\Database\TypedValue;
-
 /**
- * A basic integer type
+ * A Set type
  */
-class Integer extends Base
+class SetType extends BaseType
 {
-    public $width;
+    private $_set;
 
     /**
      * Constructor
      */
-    public function __construct($width=null, $options=null)
+    public function __construct($set = array(), $options=null)
     {
         parent::__construct($options);
-        $this->width = intval($width);
+        $this->_set = $set;
     }
 
     /* (non-phpdoc)
@@ -25,9 +23,7 @@ class Integer extends Base
      */
     public function columnSql($column, $platform)
     {
-        $type = $this->width ? "int({$this->width})" : "int";
-
-        return $platform->columnSql($column, $type, $this->options());
+        return $platform->columnSql($column, "set('" . implode("','", $this->_set) . "')", $this->options());
     }
 
     /* (non-phpdoc)
@@ -35,7 +31,7 @@ class Integer extends Base
      */
     public function unmarshal($value)
     {
-        return (int) $value;
+        return explode(',',$value);
     }
 
     /* (non-phpdoc)
@@ -43,6 +39,6 @@ class Integer extends Base
      */
     public function marshal($value)
     {
-        return new TypedValue((int) $value);
+        return implode(',',$value);
     }
 }

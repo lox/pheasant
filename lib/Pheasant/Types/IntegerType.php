@@ -5,20 +5,19 @@ namespace Pheasant\Types;
 use \Pheasant\Database\TypedValue;
 
 /**
- * A basic decimal type
+ * A basic integer type
  */
-class Decimal extends Base
+class IntegerType extends BaseType
 {
-    private $_length, $_scale;
+    public $width;
 
     /**
      * Constructor
      */
-    public function __construct($length=10, $scale=2, $options=null)
+    public function __construct($width=null, $options=null)
     {
         parent::__construct($options);
-        $this->_length = intval($length);
-        $this->_scale = intval($scale);
+        $this->width = intval($width);
     }
 
     /* (non-phpdoc)
@@ -26,7 +25,9 @@ class Decimal extends Base
      */
     public function columnSql($column, $platform)
     {
-        return $platform->columnSql($column, "decimal({$this->_length},{$this->_scale})", $this->options());
+        $type = $this->width ? "int({$this->width})" : "int";
+
+        return $platform->columnSql($column, $type, $this->options());
     }
 
     /* (non-phpdoc)
@@ -34,7 +35,7 @@ class Decimal extends Base
      */
     public function unmarshal($value)
     {
-        return (float)$value;
+        return (int) $value;
     }
 
     /* (non-phpdoc)
@@ -42,6 +43,6 @@ class Decimal extends Base
      */
     public function marshal($value)
     {
-        return new TypedValue((float) $value);
+        return new TypedValue((int) $value);
     }
 }

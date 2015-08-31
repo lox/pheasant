@@ -65,21 +65,21 @@ class TestObject extends \Pheasant\DomainObject
     public function properties()
     {
         return array(
-            'testid' => new Types\Sequence(),
-            'string1' => new Types\String(),
-            'string2' => new Types\String(),
-            'string3' => new Types\String(),
-            'string4' => new Types\String(),
-            'string5' => new Types\String(),
-            'datetime1' => new Types\DateTime(),
-            'datetime2' => new Types\DateTime(),
-            'datetime3' => new Types\DateTime(),
-            'int1' => new Types\Integer(),
-            'int2' => new Types\Integer(),
-            'int3' => new Types\Integer(),
-            'int4' => new Types\Integer(),
-            'int5' => new Types\Integer(),
-            'testrelid' => new Types\Integer(),
+            'testid' => new Types\SequenceType(),
+            'string1' => new Types\StringType(),
+            'string2' => new Types\StringType(),
+            'string3' => new Types\StringType(),
+            'string4' => new Types\StringType(),
+            'string5' => new Types\StringType(),
+            'datetime1' => new Types\DateTimeType(),
+            'datetime2' => new Types\DateTimeType(),
+            'datetime3' => new Types\DateTimeType(),
+            'int1' => new Types\IntegerType(),
+            'int2' => new Types\IntegerType(),
+            'int3' => new Types\IntegerType(),
+            'int4' => new Types\IntegerType(),
+            'int5' => new Types\IntegerType(),
+            'testrelid' => new Types\IntegerType(),
         );
     }
 
@@ -106,7 +106,7 @@ class TestRelationship extends \Pheasant\DomainObject
     public function properties()
     {
         return array(
-            'testrelid' => new Types\Sequence(),
+            'testrelid' => new Types\SequenceType(),
         );
     }
 }

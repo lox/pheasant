@@ -5,7 +5,7 @@ namespace Pheasant\Types;
 /**
  * A big integer type
  */
-class BigInteger extends Integer
+class BigIntegerType extends IntegerType
 {
     /* (non-phpdoc)
      * @see \Pheasant\Type::columnSql

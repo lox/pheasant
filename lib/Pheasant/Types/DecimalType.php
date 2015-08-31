@@ -2,20 +2,23 @@
 
 namespace Pheasant\Types;
 
+use \Pheasant\Database\TypedValue;
+
 /**
- * A Set type
+ * A basic decimal type
  */
-class Set extends Base
+class DecimalType extends BaseType
 {
-    private $_set;
+    private $_length, $_scale;
 
     /**
      * Constructor
      */
-    public function __construct($set = array(), $options=null)
+    public function __construct($length=10, $scale=2, $options=null)
     {
         parent::__construct($options);
-        $this->_set = $set;
+        $this->_length = intval($length);
+        $this->_scale = intval($scale);
     }
 
     /* (non-phpdoc)
@@ -23,7 +26,7 @@ class Set extends Base
      */
     public function columnSql($column, $platform)
     {
-        return $platform->columnSql($column, "set('" . implode("','", $this->_set) . "')", $this->options());
+        return $platform->columnSql($column, "decimal({$this->_length},{$this->_scale})", $this->options());
     }
 
     /* (non-phpdoc)
@@ -31,7 +34,7 @@ class Set extends Base
      */
     public function unmarshal($value)
     {
-        return explode(',',$value);
+        return (float)$value;
     }
 
     /* (non-phpdoc)
@@ -39,6 +42,6 @@ class Set extends Base
      */
     public function marshal($value)
     {
-        return implode(',',$value);
+        return new TypedValue((float) $value);
     }
 }

@@ -5,7 +5,7 @@ namespace Pheasant\Types;
 /**
  * A small integer type
  */
-class SmallInteger extends Integer
+class SmallIntegerType extends IntegerType
 {
     /* (non-phpdoc)
      * @see \Pheasant\Type::columnSql

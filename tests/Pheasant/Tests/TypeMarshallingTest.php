@@ -16,13 +16,13 @@ class TypeMarshallingTest extends \Pheasant\Tests\MysqlTestCase
         // set up a domain object
         $this->initialize('Pheasant\DomainObject', function($builder) {
             $builder->properties(array(
-                'id' => new Types\Integer(null, 'primary auto_increment'),
-                'type' => new Types\String(128),
-                'isllama' => new Types\Boolean(array('default'=>true)),
-                'weight' => new Types\Decimal(5, 1),
-                'timecreated' => new Types\DateTime(),
-                'unixtime' => new Types\UnixTimestamp(),
-                'camelidvariant' => new Types\String(128, array('allowed'=>array('llama', 'alpaca'))),
+                'id' => new Types\IntegerType(null, 'primary auto_increment'),
+                'type' => new Types\StringType(128),
+                'isllama' => new Types\BooleanType(array('default'=>true)),
+                'weight' => new Types\DecimalType(5, 1),
+                'timecreated' => new Types\DateTimeType(),
+                'unixtime' => new Types\UnixTimestampType(),
+                'camelidvariant' => new Types\StringType(128, array('allowed'=>array('llama', 'alpaca'))),
             ));
         });
 
