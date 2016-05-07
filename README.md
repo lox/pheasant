@@ -7,8 +7,6 @@ are supported, with the emphasis being on scalability and performance over compl
 Pheasant doesn't attempt to abstract the database and makes heavy use of
 MySQL/Innodb features.
 
-More details available at http://getpheasant.com
-
 Status of Development
 ---------------------------------
 
@@ -114,6 +112,15 @@ $users = User::one('firstname = ?', 'frank');
 
 // a user by primary key
 $user = User::byId(1);
+
+// all comments by a user (if user hasmany comment)
+$comments = User::byId(1)->Comment;
+
+// to prevent the n+1 query issue, eager load the relation:
+$users = User::all()->includes(['Comment']); // $users[0]->Comment will not hit db
+
+// eager loading also has support for eager loading sub-relations
+$users = User::all()->includes(['Comment' => [ 'Like', ]]);
 
 ```
 
