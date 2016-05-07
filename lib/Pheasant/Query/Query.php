@@ -17,6 +17,7 @@ class Query implements \IteratorAggregate, \Countable
     private $_lock=null;
     private $_where;
     private $_group;
+    private $_having;
     private $_order=array();
     private $_distinct=false;
 
@@ -113,6 +114,18 @@ class Query implements \IteratorAggregate, \Countable
             $this->_where = new Criteria();
 
         $this->_where->or(new Criteria($sql, $params));
+
+        return $this;
+    }
+
+    /**
+     * Sets the having clause to the provided sql, optionally binding
+     * parameters into the string.
+     * @chainable
+     */
+    public function having($sql=null, $params=array())
+    {
+        $this->_having = new Criteria($sql, $params);
 
         return $this;
     }
@@ -218,6 +231,7 @@ class Query implements \IteratorAggregate, \Countable
             implode(' ', $this->_joins),
             $this->_clause('WHERE', $this->_where),
             $this->_clause('GROUP BY', $this->_group),
+            $this->_clause('HAVING', $this->_having),
             $this->_clause('ORDER BY', $this->_order),
             $this->_limit,
             $this->_lock
