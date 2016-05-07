@@ -310,7 +310,7 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     {
         foreach (Relationship::normalizeMap($rels) as $alias=>$nested) {
             $this->_includes[$alias] = new Relationships\Includer(
-                $this->_query, $this->_schema->relationship($alias)
+                $this->_query, $this->_schema->relationship($alias), $nested
             );
         }
 

@@ -58,4 +58,26 @@ class IncludesTest extends \Pheasant\Tests\MysqlTestCase
 
         $this->assertEquals(0, $queries, "this should have hit the cache");
     }
+
+    public function testNestedIncludesHitsCache()
+    {
+        $queries = 0;
+
+        $this->connection()->filterChain()->onQuery(function ($sql) use (&$queries) {
+            ++$queries;
+            return $sql;
+        });
+
+        // the first lookup of SecretIdentity should cache all the rest
+        $powers = Power::all()->includes(
+          array('Hero' => array('SecretIdentity')))->toArray();
+        $this->assertNotNull($powers[0]->Hero->SecretIdentity);
+
+        // these should be from cache
+        $queries = 0;
+        foreach ($powers as $power) {
+            $this->assertNotNull($power->Hero->SecretIdentity);
+        }
+        $this->assertEquals(0, $queries, "this should have hit the cache");
+    }
 }
