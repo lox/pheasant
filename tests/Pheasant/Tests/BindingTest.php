@@ -135,13 +135,4 @@ class BindingTest extends \Pheasant\Tests\MysqlTestCase
             "`id`='1'"
         );
     }
-
-    public function testBindWithSqlFunction()
-    {
-        $binder = new Binder();
-        $this->assertEquals(
-            $binder->magicBind('DATE_FORMAT(col, "%d-%m")=?', array(array('03-25', '03-26'))),
-            "DATE_FORMAT(col, \"%d-%m\") IN ('03-25','03-26')"
-        );
-    }
 }
