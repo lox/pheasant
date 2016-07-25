@@ -130,12 +130,26 @@ class TypeMarshallingTest extends \Pheasant\Tests\MysqlTestCase
         setlocale(LC_ALL, $prevLocale);
     }
 
-    public function testVariableIsNullable() {
+    public function testVariableIsNullable()
+    {
         $object = new DomainObject;
         $object->weight = 88.5; // var type = double
         $object->weight = ''; // var type = string
         $object->weight = null;
 
         $this->assertSame($object->weight, null);
+    }
+    
+    public function testJsonTypesAreUnmarshalled()
+    {
+        $object = new Animal(array(
+            'type' => 'Llama', 
+            'meta' => array('foo' => 'bar')
+        ));
+        $object->save();
+        
+        $llamaById = Animal::byId(1);
+        $this->assertInstanceOf('stdClass', $llamaById->meta);
+        $this->assertSame($llamaById->meta->foo, 'bar');
     }
 }
