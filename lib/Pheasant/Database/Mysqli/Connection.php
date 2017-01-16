@@ -122,7 +122,7 @@ class Connection
             if ($this->_link->connect_error)
                 throw new Exception("Failed to connect to mysql: {$this->_link->connect_error}", $this->_link->connect_errno);
 
-            if (!$this->_link->set_charset("utf8"))
+            if (!$this->_link->set_charset($this->_charset))
                 throw new Exception(sprintf("Error setting character to %s: %s", $this->_charset, $this->_link->error));
         }
 
