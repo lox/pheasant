@@ -234,14 +234,6 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
     }
 
     /**
-     * Filter function when called as a function
-     */
-    public function __invoke($sql, $params=array())
-    {
-        return $this->filter($sql, $params);
-    }
-
-    /**
      * Gets the underlying query object
      */
     public function query()
