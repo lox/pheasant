@@ -380,4 +380,16 @@ class Collection implements \IteratorAggregate, \Countable, \ArrayAccess
         if(!isset($this->_accessor))
             throw new \BadMethodCallException('Unset not supported');
     }
+
+    /**
+    * String coercion. Returns a value like "[ClassName[pkcol1=foo,pkcol2=bar],ClassName[pkcol1=foo,pkcol2=bar],...]"
+    */
+    public function __toString()
+    {
+        $itemsInCollection = [];
+        foreach ($this->_iterator as $obj) {
+            $itemsInCollection[] = (string)$obj;
+        }
+        return implode(',', $itemsInCollection);
+    }
 }
