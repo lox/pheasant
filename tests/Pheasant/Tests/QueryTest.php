@@ -96,6 +96,20 @@ class QueryTest extends \Pheasant\Tests\MysqlTestCase
             $query->toSql());
     }
 
+    public function testAddingHaving()
+    {
+        $query = new Query();
+        $query
+            ->select('userid')
+            ->from('user')
+            ->having('userid < ?', 100)
+            ;
+
+        $this->assertEquals(
+            "SELECT userid FROM user HAVING (userid < '100')",
+            $query->toSql());
+    }
+    
     public function testAddingOrderBy()
     {
         $query = new Query();
