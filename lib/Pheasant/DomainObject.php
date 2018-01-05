@@ -469,7 +469,7 @@ class DomainObject implements \ArrayAccess
             if(is_object($value) || is_array($value))
                 $this->$key = $value;
             else
-                $this->set($key, $value);
+                $this->__set($key, $value);
         }
 
         return $this;
