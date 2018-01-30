@@ -2,7 +2,9 @@
 
 namespace Pheasant\Tests;
 
-class MysqlTestCase extends \PHPUnit_Framework_TestCase
+use \PHPUnit\Framework\TestCase;
+
+class MysqlTestCase extends TestCase
 {
     public function setUp()
     {

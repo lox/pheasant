@@ -6,6 +6,12 @@ use \Pheasant\Database\FilterChain;
 
 class FilterChainTest extends \Pheasant\Tests\MysqlTestCase
 {
+    public function tearDown()
+    {
+        parent::tearDown();
+        \Mockery::close();
+    }
+    
     public function testFilteringQuery()
     {
         $connection = \Mockery::mock('\Pheasant\Database\Mysqli\Connection');
