@@ -28,17 +28,19 @@ class CollectionTest extends \Pheasant\Tests\MysqlTestCase
     {
         foreach(Animal::find('type=?','mongoose') as $animal) {
         }
+
+        $this->assertTrue(true);
     }
 
     public function testOneWhenZero()
     {
-        $this->setExpectedException('Pheasant\NotFoundException');
+        $this->expectException('Pheasant\NotFoundException');
         $results = Animal::findByName('nonexistent')->one();
     }
 
     public function testOneWhenMany()
     {
-        $this->setExpectedException('Pheasant\ConstraintException');
+        $this->expectException('Pheasant\ConstraintException');
         $results = Animal::find()->one();
     }
 
@@ -112,13 +114,13 @@ class CollectionTest extends \Pheasant\Tests\MysqlTestCase
 
     public function testFirstOnEmptyCollection()
     {
-        $this->setExpectedException('Pheasant\NotFoundException');
+        $this->expectException('Pheasant\NotFoundException');
         Animal::find('name=?', 'Dodo')->first();
     }
 
     public function testLastOnEmptyCollection()
     {
-        $this->setExpectedException('Pheasant\NotFoundException');
+        $this->expectException('Pheasant\NotFoundException');
         Animal::find('name=?', 'Dodo')->last();
     }
 

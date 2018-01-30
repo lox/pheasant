@@ -5,6 +5,12 @@ use \Pheasant\Database\Mysqli\Transaction;
 
 class TransactionTest extends \Pheasant\Tests\MysqlTestCase
 {
+    public function tearDown()
+    {
+        parent::tearDown();
+        \Mockery::close();
+    }
+
     public function testBasicSuccessfulTransaction()
     {
         $connection = \Mockery::mock('\Pheasant\Database\Mysqli\Connection');
@@ -32,7 +38,7 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
             throw new \Exception('Eeeek!');
         });
 
-        $this->setExpectedException('\Exception');
+        $this->expectException('\Exception');
         $transaction->execute();
     }
 
@@ -50,6 +56,7 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
         });
 
         $transaction->execute();
+        $this->assertTrue(true);
     }
 
     public function testCallbacksWithParams()
@@ -85,6 +92,7 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
         });
 
         $transaction->execute();
+        $this->assertTrue(true);
     }
 
     public function testDeferEventsFireOnRollback()
@@ -104,7 +112,7 @@ class TransactionTest extends \Pheasant\Tests\MysqlTestCase
             throw new \Exception("Llamas :( :)");
         });
 
-        $this->setExpectedException('\Exception');
+        $this->expectException('\Exception');
         $transaction->execute();
     }
 }

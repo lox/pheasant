@@ -59,7 +59,7 @@ class LockingTest extends \Pheasant\Tests\MysqlTestCase
         $animal = new Animal();
         $animal->type = 'llama';
 
-        $this->setExpectedException('\Pheasant\Locking\LockingException');
+        $this->expectException('\Pheasant\Locking\LockingException');
         $animal->transaction(function($animal) {
             $animal->lock();
         });
