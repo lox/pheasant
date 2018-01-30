@@ -52,6 +52,21 @@ The simplest way to configure Pheasant is to use static `setup()` method:
      Set strict mode on the connection. This is generally not a good idea, as it creates issues
      with binding.
 
+  ssl_key
+     When connecting to MySQL over SSL. The path name to the key file.
+
+  ssl_cert
+     When connecting to MySQL over SSL. The path name to the certificate file.
+
+  ssl_ca
+     When connecting to MySQL over SSL. The path name to the certificate authority file.
+
+  ssl_capath
+     When connecting to MySQL over SSL. The pathname to a directory that contains trusted SSL CA
+     certificates in PEM format.
+
+  cipher
+     When connecting to MySQL over SSL. A list of allowable ciphers to use for SSL encryption.
 
 Multiple Connections
 ~~~~~~~~~~~~~~~~~~~~
