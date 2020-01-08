@@ -22,6 +22,13 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(is_numeric($this->conn->execute("SELECT CONNECTION_ID()")->scalar()));
     }
 
+    public function testConnectingUsingSsl()
+    {
+        $dsn = new Dsn('mysql://root@localhost/pheasanttest?charset=utf8&ssl_ca=foobar.pem');
+        $conn = new Mysqli\Connection($dsn);
+        $this->assertEquals('foobar.pem', $conn->_ssl_ca);
+    }
+
     public function testReconnecting()
     {
         $id = $this->conn->execute("SELECT CONNECTION_ID()")->scalar();
