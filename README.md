@@ -78,6 +78,10 @@ class Author extends DomainObject
 // configure database connection
 Pheasant::setup('mysql://localhost:/mydatabase');
 
+// you can add extra options:
+// Pheasant::setup('mysql://root@localhost:/mydatabase?charset=utf8'); (utf8 is assumed by default)
+// Pheasant::setup('mysql://root:password@localhost:/mydatabase?ssl_ca=foobar.pem');
+
 // create some objects
 $author = new Author(array('fullname'=>'Lachlan'));
 $post = new Post(array('title'=>'My Post', 'author'=>$author));

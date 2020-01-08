@@ -40,6 +40,16 @@ class Connection
             $this->_dsn->params['charset'] : 'utf8';
         $this->_strict = isset($this->_dsn->params['strict']) ?
             $this->_dsn->params['strict'] : false;
+        $this->_ssl_key = isset($this->_dsn->params['ssl_key']) ?
+            $this->_dsn->params['ssl_key'] : null;
+        $this->_ssl_cert = isset($this->_dsn->params['ssl_cert']) ?
+            $this->_dsn->params['ssl_cert'] : null;
+        $this->_ssl_ca = isset($this->_dsn->params['ssl_ca']) ?
+            $this->_dsn->params['ssl_ca'] : null;
+        $this->_ssl_capath = isset($this->_dsn->params['ssl_capath']) ?
+            $this->_dsn->params['ssl_capath'] : null;
+        $this->_ssl_cipher = isset($this->_dsn->params['ssl_cipher']) ?
+            $this->_dsn->params['ssl_cipher'] : null;
 
         if(!empty($this->_dsn->database))
             $this->_selectedDatabase = $this->_dsn->database;
@@ -114,6 +124,10 @@ class Connection
             $sqlMode = $this->_strict ? 'TRADITIONAL' : '';
             $this->_link->options(MYSQLI_INIT_COMMAND, "SET SESSION sql_mode = '{$sqlMode}'");
             $this->_link->options(MYSQLI_OPT_CONNECT_TIMEOUT, 5);
+
+            if ($this->_ssl_key || $this->_ssl_cert || $this->_ssl_ca) {
+                $this->_link->ssl_set($this->_ssl_key, $this->_ssl_cert, $this->_ssl_ca, $this->_ssl_capath, $this->_ssl_cipher);
+            }
 
             @$this->_link->real_connect(
                 $this->_dsn->host, $this->_dsn->user, $this->_dsn->pass,

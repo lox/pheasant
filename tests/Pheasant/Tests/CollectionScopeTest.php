@@ -45,7 +45,7 @@ class CollectionScopeTest extends \Pheasant\Tests\MysqlTestCase
 
     public function testNonExistantProperty()
     {
-        $this->setExpectedException('BadMethodCallException');
+        $this->expectException('BadMethodCallException');
         Animal::all()->llamas();
     }
 }

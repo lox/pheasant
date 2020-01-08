@@ -107,7 +107,7 @@ class RelationshipTest extends \Pheasant\Tests\MysqlTestCase
         $power = new Power(array('description'=>'Spider Senses'));
         $power->save();
         
-        $this->setExpectedException('\Pheasant\Exception');
+        $this->expectException('\Pheasant\Exception');
         $foo = $power->Hero;
     }
 }

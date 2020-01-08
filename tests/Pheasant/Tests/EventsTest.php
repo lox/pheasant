@@ -13,8 +13,13 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
     public function setUp()
     {
         parent::setUp();
-
         $this->mapper = \Mockery::mock('\Pheasant\Mapper\Mapper');
+    }
+
+    public function tearDown()
+    {
+        parent::tearDown();
+        \Mockery::close();
     }
 
     /**
@@ -196,5 +201,7 @@ class EventsTestCase extends \Pheasant\Tests\MysqlTestCase
         $do = new EventTestObject();
         $do->test = "blargh";
         $do->save();
+
+        $this->assertTrue(true);
     }
 }

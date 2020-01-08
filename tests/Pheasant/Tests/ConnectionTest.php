@@ -6,7 +6,7 @@ use \Pheasant;
 use \Pheasant\Database\Mysqli;
 use \Pheasant\Database\Dsn;
 
-class ConnectionTest extends \PHPUnit_Framework_TestCase
+class ConnectionTest extends \PHPUnit\Framework\TestCase
 {
     public function setUp()
     {
@@ -20,6 +20,13 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function testConnecting()
     {
         $this->assertTrue(is_numeric($this->conn->execute("SELECT CONNECTION_ID()")->scalar()));
+    }
+
+    public function testConnectingUsingSsl()
+    {
+        $dsn = new Dsn('mysql://root@localhost/pheasanttest?charset=utf8&ssl_ca=foobar.pem');
+        $conn = new Mysqli\Connection($dsn);
+        $this->assertEquals('foobar.pem', $conn->_ssl_ca);
     }
 
     public function testReconnecting()
@@ -52,13 +59,13 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $dsn = $this->dsn->copy(array('database'=>''));
         $conn = new Mysqli\Connection($dsn);
 
-        $this->setExpectedException('\Pheasant\Database\Mysqli\Exception');
+        $this->expectException('\Pheasant\Database\Mysqli\Exception');
         $conn->selectDatabase('llamassddfasdfsdfsdf');
     }
 
     public function testDeadlockException()
     {
-        $this->setExpectedException('\Pheasant\Database\Mysqli\DeadlockException');
+        $this->expectException('\Pheasant\Database\Mysqli\DeadlockException');
         $this->conn->execute("SIGNAL SQLSTATE '40001' SET MYSQL_ERRNO='1213'");
     }
 }
