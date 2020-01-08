@@ -24,7 +24,8 @@ class Connection
 
     public static
         $counter=0,
-        $timer=0
+        $timer=0,
+        $queries=[]
         ;
 
     /**
@@ -168,11 +169,12 @@ class Connection
 
             if($debug) {
                 \Pheasant\Database\Mysqli\Connection::$timer += microtime(true)-$timer;
-            }
-
-            if ($debug) {
-                printf("<pre>Pheasant executed <code>%s</code> on thread #%d in %.2fms, returned %d rows</pre>\n\n",
-                    $sql, $mysqli->thread_id, (microtime(true)-$timer)*1000, is_object($r) ? $r->num_rows : 0);
+                \Pheasant\Database\Mysqli\Connection::$queries[] = [
+                    'sql' => $sql,
+                    'thread' => $mysqli->thread_id,
+                    'time' => (microtime(true)-$timer)*1000,
+                    'rows' => is_object($r) ? $r->num_rows : 0,
+                ];
             }
 
             if ($mysqli->error) {
