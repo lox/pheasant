@@ -1,16 +1,15 @@
 language: php
+services:
+  - mysql
 sudo: false
 
 php:
-  - hhvm
+  - 7.4
+  - 7.3
   - 7.2
-  - 7.1
-  - 7.0
-  - 5.6
 
 before_script:
-  - curl -s http://getcomposer.org/installer | php
-  - php composer.phar install --dev --no-interaction
+  - composer install --dev --no-interaction
   - mysql -e 'create database pheasanttest;'
 
 script:

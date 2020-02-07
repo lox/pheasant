@@ -1,6 +1,6 @@
 {
     "name": "lox/pheasant",
-    "description": "A lightweight data mapper for MySQL and PHP 5.3+",
+    "description": "A lightweight data mapper for MySQL and PHP 7.2+",
     "keywords": ["datamapper", "orm", "activerecord", "mysql", "99designs"],
     "license": "MIT",
     "authors": [
@@ -8,7 +8,7 @@
         { "name": "Richard Bone", "email": "rjonbone@gmail.com" }
     ],
     "require": {
-      "php": ">=5.6.0"
+      "php": ">=7.2"
     },
     "require-dev": {
       "phpunit/phpunit": "~6.0",
