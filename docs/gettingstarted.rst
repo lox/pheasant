@@ -5,7 +5,7 @@ Getting Started
 This document will get you up and running with a basic Pheasant environment. You'll need:
 
  * MySQL 5.1+
- * PHP 5.3.1+
+ * PHP 7.2+
  * `Composer`_
 
 .. _Composer: http://getcomposer.org/

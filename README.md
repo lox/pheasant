@@ -1,7 +1,7 @@
 Pheasant
 =======================================
 
-Pheasant is an object relational mapper written to take advantage of PHP 5.3. Simple relationships
+Pheasant is an object relational mapper written to take advantage of PHP 7. Simple relationships
 are supported, with the emphasis being on scalability and performance over complexity.
 
 Pheasant doesn't attempt to abstract the database and makes heavy use of
