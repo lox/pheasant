@@ -107,4 +107,10 @@ class TypesTest extends \Pheasant\Tests\MysqlTestCase
     {
         $this->assertEquals($type->columnSql('test', new \Pheasant\Database\MysqlPlatform()), $sql);
     }
+    
+    public function testJson()
+    {
+        $type = new Types\JsonType();
+        $this->assertMysqlColumnSql('`test` json', $type);
+    }
 }

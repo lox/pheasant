@@ -18,6 +18,7 @@ class Animal extends DomainObject
                 'id' => new Types\IntegerType(11, 'primary auto_increment'),
                 'type' => new Types\StringType(255, 'required default=llama'),
                 'name' => new Types\StringType(255),
+                'meta' => new Types\JsonType(),
             ));
     }
 
